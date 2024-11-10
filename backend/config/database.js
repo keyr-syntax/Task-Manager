@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-require("dotenv").config();
 const MONGODB_ATLAS =
   "mongodb+srv://keyrumail:yopO9cm5F1gVyjoj@cluster0.w457g.mongodb.net/taskmanager?retryWrites=true&w=majority&appName=Cluster0";
 
