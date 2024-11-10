@@ -1,0 +1,50 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: 80px auto;
+  border: 0.5px solid wheat;
+  border-radius: 8px;
+}
+form h3 {
+  text-align: center;
+  font-weight: 500;
+}
+form button {
+  border: none;
+  display: block;
+  background-color: #151533;
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 10px auto;
+  padding: 10px 20px;
+  width: 100px;
+  font-weight: 100;
+  font-size: 16px;
+  cursor: pointer;
+}
+.input-title {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  height: 6vh;
+}
+.input-title::placeholder {
+  color: black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+}
+.input-description {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  height: 10vh;
+  resize: vertical;
+  vertical-align: top;
+}
+.input-description::placeholder {
+  color: black;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+  vertical-align: top;
+}
