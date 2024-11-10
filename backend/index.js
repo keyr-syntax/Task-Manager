@@ -9,7 +9,13 @@ const taskRoutes = require("./routes/taskRoutes.js");
 connectDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors("*"));
+app.use(
+  cors({
+    origin: "https://task-management-frontend-two-dun.vercel.app",
+    methods: "GET, POST, PUT, DELETE",
+    allowedHeaders: "Content-Type, Authorization",
+  })
+);
 app.get("/", (req, res) => {
   res.json({
     success: true,
