@@ -12,7 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "https://task-management-frontend-two-dun.vercel.app/",
+<<<<<<< HEAD
     // origin: "*",
+=======
+    origin: "*",
+>>>>>>> effa9e83f42c59a71ea1ec75b11c90e9200e263f
     methods: "GET, POST, PUT, DELETE",
     allowedHeaders: "Content-Type, Authorization",
   })
