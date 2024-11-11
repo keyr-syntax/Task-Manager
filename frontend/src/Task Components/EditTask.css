@@ -73,7 +73,7 @@ form button {
   display: block;
   margin: 5px 25px;
   height: 6vh;
-  width: fit-content;
+  width: 80vw;
   font-weight: bold;
   border-radius: 6px;
   border: 1px solid white;
