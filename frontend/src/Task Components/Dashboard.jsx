@@ -5,7 +5,7 @@ function Dashboard() {
   return (
     <>
       <div className="navbar-container">
-        <Link>All Tasks</Link>
+        <Link to="/alltasks">All Tasks</Link>
         <Link to="/createtask">New Task</Link>
       </div>
     </>
