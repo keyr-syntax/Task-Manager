@@ -12,20 +12,11 @@ const taskSchema = new Schema(
       required: true,
       trim: true,
     },
-    isCompleted: {
-      type: Boolean,
-      required: true,
-      default: false,
-    },
+
     isPending: {
       type: Boolean,
       required: true,
       default: true,
-    },
-    isCancelled: {
-      type: Boolean,
-      required: true,
-      default: false,
     },
     createdAt: {
       type: Date,

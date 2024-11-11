@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import "./Createtask.css";
+import { TaskContext } from "./Contextprovider.jsx";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 function Createtask() {
+  const { BASEAPI } = useContext(TaskContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [scheduledFor, setScheduledFor] = useState("");
   // const BASEAPI = "http://localhost:5000";
-  const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
@@ -17,10 +22,14 @@ function Createtask() {
         body: JSON.stringify({
           title,
           description,
+          scheduledFor,
         }),
       });
       const response = await data.json();
       if (response.success) {
+        setDescription("");
+        setTitle("");
+        setScheduledFor("");
         console.log("Task added:", response.task);
       }
     } catch (error) {
@@ -32,7 +41,8 @@ function Createtask() {
     <>
       <div>
         <form onSubmit={handleCreateTask}>
-          <h3>New Task</h3>
+          <h3>Add new task</h3>
+          <label className="label-date-time-picker">Task Title:</label>
           <input
             value={title}
             onChange={(e) => {
@@ -41,16 +51,34 @@ function Createtask() {
             className="input-title"
             type="text"
             placeholder="Title..."
+            required
           />
-          <input
+          <label className="label-date-time-picker">Task Description:</label>
+          <textarea
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
             }}
             className="input-description"
             type="text"
-            placeholder="Description..."
+            placeholder="write your task description..."
+            required
           />
+          <label className="label-date-time-picker">
+            Select Due Date and Time:
+          </label>
+          <div className="date-picker-div">
+            <DatePicker
+              className="date-picker"
+              placeholderText="Select Due date and time..."
+              minDate={new Date()}
+              style={{ color: "black" }}
+              selected={scheduledFor}
+              onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
+              showTimeSelect
+              dateFormat="Pp"
+            />
+          </div>
           <button type="submit">Submit</button>
         </form>
       </div>

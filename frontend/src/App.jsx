@@ -1,9 +1,10 @@
 import Createtask from "./Task Components/Createtask";
 import Dashboard from "./Task Components/Dashboard";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import EditTask from "./Task Components/EditTask";
 import Tasklist from "./Task Components/Tasklist";
 import Contextprovider from "./Task Components/Contextprovider";
+import Seetask from "./Task Components/Seetask";
 function App() {
   return (
     <>
@@ -14,6 +15,8 @@ function App() {
           <Route exact path="/createtask" element={<Createtask />} />
           <Route exact path="/updatetask/:_id" element={<EditTask />} />
           <Route exact path="/alltasks" element={<Tasklist />} />
+          <Route exact path="/seetask/:_id" element={<Seetask />} />
+          <Route exact path="/edittask/:_id" element={<EditTask />} />
         </Routes>
       </Contextprovider>
     </>

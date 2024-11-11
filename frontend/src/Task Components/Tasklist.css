@@ -8,22 +8,16 @@
   margin: 70px auto 5px auto;
 }
 table {
-  /* border-top: 1px solid white;
-  border-bottom: 1px solid white;
-  border-left: 1px solid white; */
   width: 85%;
   margin: 15px auto;
   border: 1px solid white;
 }
 
 th {
-  /* border-right: 1px solid white;
-  border-bottom: 1px solid white; */
   text-align: center;
 }
 
 td {
-  /* border-right: 1px solid white; */
   text-align: center;
   border: 1px solid white;
 }
@@ -33,6 +27,13 @@ td {
   cursor: pointer;
 }
 .delete-tr {
-  background-color: red;
+  background-color: green;
   border-radius: 4px;
+}
+.table-head th {
+  background-color: #151533;
+  color: white;
+  font-weight: 500;
+  font-size: 20px;
+  border: 1px solid white;
 }

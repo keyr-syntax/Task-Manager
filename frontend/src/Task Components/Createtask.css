@@ -9,6 +9,7 @@ form {
 form h3 {
   text-align: center;
   font-weight: 500;
+  font-size: 25px;
 }
 form button {
   border: none;
@@ -21,16 +22,20 @@ form button {
   width: 100px;
   font-weight: 100;
   font-size: 16px;
+  border: 1px solid white;
+  border-radius: 6px;
   cursor: pointer;
 }
 .input-title {
   margin: 5px 25px;
   font-weight: 200;
   border-radius: 6px;
+  padding: 5px 10px;
   height: 6vh;
+  font-size: 16px;
 }
 .input-title::placeholder {
-  color: black;
+  color: gray;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   padding: 10px 5px;
 }
@@ -38,12 +43,16 @@ form button {
   margin: 5px 25px;
   font-weight: 200;
   border-radius: 6px;
-  height: 10vh;
   resize: vertical;
   vertical-align: top;
+  /* width: 100%;
+  max-width: 600px; */
+  height: 50px;
+  padding: 10px;
+  font-size: 16px;
 }
 .input-description::placeholder {
-  color: black;
+  color: gray;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   padding: 10px 5px;
   vertical-align: top;
@@ -52,4 +61,28 @@ form button {
   form {
     width: 70%;
   }
+}
+.label-date-time-picker {
+  margin: 5px 25px;
+  font-weight: bold;
+  border-radius: 6px;
+  color: white;
+  display: block;
+  font-size: 18px;
+}
+.date-picker {
+  display: block;
+  margin: 5px 25px;
+  height: 6vh;
+  width: fit-content;
+  font-weight: bold;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.date-picker::placeholder {
+  font-weight: 200;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+  color: gray;
 }

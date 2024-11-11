@@ -39,6 +39,7 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { _id } = req.params;
+    const { title, description, scheduledFor } = req.body;
     const tasktobeUpdated = await Task.findByIdAndUpdate(
       req.params._id,
       {
@@ -51,6 +52,7 @@ const updateTask = async (req, res) => {
       }
     );
     if (tasktobeUpdated) {
+      console.log("Task updated", tasktobeUpdated);
       return res.json({
         success: true,
         message: "Task update successfully",
@@ -89,6 +91,30 @@ const fetchAllTasks = async (req, res) => {
     });
   }
 };
+const fetchonetask = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const taskbyid = await Task.findById({
+      _id: req.params._id,
+    });
+    if (taskbyid) {
+      return res.json({
+        success: true,
+        message: "Task fetched successfully",
+        task: taskbyid,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Task not found");
+    }
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Error while fetching task",
+      error: error,
+    });
+  }
+};
 const deleteTask = async (req, res) => {
   try {
     const { _id } = req.params;
@@ -110,10 +136,31 @@ const deleteTask = async (req, res) => {
     });
   }
 };
+const markascompleted = async (req, res) => {
+  try {
+    const tasktobecompleted = await Task.findById({ _id: req.params._id });
+    if (tasktobecompleted) {
+      tasktobecompleted.isPending = false;
+      const taskcompleted = await tasktobecompleted.save();
+      return res.json({
+        success: true,
+        message: "Task marked as completed successfully",
+        task: taskcompleted,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Task not found");
+    }
+  } catch (error) {
+    console.log("Error while marking completed", error);
+  }
+};
 
 module.exports = {
   createTask,
   updateTask,
   fetchAllTasks,
   deleteTask,
+  fetchonetask,
+  markascompleted,
 };

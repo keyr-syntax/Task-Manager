@@ -3,7 +3,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 function Tasklist() {
-  const { alltasks, deletetask, getalltasks } = useContext(TaskContext);
+  const { alltasks, getalltasks } = useContext(TaskContext);
   useEffect(() => {
     getalltasks();
   }, []);
@@ -16,13 +16,11 @@ function Tasklist() {
             <div className="table-heading">All tasks</div>
             <table>
               <thead>
-                <tr>
+                <tr className="table-head">
                   <th>Title</th>
                   <th>Due Date</th>
                   <th>Status</th>
-                  <th>Done</th>
-                  <th>Update</th>
-                  <th>Delete</th>
+                  <th>See Task</th>
                 </tr>
               </thead>
               <tbody>
@@ -44,17 +42,18 @@ function Tasklist() {
                               }
                             )}
                           </td>
-                          <td>{task.isPending ? "Pending" : "Done"}</td>
-                          <td>Done</td>
-                          <td>Update</td>
+                          {task.isPending ? (
+                            <td style={{ color: "red" }}>Pending</td>
+                          ) : (
+                            <td style={{ color: "green" }}>Completed</td>
+                          )}
+
                           <td className="delete-tr">
                             <Link
-                              onClick={() => {
-                                deletetask(task._id);
-                              }}
+                              to={`/seetask/${task._id}`}
                               className="delete-link"
                             >
-                              Delete
+                              Open
                             </Link>
                           </td>
                         </tr>
