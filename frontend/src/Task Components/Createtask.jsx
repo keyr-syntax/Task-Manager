@@ -21,6 +21,8 @@ function Createtask() {
       });
       const response = await data.json();
       if (response.success) {
+        setTitle("");
+        setDescription("");
         console.log("Task added:", response.task);
       }
     } catch (error) {
