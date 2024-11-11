@@ -6,8 +6,8 @@ function Contextprovider({ children }) {
   const [alltasks, setAlltasks] = useState([]);
   const [task, setTask] = useState("");
   const navigate = useNavigate();
-  const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "http://localhost:5000";
+  const BASEAPI = "https://task-management-roan-eight.vercel.app";
 
   useEffect(() => {
     getalltasks();
