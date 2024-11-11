@@ -3,7 +3,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 function Seetask() {
-  const { BASEAPI, task, setTask, markascompleted, deletetask } =
+  const { BASEAPI, task, setTask, markascompleted, deletetask, markaspending } =
     useContext(TaskContext);
   const { _id } = useParams();
   useEffect(() => {
@@ -51,6 +51,10 @@ function Seetask() {
               )}
             </p>
             <p>
+              Priority:
+              <span>{task.priority}</span>
+            </p>
+            <p>
               Due date:{" "}
               <span>
                 {new Date(task.scheduledFor).toLocaleString("en-US", {
@@ -77,6 +81,14 @@ function Seetask() {
               className="completed"
             >
               Mark as Completed
+            </button>
+            <button
+              onClick={() => {
+                markaspending(task._id);
+              }}
+              className="completed"
+            >
+              Mark as Pending
             </button>
             <button
               onClick={() => {

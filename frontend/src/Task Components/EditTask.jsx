@@ -9,6 +9,8 @@ function EditTask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
+  const [priority, setPriority] = useState("");
+  const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -26,9 +28,12 @@ function EditTask() {
       });
       const response = await data.json();
       if (response.success) {
+        const dateconverted = new Date(response.task.scheduledFor);
         setTitle(response.task.title);
         setDescription(response.task.description);
-        setScheduledFor(response.task.scheduledFor);
+        setPriority(response.task.priority);
+        setScheduledFor(dateconverted);
+
         console.log("Task fetched: ", response.task);
       }
     } catch (error) {
@@ -47,6 +52,7 @@ function EditTask() {
           title,
           description,
           scheduledFor,
+          priority,
         }),
       });
       const response = await data.json();
@@ -86,6 +92,22 @@ function EditTask() {
           placeholder="write your task description..."
           required
         />
+        <label className="label-date-time-picker">Priority:</label>
+        <select
+          className="select-priority"
+          value={priority}
+          onChange={(e) => {
+            setPriority(e.target.value);
+          }}
+          required
+        >
+          <option value="">Select Priority Level</option>
+          {priority_Levels.map((level, index) => (
+            <option value={level} key={index}>
+              {level}
+            </option>
+          ))}
+        </select>
         <label className="label-date-time-picker">Due Date and Time:</label>
 
         <DatePicker
@@ -93,13 +115,7 @@ function EditTask() {
           placeholderText="Change Due date and time..."
           minDate={new Date()}
           style={{ color: "black" }}
-          value={new Date(scheduledFor).toLocaleString("en-US", {
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          })}
+          value={scheduledFor}
           selected={scheduledFor}
           onChange={(scheduledFor) => {
             setScheduledFor(scheduledFor);

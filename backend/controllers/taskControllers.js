@@ -2,14 +2,15 @@ const Task = require("../models/taskModel.js");
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, scheduledFor } = req.body;
+    const { title, description, scheduledFor, priority } = req.body;
     const newTask = await Task.create({
       title: title,
       description: description,
     });
     if (newTask) {
-      if (scheduledFor) {
+      if (scheduledFor || priority) {
         newTask.scheduledFor = scheduledFor;
+        newTask.priority = priority;
         await newTask.save();
         return res.json({
           success: true,
@@ -39,13 +40,14 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { _id } = req.params;
-    const { title, description, scheduledFor } = req.body;
+    const { title, description, scheduledFor, priority } = req.body;
     const tasktobeUpdated = await Task.findByIdAndUpdate(
       req.params._id,
       {
         title,
         description,
         scheduledFor,
+        priority,
       },
       {
         new: true,
@@ -155,6 +157,25 @@ const markascompleted = async (req, res) => {
     console.log("Error while marking completed", error);
   }
 };
+const markaspending = async (req, res) => {
+  try {
+    const tasktobecompleted = await Task.findById({ _id: req.params._id });
+    if (tasktobecompleted) {
+      tasktobecompleted.isPending = true;
+      const taskpending = await tasktobecompleted.save();
+      return res.json({
+        success: true,
+        message: "Task marked as pending successfully",
+        task: taskpending,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Task not found");
+    }
+  } catch (error) {
+    console.log("Error while marking pending", error);
+  }
+};
 
 module.exports = {
   createTask,
@@ -163,4 +184,5 @@ module.exports = {
   deleteTask,
   fetchonetask,
   markascompleted,
+  markaspending,
 };

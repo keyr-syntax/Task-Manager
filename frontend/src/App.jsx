@@ -5,6 +5,8 @@ import EditTask from "./Task Components/EditTask";
 import Tasklist from "./Task Components/Tasklist";
 import Contextprovider from "./Task Components/Contextprovider";
 import Seetask from "./Task Components/Seetask";
+import Pendingtask from "./Task Components/Pendingtask";
+import Completedtasks from "./Task Components/Completedtasks";
 function App() {
   return (
     <>
@@ -17,6 +19,8 @@ function App() {
           <Route exact path="/alltasks" element={<Tasklist />} />
           <Route exact path="/seetask/:_id" element={<Seetask />} />
           <Route exact path="/edittask/:_id" element={<EditTask />} />
+          <Route exact path="/pendingtasks" element={<Pendingtask />} />
+          <Route exact path="/completedtasks" element={<Completedtasks />} />
         </Routes>
       </Contextprovider>
     </>

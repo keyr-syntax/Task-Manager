@@ -1,19 +1,28 @@
 import "./Tasklist.css";
 import { TaskContext } from "./Contextprovider.jsx";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-function Tasklist() {
+
+function Pendingtask() {
   const { alltasks, getalltasks } = useContext(TaskContext);
+  const [pendingtask, setPendingtask] = useState([]);
   useEffect(() => {
     getalltasks();
   }, []);
+  useEffect(() => {
+    const filterpendingtask = () => {
+      const filterpending = alltasks.filter((task) => task.isPending === true);
+      return setPendingtask(filterpending);
+    };
+    filterpendingtask();
+  }, [alltasks]);
 
   return (
     <>
       <div className="table-container">
-        {alltasks && alltasks.length > 0 ? (
+        {pendingtask && pendingtask.length > 0 ? (
           <>
-            <div className="table-heading">All tasks</div>
+            <div className="table-heading">Pending tasks</div>
             <table>
               <thead>
                 <tr className="table-head">
@@ -25,8 +34,8 @@ function Tasklist() {
                 </tr>
               </thead>
               <tbody>
-                {alltasks &&
-                  alltasks.map(
+                {pendingtask &&
+                  pendingtask.map(
                     (task) =>
                       task && (
                         <tr key={task._id}>
@@ -43,13 +52,12 @@ function Tasklist() {
                               }
                             )}
                           </td>
-                          {task.isPending ? (
-                            <td style={{ color: "red" }}>Pending</td>
-                          ) : (
-                            <td style={{ color: "green" }}>Completed</td>
+                          {task.isPending && (
+                            <td style={{ color: "red", fontWeight: "bold" }}>
+                              Pending
+                            </td>
                           )}
                           <td>{task.priority}</td>
-
                           <td className="delete-tr">
                             <Link
                               to={`/seetask/${task._id}`}
@@ -65,11 +73,11 @@ function Tasklist() {
             </table>
           </>
         ) : (
-          <div className="table-heading">No tasks</div>
+          <div className="table-heading">No Pending tasks</div>
         )}
       </div>
     </>
   );
 }
 
-export default Tasklist;
+export default Pendingtask;

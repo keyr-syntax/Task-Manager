@@ -12,6 +12,11 @@ const taskSchema = new Schema(
       required: true,
       trim: true,
     },
+    priority: {
+      type: String,
+      required: true,
+      default: "low",
+    },
 
     isPending: {
       type: Boolean,

@@ -8,6 +8,8 @@ function Createtask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
+  const [priority, setPriority] = useState("");
+  const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
   // const BASEAPI = "http://localhost:5000";
   // const BASEAPI = "https://task-management-roan-eight.vercel.app";
 
@@ -23,6 +25,7 @@ function Createtask() {
           title,
           description,
           scheduledFor,
+          priority,
         }),
       });
       const response = await data.json();
@@ -64,6 +67,21 @@ function Createtask() {
             placeholder="write your task description..."
             required
           />
+          <label className="label-date-time-picker">Priority:</label>
+          <select
+            className="select-priority"
+            value={priority}
+            onChange={(e) => {
+              setPriority(e.target.value);
+            }}
+          >
+            <option value="">Select Priority Level</option>
+            {priority_Levels.map((level, index) => (
+              <option value={level} key={index}>
+                {level}
+              </option>
+            ))}
+          </select>
           <label className="label-date-time-picker">
             Select Due Date and Time:
           </label>
@@ -79,6 +97,7 @@ function Createtask() {
               dateFormat="Pp"
             />
           </div>
+
           <button type="submit">Submit</button>
         </form>
       </div>

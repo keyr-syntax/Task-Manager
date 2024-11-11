@@ -60,6 +60,25 @@ function Contextprovider({ children }) {
       const response = await data.json();
       if (response.success) {
         setTask(response.task);
+        getalltasks();
+        console.log(response.task);
+      }
+    } catch (error) {
+      console.log("Error while marking task as completed", error);
+    }
+  };
+  const markaspending = async (_id) => {
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/markaspending/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        setTask(response.task);
+        getalltasks();
         console.log(response.task);
       }
     } catch (error) {
@@ -75,6 +94,7 @@ function Contextprovider({ children }) {
           deletetask,
           getalltasks,
           markascompleted,
+          markaspending,
           task,
           setTask,
           BASEAPI,

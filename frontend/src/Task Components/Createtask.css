@@ -86,3 +86,11 @@ form button {
   padding: 10px 5px;
   color: gray;
 }
+.select-priority {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  padding: 5px 10px;
+  height: 6vh;
+  font-size: 16px;
+}
