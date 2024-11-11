@@ -1,0 +1,105 @@
+form {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  margin: 80px auto;
+  border: 0.5px solid white;
+  border-radius: 8px;
+}
+form h3 {
+  text-align: center;
+  font-weight: 500;
+  font-size: 25px;
+}
+form button {
+  border: none;
+  display: block;
+  background-color: #151533;
+  color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  margin: 10px auto;
+  padding: 10px 20px;
+  width: 100px;
+  font-weight: 100;
+  font-size: 16px;
+  border: 1px solid white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.input-title {
+  margin: 5px 25px;
+  font-weight: 200;
+  border: 1px solid white;
+  border-radius: 6px;
+  padding: 5px 10px;
+  height: 6vh;
+  font-size: 16px;
+  background-color: #151533;
+  color: white;
+}
+.input-title::placeholder {
+  color: gray;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+}
+.input-description {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  border: 1px solid white;
+  resize: vertical;
+  height: 50px;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #151533;
+  color: white;
+}
+.input-description::placeholder {
+  color: gray;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+  vertical-align: top;
+}
+
+.edit-label-date-time-picker {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  color: white;
+  display: block;
+  font-size: 18px;
+}
+.date-picker {
+  display: block;
+  margin: 5px 25px;
+  height: 6vh;
+  width: fit-content;
+  font-weight: bold;
+  border-radius: 6px;
+  border: 1px solid white;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #151533;
+}
+.date-picker::placeholder {
+  font-weight: 200;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 10px 5px;
+  color: gray;
+}
+.select-priority {
+  margin: 5px 25px;
+  font-weight: 200;
+  border-radius: 6px;
+  border: 1px solid white;
+  padding: 5px 10px;
+  height: 6vh;
+  font-size: 16px;
+  background-color: #151533;
+  color: grey;
+}
+@media only screen and (max-width: 600px) {
+  form {
+    width: 95vw;
+  }
+}

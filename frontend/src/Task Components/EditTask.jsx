@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import "./EditTask.css";
 function EditTask() {
   const { BASEAPI } = useContext(TaskContext);
   const [title, setTitle] = useState("");
@@ -69,8 +70,8 @@ function EditTask() {
   return (
     <>
       <form onSubmit={edittask}>
-        <h3>Add new task</h3>
-        <label className="label-date-time-picker">Task Title:</label>
+        <h3>Edit task</h3>
+        <label className="edit-label-date-time-picker">Task Title:</label>
         <input
           value={title}
           onChange={(e) => {
@@ -81,7 +82,7 @@ function EditTask() {
           placeholder="Title..."
           required
         />
-        <label className="label-date-time-picker">Task Description:</label>
+        <label className="edit-label-date-time-picker">Task Description:</label>
         <textarea
           value={description}
           onChange={(e) => {
@@ -92,7 +93,7 @@ function EditTask() {
           placeholder="write your task description..."
           required
         />
-        <label className="label-date-time-picker">Priority:</label>
+        <label className="edit-label-date-time-picker">Priority:</label>
         <select
           className="select-priority"
           value={priority}
@@ -108,7 +109,9 @@ function EditTask() {
             </option>
           ))}
         </select>
-        <label className="label-date-time-picker">Due Date and Time:</label>
+        <label className="edit-label-date-time-picker">
+          Due Date and Time:
+        </label>
 
         <DatePicker
           className="date-picker"

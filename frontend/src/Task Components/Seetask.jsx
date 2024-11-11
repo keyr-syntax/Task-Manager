@@ -35,7 +35,7 @@ function Seetask() {
           <div className="seetask-container">
             <h2>Task</h2>
             <p>
-              Title: <span>{task.title}</span>{" "}
+              Task: <span>{task.title}</span>{" "}
             </p>
             <p>
               Description: <span>{task.description}</span>
@@ -98,6 +98,41 @@ function Seetask() {
             >
               Delete{" "}
             </button>
+          </div>
+
+          <div style={{ position: "fixed", bottom: 0, left: "3%" }}>
+            <div className="mobile-task-button">
+              <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
+                Edit
+              </Link>
+              <button className="edit">Reminder</button>
+              <button
+                onClick={() => {
+                  markascompleted(task._id);
+                }}
+                className="completed"
+              >
+                Mark as Completed
+              </button>
+            </div>
+            <div className="mobile-task-button">
+              <button
+                onClick={() => {
+                  markaspending(task._id);
+                }}
+                className="completed"
+              >
+                Mark as Pending
+              </button>
+              <button
+                onClick={() => {
+                  deletetask(task._id);
+                }}
+                className="delete"
+              >
+                Delete{" "}
+              </button>
+            </div>
           </div>
         </>
       ) : (

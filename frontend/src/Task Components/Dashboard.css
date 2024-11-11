@@ -22,3 +22,37 @@
   align-items: center;
   margin: 0 auto;
 }
+.mobile-navbar-container {
+  border: 1px solid white;
+  margin: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  position: fixed;
+  width: 98%;
+  background-color: black;
+  display: flex;
+  flex-direction: row;
+  z-index: 1000;
+}
+.mobile-navbar-container a {
+  text-decoration: none;
+  color: white;
+  padding: 10px 16px;
+  font-size: 20px;
+  font-weight: 200;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+@media only screen and (max-width: 600px) {
+  .navbar-container {
+    display: none;
+  }
+}
+@media only screen and (min-width: 601px) {
+  .mobile-navbar-container {
+    display: none;
+  }
+}

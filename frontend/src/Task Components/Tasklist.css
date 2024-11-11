@@ -37,3 +37,51 @@ td {
   font-size: 20px;
   border: 1px solid white;
 }
+@media only screen and (max-width: 600px) {
+  .table-container {
+    display: none;
+  }
+}
+@media only screen and (min-width: 601px) {
+  .mobile-container {
+    display: none;
+  }
+}
+.mobile-container {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 90vw;
+  margin: 85px auto;
+}
+.mobile-container h2 {
+  text-align: center;
+}
+.mobile-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.mobile-container p > span {
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: normal;
+  font-size: 14px;
+}
+.mobile-bottom-div {
+  margin: 20px;
+}
+.mobile-open-link {
+  text-decoration: none;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  background-color: green;
+  padding: 5px 15px;
+  margin: 2px auto;
+  border-radius: 4px;
+  display: block;
+}
