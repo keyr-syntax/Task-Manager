@@ -27,14 +27,9 @@ function Createtask() {
       });
       const response = await data.json();
       if (response.success) {
-<<<<<<< HEAD
         setDescription("");
         setTitle("");
         setScheduledFor("");
-=======
-        setTitle("");
-        setDescription("");
->>>>>>> 8a9eca0f141003b888f9037d489c78b7e34df25f
         console.log("Task added:", response.task);
       }
     } catch (error) {
