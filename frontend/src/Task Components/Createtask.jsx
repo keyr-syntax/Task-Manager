@@ -33,6 +33,7 @@ function Createtask() {
         setDescription("");
         setTitle("");
         setScheduledFor("");
+        setPriority("");
         console.log("Task added:", response.task);
       }
     } catch (error) {
@@ -74,6 +75,7 @@ function Createtask() {
             onChange={(e) => {
               setPriority(e.target.value);
             }}
+            required
           >
             <option value="">Select Priority Level</option>
             {priority_Levels.map((level, index) => (
