@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 export const TaskContext = createContext();
 
+// eslint-disable-next-line react/prop-types
 function Contextprovider({ children }) {
   const [alltasks, setAlltasks] = useState([]);
   const [task, setTask] = useState("");
