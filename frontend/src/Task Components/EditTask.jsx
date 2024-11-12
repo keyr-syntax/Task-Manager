@@ -59,7 +59,6 @@ function EditTask() {
       const response = await data.json();
       if (response.success) {
         console.log("task updated", response.task);
-        // alert("Task updated successfully");
         navigate(`/seetask/${_id}`);
       }
     } catch (error) {

@@ -5,6 +5,7 @@ export const TaskContext = createContext();
 function Contextprovider({ children }) {
   const [alltasks, setAlltasks] = useState([]);
   const [task, setTask] = useState("");
+  const [filteredtask, setFilteredtask] = useState([]);
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
   const BASEAPI = "https://task-management-roan-eight.vercel.app";
@@ -86,6 +87,12 @@ function Contextprovider({ children }) {
       console.log("Error while marking task as completed", error);
     }
   };
+  const filtertask = (level) => {
+    const filtered = alltasks.filter(
+      (task) => task.isPending === true && task.priority === level
+    );
+    return setFilteredtask(filtered);
+  };
 
   return (
     <>
@@ -99,6 +106,8 @@ function Contextprovider({ children }) {
           task,
           setTask,
           BASEAPI,
+          filtertask,
+          filteredtask,
         }}
       >
         {children}

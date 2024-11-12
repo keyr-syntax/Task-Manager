@@ -1,34 +1,54 @@
-import "./Tasklist.css";
 import { TaskContext } from "./Contextprovider.jsx";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import "./Filterbypriority.css";
 
-function Completedtasks() {
-  const { alltasks, getalltasks } = useContext(TaskContext);
-  const [completedtasks, setCompletedtasks] = useState([]);
-  useEffect(() => {
-    getalltasks();
-  }, []);
-
-  useEffect(() => {
-    const filtercompletedtasks = () => {
-      const completedtasks = alltasks.filter(
-        (task) => task.isPending === false
-      );
-      return setCompletedtasks(completedtasks);
-    };
-    filtercompletedtasks();
-  }, [alltasks]);
+function Filterbypriority() {
+  const { filteredtask, alltasks, filtertask } = useContext(TaskContext);
 
   return (
     <>
+      <div
+        style={{
+          border: "1px solid white",
+          margin: "60px auto 20px auto",
+          width: "91vw",
+          borderRadius: "4px",
+          padding: "5px",
+        }}
+      >
+        {alltasks &&
+          alltasks.length > 0 &&
+          alltasks.map(
+            (task) =>
+              task && (
+                <button
+                  onClick={() => {
+                    filtertask(task.priority);
+                  }}
+                  key={task._id}
+                  style={{
+                    backgroundColor: "#151533",
+                    color: "white",
+                    padding: "5px 8px",
+                    border: "1px solid white",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    display: "inline-block",
+                    margin: "2px 5px",
+                  }}
+                >
+                  {task.priority}
+                </button>
+              )
+          )}
+      </div>
       <div className="table-container">
-        {completedtasks && completedtasks.length > 0 ? (
+        {filteredtask && filteredtask.length > 0 ? (
           <>
-            {/* <div className="table-heading">Completed tasks</div> */}
             <p
               style={{
-                margin: "70px auto 20px auto",
+                margin: "20px auto 20px auto",
                 textAlign: "center",
                 border: "1px solid white",
                 borderRadius: "4px",
@@ -37,12 +57,17 @@ function Completedtasks() {
                 fontSize: "18px",
               }}
             >
-              You have {completedtasks.length} completed tasks
+              {filteredtask.length <= 1 ? (
+                <>You have {filteredtask.length} task</>
+              ) : (
+                <>You have {filteredtask.length} tasks</>
+              )}
             </p>
+
             <table>
               <thead>
                 <tr className="table-head">
-                  <th>Title</th>
+                  <th>Task</th>
                   <th>Due Date</th>
                   <th>Status</th>
                   <th>Priority</th>
@@ -50,10 +75,11 @@ function Completedtasks() {
                 </tr>
               </thead>
               <tbody>
-                {completedtasks &&
-                  completedtasks.map(
+                {filteredtask &&
+                  filteredtask.map(
                     (task) =>
-                      task && (
+                      task &&
+                      task.isPending === true && (
                         <tr key={task._id}>
                           <td>{task.title}</td>
                           <td>
@@ -68,13 +94,11 @@ function Completedtasks() {
                               }
                             )}
                           </td>
-
-                          {!task.isPending && (
-                            <td style={{ color: "green", fontWeight: "bold" }}>
-                              Completed
-                            </td>
+                          {task.isPending && (
+                            <td style={{ color: "red" }}>Pending</td>
                           )}
                           <td>{task.priority}</td>
+
                           <td className="delete-tr">
                             <Link
                               to={`/seetask/${task._id}`}
@@ -90,27 +114,34 @@ function Completedtasks() {
             </table>
           </>
         ) : (
-          <div className="table-heading">No Completed tasks</div>
+          <div className="table-heading">No tasks</div>
         )}
       </div>
-      <p
-        className="counter"
-        style={{
-          margin: "70px auto 20px auto",
-          textAlign: "center",
-          border: "1px solid white",
-          borderRadius: "4px",
-          width: "86%",
-          padding: "5px 10px",
-          fontSize: "16px",
-        }}
-      >
-        You have {completedtasks.length} completed tasks
-      </p>
-      {completedtasks && completedtasks.length > 0 ? (
-        completedtasks.map(
+      {filteredtask && (
+        <p
+          className="counter"
+          style={{
+            margin: "20px auto 20px auto",
+            textAlign: "center",
+            border: "1px solid white",
+            borderRadius: "4px",
+            width: "86%",
+            padding: "5px 10px",
+            fontSize: "16px",
+          }}
+        >
+          {filteredtask.length <= 1 ? (
+            <>You have {filteredtask.length} task</>
+          ) : (
+            <>You have {filteredtask.length} tasks</>
+          )}
+        </p>
+      )}
+      {filteredtask && filteredtask.length > 0 ? (
+        filteredtask.map(
           (task) =>
-            task && (
+            task &&
+            task.isPending === true && (
               <div key={task._id} className="mobile-container">
                 <h2>Task</h2>
                 <p>
@@ -119,12 +150,8 @@ function Completedtasks() {
 
                 <p>
                   Status:{" "}
-                  {task.isPending ? (
+                  {task.isPending === true && (
                     <span style={{ color: "red" }}>Pending</span>
-                  ) : (
-                    <span style={{ color: "green", fontWeight: "bold" }}>
-                      Completed
-                    </span>
                   )}
                 </p>
                 <p>
@@ -162,4 +189,4 @@ function Completedtasks() {
   );
 }
 
-export default Completedtasks;
+export default Filterbypriority;

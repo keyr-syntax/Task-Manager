@@ -22,7 +22,20 @@ function Pendingtask() {
       <div className="table-container">
         {pendingtask && pendingtask.length > 0 ? (
           <>
-            <div className="table-heading">Pending tasks</div>
+            {/* <div className="table-heading">Pending tasks</div> */}
+            <p
+              style={{
+                margin: "70px auto 20px auto",
+                textAlign: "center",
+                border: "1px solid white",
+                borderRadius: "4px",
+                width: "82%",
+                padding: "5px 10px",
+                fontSize: "18px",
+              }}
+            >
+              You have {pendingtask.length} pending tasks
+            </p>
             <table>
               <thead>
                 <tr className="table-head">
@@ -76,56 +89,72 @@ function Pendingtask() {
           <div className="table-heading">No Pending tasks</div>
         )}
       </div>
+      <p
+        className="counter"
+        style={{
+          margin: "70px auto 20px auto",
+          textAlign: "center",
+          border: "1px solid white",
+          borderRadius: "4px",
+          width: "86%",
+          padding: "5px 10px",
+          fontSize: "16px",
+        }}
+      >
+        You have {pendingtask.length} pending tasks
+      </p>
       {pendingtask && pendingtask.length > 0 ? (
         pendingtask.map(
           (task) =>
             task && (
-              <div key={task._id} className="mobile-container">
-                <h2>Task</h2>
-                <p>
-                  Task: <span>{task.title}</span>{" "}
-                </p>
+              <>
+                <div key={task._id} className="mobile-container">
+                  <h2>Task</h2>
+                  <p>
+                    Task: <span>{task.title}</span>{" "}
+                  </p>
 
-                <p>
-                  Status:{" "}
-                  {task.isPending ? (
-                    <span style={{ color: "red" }}>Pending</span>
-                  ) : (
-                    <span style={{ color: "green", fontWeight: "bold" }}>
-                      Completed
+                  <p>
+                    Status:{" "}
+                    {task.isPending ? (
+                      <span style={{ color: "red" }}>Pending</span>
+                    ) : (
+                      <span style={{ color: "green", fontWeight: "bold" }}>
+                        Completed
+                      </span>
+                    )}
+                  </p>
+                  <p>
+                    Priority:
+                    <span>{task.priority}</span>
+                  </p>
+                  <p>
+                    Due date:{" "}
+                    <span>
+                      {new Date(task.scheduledFor).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
                     </span>
-                  )}
-                </p>
-                <p>
-                  Priority:
-                  <span>{task.priority}</span>
-                </p>
-                <p>
-                  Due date:{" "}
-                  <span>
-                    {new Date(task.scheduledFor).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </span>
-                </p>
-                <p>
-                  <Link
-                    to={`/seetask/${task._id}`}
-                    className="mobile-open-link"
-                  >
-                    Open
-                  </Link>
-                </p>
-                <div className="mobile-bottom-div"></div>
-              </div>
+                  </p>
+                  <p>
+                    <Link
+                      to={`/seetask/${task._id}`}
+                      className="mobile-open-link"
+                    >
+                      Open
+                    </Link>
+                  </p>
+                  <div className="mobile-bottom-div"></div>
+                </div>
+              </>
             )
         )
       ) : (
-        <div>No Pending Task</div>
+        <div></div>
       )}
     </>
   );

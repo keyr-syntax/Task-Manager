@@ -76,6 +76,14 @@ function Seetask() {
             <button className="edit">Add Reminder</button>
             <button
               onClick={() => {
+                deletetask(task._id);
+              }}
+              className="delete"
+            >
+              Delete{" "}
+            </button>
+            <button
+              onClick={() => {
                 markascompleted(task._id);
               }}
               className="completed"
@@ -90,14 +98,6 @@ function Seetask() {
             >
               Mark as Pending
             </button>
-            <button
-              onClick={() => {
-                deletetask(task._id);
-              }}
-              className="delete"
-            >
-              Delete{" "}
-            </button>
           </div>
 
           <div style={{ position: "fixed", bottom: 0, left: "3%" }}>
@@ -106,13 +106,14 @@ function Seetask() {
                 Edit
               </Link>
               <button className="edit">Reminder</button>
+
               <button
                 onClick={() => {
-                  markascompleted(task._id);
+                  deletetask(task._id);
                 }}
-                className="completed"
+                className="delete"
               >
-                Mark as Completed
+                Delete{" "}
               </button>
             </div>
             <div className="mobile-task-button">
@@ -126,17 +127,17 @@ function Seetask() {
               </button>
               <button
                 onClick={() => {
-                  deletetask(task._id);
+                  markascompleted(task._id);
                 }}
-                className="delete"
+                className="completed"
               >
-                Delete{" "}
+                Mark as Completed
               </button>
             </div>
           </div>
         </>
       ) : (
-        <div>Task not found</div>
+        <div></div>
       )}
     </>
   );

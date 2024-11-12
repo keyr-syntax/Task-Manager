@@ -9,12 +9,14 @@ function Dashboard() {
         <Link to="/pendingtasks">Pending Task</Link>
         <Link to="/completedtasks">Completed Task</Link>
         <Link to="/createtask">New Task</Link>
+        <Link to="/filterbypriority">Priority</Link>
       </div>
       <div className="mobile-navbar-container">
         <Link to="/alltasks">All </Link>
         <Link to="/pendingtasks">Pending </Link>
         <Link to="/completedtasks">Completed </Link>
         <Link to="/createtask">New </Link>
+        <Link to="/filterbypriority">Priority </Link>
       </div>
     </>
   );

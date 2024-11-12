@@ -46,12 +46,12 @@
   align-items: center;
   margin: 0 auto;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
   .navbar-container {
     display: none;
   }
 }
-@media only screen and (min-width: 601px) {
+@media only screen and (min-width: 801px) {
   .mobile-navbar-container {
     display: none;
   }

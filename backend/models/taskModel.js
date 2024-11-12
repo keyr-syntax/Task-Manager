@@ -11,11 +11,12 @@ const taskSchema = new Schema(
       type: String,
       required: true,
       trim: true,
+      default: "You haven't added description yet",
     },
     priority: {
       type: String,
       required: true,
-      default: "low",
+      default: "Low",
     },
 
     isPending: {

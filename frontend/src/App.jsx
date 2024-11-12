@@ -7,6 +7,7 @@ import Contextprovider from "./Task Components/Contextprovider";
 import Seetask from "./Task Components/Seetask";
 import Pendingtask from "./Task Components/Pendingtask";
 import Completedtasks from "./Task Components/Completedtasks";
+import Filterbypriority from "./Task Components/Filterbypriority";
 function App() {
   return (
     <>
@@ -21,6 +22,11 @@ function App() {
           <Route exact path="/edittask/:_id" element={<EditTask />} />
           <Route exact path="/pendingtasks" element={<Pendingtask />} />
           <Route exact path="/completedtasks" element={<Completedtasks />} />
+          <Route
+            exact
+            path="/filterbypriority"
+            element={<Filterbypriority />}
+          />
         </Routes>
       </Contextprovider>
     </>

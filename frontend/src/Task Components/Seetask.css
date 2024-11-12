@@ -67,7 +67,7 @@
   background-color: green;
   text-decoration: none;
 }
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
   .seetask-container {
     width: 90vw;
     margin: 60px auto 100px auto;
@@ -106,7 +106,7 @@
   text-decoration: none;
   font-size: 16px;
 }
-@media only screen and (min-width: 601px) {
+@media only screen and (min-width: 801px) {
   .mobile-task-button {
     display: none;
   }

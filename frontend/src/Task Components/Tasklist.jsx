@@ -13,7 +13,20 @@ function Tasklist() {
       <div className="table-container">
         {alltasks && alltasks.length > 0 ? (
           <>
-            <div className="table-heading">All tasks</div>
+            {/* <div className="table-heading">All tasks</div> */}
+            <p
+              style={{
+                margin: "70px auto 20px auto",
+                textAlign: "center",
+                border: "1px solid white",
+                borderRadius: "4px",
+                width: "82%",
+                padding: "5px 10px",
+                fontSize: "18px",
+              }}
+            >
+              You have {alltasks.length} tasks
+            </p>
             <table>
               <thead>
                 <tr className="table-head">
@@ -68,6 +81,20 @@ function Tasklist() {
           <div className="table-heading">No tasks</div>
         )}
       </div>
+      <p
+        className="counter"
+        style={{
+          margin: "70px auto 20px auto",
+          textAlign: "center",
+          border: "1px solid white",
+          borderRadius: "4px",
+          width: "86%",
+          padding: "5px 10px",
+          fontSize: "16px",
+        }}
+      >
+        You have {alltasks.length} tasks
+      </p>
       {alltasks && alltasks.length > 0 ? (
         alltasks.map(
           (task) =>
@@ -117,7 +144,7 @@ function Tasklist() {
             )
         )
       ) : (
-        <div>No Task</div>
+        <div></div>
       )}
     </>
   );
