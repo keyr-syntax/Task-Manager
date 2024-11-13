@@ -1,19 +1,24 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import "./Createtask.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 function Createtask() {
-  const { BASEAPI, getalltasks } = useContext(TaskContext);
+  const { BASEAPI, getalltasks, prioritylist, getallpriorities } =
+    useContext(TaskContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState(false);
   const [reminder, setReminder] = useState("");
-  const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
+
   // const BASEAPI = "http://localhost:5000";
   // const BASEAPI = "https://task-management-roan-eight.vercel.app";
+
+  useEffect(() => {
+    getallpriorities();
+  }, []);
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
@@ -85,9 +90,9 @@ function Createtask() {
             required
           >
             <option value="">Select Priority Level</option>
-            {priority_Levels.map((level, index) => (
-              <option value={level} key={index}>
-                {level}
+            {prioritylist.map((level) => (
+              <option value={level.priority} key={level._id}>
+                {level.priority}
               </option>
             ))}
           </select>

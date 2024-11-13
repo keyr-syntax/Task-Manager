@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./EditTask.css";
 function EditTask() {
-  const { BASEAPI } = useContext(TaskContext);
+  const { BASEAPI, prioritylist, getallpriorities } = useContext(TaskContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
@@ -17,6 +17,7 @@ function EditTask() {
   // state to control add/remove buttons
   const [addreminder, setAddreminder] = useState(false);
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
+  const [now, setNow] = useState("");
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ function EditTask() {
       });
       const response = await data.json();
       if (response.success) {
+        const now = new Date();
         const duedate = new Date(response.task.scheduledFor);
         const reminderdate = new Date(response.task.reminder);
         setTitle(response.task.title);
@@ -44,6 +46,7 @@ function EditTask() {
         setaddOnReminderlist(response.task.addOnReminderlist);
         setcontrolforremovebutton(response.task.addOnReminderlist);
         setAddreminder(false);
+        setNow(now);
 
         console.log("Task fetched: ", response.task);
       }
@@ -141,9 +144,9 @@ function EditTask() {
           required
         >
           <option value="">Select Priority Level</option>
-          {priority_Levels.map((level, index) => (
-            <option value={level} key={index}>
-              {level}
+          {prioritylist.map((level) => (
+            <option value={level.priority} key={level._id}>
+              {level.priority}
             </option>
           ))}
         </select>
@@ -200,27 +203,6 @@ function EditTask() {
           </button>
         )}
 
-        {/* {addOnReminderlist === false ? (
-          <button
-            onClick={() => {
-              setAddreminder(true);
-            }}
-            type="button"
-            className="add-reminder-button"
-          >
-            Add Reminder
-          </button>
-        ) : (
-          <button
-            type="button"
-            className="add-reminder-button"
-            onClick={() => {
-              turnoffreminder(_id);
-            }}
-          >
-            Remove Reminder
-          </button>
-        )} */}
         {controlforremovebutton && (
           <div className="date-picker-div">
             <DatePicker
@@ -228,12 +210,12 @@ function EditTask() {
               placeholderText="Set Reminder date and time..."
               minDate={new Date()}
               style={{ color: "white" }}
-              value={reminder}
+              // value={reminder}
               selected={reminder}
-              // onChange={(reminder) => {
-              //   setReminder(reminder);
-              //   setaddOnReminderlist(true);
-              // }}
+              onChange={(reminder) => {
+                setaddOnReminderlist(true);
+                setReminder(reminder);
+              }}
               showTimeSelect
               dateFormat="Pp"
               required
@@ -247,10 +229,11 @@ function EditTask() {
               placeholderText="Set Reminder date and time..."
               minDate={new Date()}
               style={{ color: "white" }}
-              selected={reminder}
+              selected={now}
               onChange={(reminder) => {
                 setaddOnReminderlist(true);
                 setReminder(reminder);
+                setNow(reminder);
               }}
               showTimeSelect
               dateFormat="Pp"

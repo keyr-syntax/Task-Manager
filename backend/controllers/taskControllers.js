@@ -7,6 +7,7 @@ const createTask = async (req, res) => {
       description,
       scheduledFor,
       priority,
+      category,
       reminder,
       addOnReminderlist,
     } = req.body;
@@ -15,6 +16,7 @@ const createTask = async (req, res) => {
       description: description,
       scheduledFor: scheduledFor,
       priority: priority,
+      category: category,
       reminder: reminder,
       addOnReminderlist: addOnReminderlist,
     });
@@ -45,6 +47,7 @@ const updateTask = async (req, res) => {
       description,
       scheduledFor,
       priority,
+      category,
       reminder,
       addOnReminderlist,
     } = req.body;
@@ -57,6 +60,7 @@ const updateTask = async (req, res) => {
       tasktobeUpdated.description = description;
       tasktobeUpdated.scheduledFor = scheduledFor;
       tasktobeUpdated.priority = priority;
+      tasktobeUpdated.category = category;
       tasktobeUpdated.reminder = reminder;
       tasktobeUpdated.addOnReminderlist = addOnReminderlist;
       await tasktobeUpdated.save();

@@ -1,14 +1,18 @@
 import { TaskContext } from "./Contextprovider.jsx";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Filterbypriority.css";
 
 function Filterbypriority() {
-  const { filteredtask, alltasks, filtertask } = useContext(TaskContext);
+  const { filteredtask, filtertask, getallpriorities, prioritylist } =
+    useContext(TaskContext);
+  useEffect(() => {
+    getallpriorities();
+  }, []);
 
   return (
     <>
-      {alltasks && (
+      {prioritylist && (
         <div
           style={{
             border: "1px solid white",
@@ -18,16 +22,16 @@ function Filterbypriority() {
             padding: "5px",
           }}
         >
-          {alltasks &&
-            alltasks.length > 0 &&
-            alltasks.map(
-              (task) =>
-                task && (
+          {prioritylist &&
+            prioritylist.length > 0 &&
+            prioritylist.map(
+              (priority) =>
+                priority && (
                   <button
                     onClick={() => {
-                      filtertask(task.priority);
+                      filtertask(priority.priority);
                     }}
-                    key={task._id}
+                    key={priority._id}
                     style={{
                       backgroundColor: "#151533",
                       color: "white",
@@ -39,7 +43,7 @@ function Filterbypriority() {
                       margin: "2px 5px",
                     }}
                   >
-                    {task.priority}
+                    {priority.priority}
                   </button>
                 )
             )}

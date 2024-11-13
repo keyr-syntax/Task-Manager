@@ -6,6 +6,8 @@ const cors = require("cors");
 const cron = require("node-cron");
 const connectDB = require("./config/database.js");
 const taskRoutes = require("./routes/taskRoutes.js");
+const categoryRoutes = require("./routes/categoryRoutes.js");
+const priorityRoutes = require("./routes/priorityRoutes.js");
 const Task = require("./models/taskModel.js");
 
 connectDB();
@@ -27,7 +29,8 @@ app.get("/", (req, res) => {
   });
 });
 app.use("/api/task", taskRoutes);
-
+app.use("/api/category", categoryRoutes);
+app.use("/api/priority", priorityRoutes);
 cron.schedule("* * * * *", async () => {
   const now = new Date();
   try {

@@ -3,8 +3,15 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 function Seetask() {
-  const { BASEAPI, task, setTask, markascompleted, deletetask, markaspending } =
-    useContext(TaskContext);
+  const {
+    BASEAPI,
+    task,
+    setTask,
+    markascompleted,
+    deletetask,
+    markaspending,
+    turnoffreminder,
+  } = useContext(TaskContext);
   const { _id } = useParams();
   useEffect(() => {
     getonetask();
@@ -119,7 +126,21 @@ function Seetask() {
               <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
                 Edit
               </Link>
-              <button className="edit">Reminder</button>
+              {task.addOnReminderlist === true && (
+                <button
+                  onClick={() => {
+                    turnoffreminder(task._id);
+                  }}
+                  className="remove"
+                >
+                  Remove Reminder
+                </button>
+              )}
+              {task.addOnReminderlist === false && (
+                <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
+                  Add Reminder
+                </Link>
+              )}
 
               <button
                 onClick={() => {
@@ -131,22 +152,27 @@ function Seetask() {
               </button>
             </div>
             <div className="mobile-task-button">
-              <button
-                onClick={() => {
-                  markaspending(task._id);
-                }}
-                className="completed"
-              >
-                Mark as Pending
-              </button>
-              <button
-                onClick={() => {
-                  markascompleted(task._id);
-                }}
-                className="completed"
-              >
-                Mark as Completed
-              </button>
+              {task.isPending === false && (
+                <button
+                  onClick={() => {
+                    markaspending(task._id);
+                  }}
+                  className="completed"
+                >
+                  Mark as Pending
+                </button>
+              )}
+
+              {task.isPending === true && (
+                <button
+                  onClick={() => {
+                    markascompleted(task._id);
+                  }}
+                  className="completed"
+                >
+                  Mark as Completed
+                </button>
+              )}
             </div>
           </div>
         </>

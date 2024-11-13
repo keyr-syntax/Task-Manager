@@ -18,7 +18,11 @@ const taskSchema = new Schema(
       required: true,
       default: "Low",
     },
-
+    category: {
+      type: String,
+      required: true,
+      default: "Miscellaneous",
+    },
     isPending: {
       type: Boolean,
       required: true,
@@ -56,5 +60,4 @@ const taskSchema = new Schema(
 );
 
 const Task = mongoose.model("Task", taskSchema);
-
 module.exports = Task;
