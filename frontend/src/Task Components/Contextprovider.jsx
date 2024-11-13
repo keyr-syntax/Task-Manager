@@ -7,10 +7,12 @@ function Contextprovider({ children }) {
   const [alltasks, setAlltasks] = useState([]);
   const [task, setTask] = useState("");
   const [filteredtask, setFilteredtask] = useState([]);
+  const [reminderlist, setReminderlist] = useState([]);
+
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
-  const BASEAPI = "https://task-management-roan-eight.vercel.app";
-  // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
+  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
 
   useEffect(() => {
     getalltasks();
@@ -94,6 +96,40 @@ function Contextprovider({ children }) {
     );
     return setFilteredtask(filtered);
   };
+  const fetchtaskonreminderlist = async () => {
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/fetchtasksonreminderlist`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        setReminderlist(response.task);
+      }
+    } catch (error) {
+      console.log("Error while fetching tasks on reminder list", error);
+    }
+  };
+
+  const turnoffreminder = async (_id) => {
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/turnoffreminder/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        fetchtaskonreminderlist();
+      }
+    } catch (error) {
+      console.log("Error while turning off reminder", error);
+    }
+  };
+
   return (
     <>
       <TaskContext.Provider
@@ -108,6 +144,9 @@ function Contextprovider({ children }) {
           BASEAPI,
           filtertask,
           filteredtask,
+          fetchtaskonreminderlist,
+          reminderlist,
+          turnoffreminder,
         }}
       >
         {children}

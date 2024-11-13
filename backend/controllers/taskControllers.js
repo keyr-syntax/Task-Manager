@@ -2,29 +2,28 @@ const Task = require("../models/taskModel.js");
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, scheduledFor, priority, reminder } = req.body;
+    const {
+      title,
+      description,
+      scheduledFor,
+      priority,
+      reminder,
+      addOnReminderlist,
+    } = req.body;
     const newTask = await Task.create({
       title: title,
       description: description,
+      scheduledFor: scheduledFor,
+      priority: priority,
+      reminder: reminder,
+      addOnReminderlist: addOnReminderlist,
     });
     if (newTask) {
-      if (scheduledFor || priority || reminder) {
-        newTask.scheduledFor = scheduledFor;
-        newTask.priority = priority;
-        newTask.reminder = reminder;
-        await newTask.save();
-        return res.json({
-          success: true,
-          message: "Task created successfully with scheduled date",
-          task: newTask,
-        });
-      } else {
-        return res.json({
-          success: true,
-          message: "Task added successfully",
-          task: newTask,
-        });
-      }
+      return res.json({
+        success: true,
+        message: "Task added successfully",
+        task: newTask,
+      });
     } else {
       res.status(404);
       throw new Error("Task not found");
@@ -41,33 +40,31 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { _id } = req.params;
-    const { title, description, scheduledFor, priority, reminder } = req.body;
+    const {
+      title,
+      description,
+      scheduledFor,
+      priority,
+      reminder,
+      addOnReminderlist,
+    } = req.body;
     const tasktobeUpdated = await Task.findById({
       _id: req.params._id,
     });
 
-    if (tasktobeUpdated && (title || description || scheduledFor || priority)) {
+    if (tasktobeUpdated) {
       tasktobeUpdated.title = title;
       tasktobeUpdated.description = description;
       tasktobeUpdated.scheduledFor = scheduledFor;
       tasktobeUpdated.priority = priority;
-      if (reminder) {
-        tasktobeUpdated.reminder = reminder;
-        tasktobeUpdated.isNotified = false;
-        await tasktobeUpdated.save();
-        return res.json({
-          success: true,
-          message: "Task updated successfully",
-          task: tasktobeUpdated,
-        });
-      } else {
-        await tasktobeUpdated.save();
-        return res.json({
-          success: true,
-          message: "Task updated successfully",
-          task: tasktobeUpdated,
-        });
-      }
+      tasktobeUpdated.reminder = reminder;
+      tasktobeUpdated.addOnReminderlist = addOnReminderlist;
+      await tasktobeUpdated.save();
+      return res.json({
+        success: true,
+        message: "Task updated successfully",
+        task: tasktobeUpdated,
+      });
     } else {
       res.status(404);
       throw new Error("Task not found");
@@ -220,6 +217,52 @@ const markaspending = async (req, res) => {
     console.log("Error while marking pending", error);
   }
 };
+const fetchtaskonreminderlist = async (req, res) => {
+  try {
+    const taskonreminderlist = await Task.find({});
+    const tasks = taskonreminderlist.filter(
+      (task) => task.addOnReminderlist === true && task.isNotified === true
+    );
+    if (tasks.length > 0) {
+      return res.json({
+        success: true,
+        message: "Tasks on reminder list fetched successfully",
+        task: tasks,
+      });
+    } else {
+      res.status(404);
+      throw new Error("No tasks on reminder list found");
+    }
+  } catch (error) {
+    console.log("Error while fetching tasks on reminder list", error);
+  }
+};
+
+const turnoffreminder = async (req, res) => {
+  try {
+    const { _id } = req.params._id;
+    const taskonreminderlist = await Task.findById({
+      _id: req.params._id,
+    });
+
+    if (taskonreminderlist) {
+      taskonreminderlist.addOnReminderlist = false;
+      taskonreminderlist.reminder = null;
+      taskonreminderlist.isNotified = false;
+      await taskonreminderlist.save();
+      return res.json({
+        success: true,
+        message: "Reminder turnedoff successfully",
+        task: taskonreminderlist,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Task not found");
+    }
+  } catch (error) {
+    console.log("Error while turning off reminder", error);
+  }
+};
 
 module.exports = {
   createTask,
@@ -229,4 +272,6 @@ module.exports = {
   fetchonetask,
   markascompleted,
   markaspending,
+  fetchtaskonreminderlist,
+  turnoffreminder,
 };

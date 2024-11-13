@@ -9,6 +9,7 @@ function Createtask() {
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [priority, setPriority] = useState("");
+  const [addOnReminderlist, setaddOnReminderlist] = useState(false);
   const [reminder, setReminder] = useState("");
   const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
   // const BASEAPI = "http://localhost:5000";
@@ -16,6 +17,7 @@ function Createtask() {
 
   const handleCreateTask = async (e) => {
     e.preventDefault();
+    console.log("addOnReminderlist on form submission", addOnReminderlist);
     try {
       const data = await fetch(`${BASEAPI}/api/task/createtask`, {
         method: "POST",
@@ -27,6 +29,7 @@ function Createtask() {
           description,
           scheduledFor,
           priority,
+          addOnReminderlist,
           reminder,
         }),
       });
@@ -36,6 +39,7 @@ function Createtask() {
         setTitle("");
         setScheduledFor("");
         setPriority("");
+        setReminder("");
         getalltasks();
         console.log("Task added:", response.task);
       }
@@ -102,20 +106,44 @@ function Createtask() {
               dateFormat="Pp"
             />
           </div>
-          <label className="label-date-time-picker">Set Reminder:</label>
-          <div className="date-picker-div">
-            <DatePicker
-              className="date-picker"
-              placeholderText="Set Reminder date and time..."
-              minDate={new Date()}
-              style={{ color: "black" }}
-              selected={reminder}
-              onChange={(reminder) => setReminder(reminder)}
-              showTimeSelect
-              dateFormat="Pp"
-            />
-          </div>
-
+          {addOnReminderlist === false ? (
+            <button
+              type="button"
+              className="add-reminder-button"
+              onClick={() => {
+                setaddOnReminderlist(true);
+                console.log(addOnReminderlist);
+              }}
+            >
+              Add Reminder
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="add-reminder-button"
+              onClick={() => {
+                setaddOnReminderlist(false);
+                console.log(addOnReminderlist);
+              }}
+            >
+              Remove Reminder
+            </button>
+          )}
+          {addOnReminderlist && (
+            <div className="date-picker-div">
+              <DatePicker
+                className="date-picker"
+                placeholderText="Set Reminder date and time..."
+                minDate={new Date()}
+                style={{ color: "black" }}
+                selected={reminder}
+                onChange={(reminder) => setReminder(reminder)}
+                showTimeSelect
+                dateFormat="Pp"
+                required
+              />
+            </div>
+          )}
           <button type="submit">Submit</button>
         </form>
       </div>

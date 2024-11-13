@@ -24,11 +24,7 @@ const taskSchema = new Schema(
       required: true,
       default: true,
     },
-    createdAt: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
+
     scheduledFor: {
       type: Date,
       required: true,
@@ -37,12 +33,21 @@ const taskSchema = new Schema(
     reminder: {
       type: Date,
       required: false,
-      default: null,
+    },
+    addOnReminderlist: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
     isNotified: {
       type: Boolean,
       required: false,
       default: false,
+    },
+    createdAt: {
+      type: Date,
+      required: true,
+      default: Date.now,
     },
   },
   {

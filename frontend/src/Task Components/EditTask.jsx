@@ -11,8 +11,12 @@ function EditTask() {
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [priority, setPriority] = useState("");
+  const [addOnReminderlist, setaddOnReminderlist] = useState("");
   const [reminder, setReminder] = useState("");
   const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
+  // state to control add/remove buttons
+  const [addreminder, setAddreminder] = useState(false);
+  const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -37,6 +41,9 @@ function EditTask() {
         setPriority(response.task.priority);
         setScheduledFor(duedate);
         setReminder(reminderdate);
+        setaddOnReminderlist(response.task.addOnReminderlist);
+        setcontrolforremovebutton(response.task.addOnReminderlist);
+        setAddreminder(false);
 
         console.log("Task fetched: ", response.task);
       }
@@ -46,6 +53,7 @@ function EditTask() {
   };
   const edittask = async (e) => {
     e.preventDefault();
+    console.log("");
     try {
       const data = await fetch(`${BASEAPI}/api/task/updatetask/${_id}`, {
         method: "PUT",
@@ -58,6 +66,7 @@ function EditTask() {
           scheduledFor,
           priority,
           reminder,
+          addOnReminderlist,
         }),
       });
       const response = await data.json();
@@ -67,6 +76,32 @@ function EditTask() {
       }
     } catch (error) {
       console.log("Error while editing task", error);
+    }
+  };
+  const turnoffreminder = async (_id) => {
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/turnoffreminder/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        console.log("Reminder turnedoff", response.task);
+        const duedate = new Date(response.task.scheduledFor);
+        const reminderdate = new Date(response.task.reminder);
+        setTitle(response.task.title);
+        setDescription(response.task.description);
+        setPriority(response.task.priority);
+        setScheduledFor(duedate);
+        setReminder(reminderdate);
+        setaddOnReminderlist(response.task.addOnReminderlist);
+        setcontrolforremovebutton(response.task.addOnReminderlist);
+        setAddreminder(false);
+      }
+    } catch (error) {
+      console.log("Error while turning off reminder", error);
     }
   };
 
@@ -120,7 +155,7 @@ function EditTask() {
           className="date-picker"
           placeholderText="Change Due date and time..."
           minDate={new Date()}
-          style={{ color: "black" }}
+          style={{ color: "white" }}
           value={scheduledFor}
           selected={scheduledFor}
           onChange={(scheduledFor) => {
@@ -129,21 +164,101 @@ function EditTask() {
           showTimeSelect
           dateFormat="Pp"
         />
-        <label className="edit-label-date-time-picker">Set Reminder:</label>
+        {addOnReminderlist === false && addreminder === false && (
+          <button
+            onClick={() => {
+              setAddreminder(true);
+            }}
+            type="button"
+            className="add-reminder-button"
+          >
+            Add Reminder
+          </button>
+        )}
 
-        <DatePicker
-          className="date-picker"
-          placeholderText="Change Due date and time..."
-          minDate={new Date()}
-          style={{ color: "black" }}
-          value={reminder}
-          selected={reminder}
-          onChange={(reminder) => {
-            setReminder(reminder);
-          }}
-          showTimeSelect
-          dateFormat="Pp"
-        />
+        {addreminder === true && (
+          <button
+            onClick={() => {
+              setAddreminder(false);
+            }}
+            type="button"
+            className="add-reminder-button"
+          >
+            Remove Reminder
+          </button>
+        )}
+        {controlforremovebutton === true && (
+          <button
+            style={{ backgroundColor: "red" }}
+            type="button"
+            className="add-reminder-button"
+            onClick={() => {
+              turnoffreminder(_id);
+            }}
+          >
+            Remove Reminder
+          </button>
+        )}
+
+        {/* {addOnReminderlist === false ? (
+          <button
+            onClick={() => {
+              setAddreminder(true);
+            }}
+            type="button"
+            className="add-reminder-button"
+          >
+            Add Reminder
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="add-reminder-button"
+            onClick={() => {
+              turnoffreminder(_id);
+            }}
+          >
+            Remove Reminder
+          </button>
+        )} */}
+        {controlforremovebutton && (
+          <div className="date-picker-div">
+            <DatePicker
+              className="date-picker"
+              placeholderText="Set Reminder date and time..."
+              minDate={new Date()}
+              style={{ color: "white" }}
+              value={reminder}
+              selected={reminder}
+              // onChange={(reminder) => {
+              //   setReminder(reminder);
+              //   setaddOnReminderlist(true);
+              // }}
+              showTimeSelect
+              dateFormat="Pp"
+              required
+            />
+          </div>
+        )}
+        {addreminder && (
+          <div className="date-picker-div">
+            <DatePicker
+              className="date-picker"
+              placeholderText="Set Reminder date and time..."
+              minDate={new Date()}
+              style={{ color: "white" }}
+              selected={reminder}
+              onChange={(reminder) => {
+                setaddOnReminderlist(true);
+                setReminder(reminder);
+              }}
+              showTimeSelect
+              dateFormat="Pp"
+              required
+            />
+          </div>
+        )}
+
         <button type="submit">Update</button>
       </form>
     </>

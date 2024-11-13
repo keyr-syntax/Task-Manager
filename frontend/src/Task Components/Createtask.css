@@ -61,6 +61,13 @@ form button {
   form {
     width: 70%;
   }
+  .add-reminder-button {
+    display: block;
+    margin: 5px 25px;
+    padding: 10px 15px;
+    text-wrap: nowrap;
+    width: 85vw;
+  }
 }
 .label-date-time-picker {
   margin: 5px 25px;
@@ -93,4 +100,16 @@ form button {
   padding: 5px 10px;
   height: 6vh;
   font-size: 16px;
+}
+.add-reminder-button {
+  display: block;
+  margin: 5px 25px;
+  padding: 10px 15px;
+  text-wrap: nowrap;
+  width: 255px;
+}
+@media only screen and (max-width: 800px) {
+  .add-reminder-button {
+    width: 82vw;
+  }
 }

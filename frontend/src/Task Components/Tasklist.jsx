@@ -131,6 +131,20 @@ function Tasklist() {
                     })}
                   </span>
                 </p>
+                {task.addOnReminderlist === true && (
+                  <p>
+                    Reminder set for:{" "}
+                    <span>
+                      {new Date(task.reminder).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </span>
+                  </p>
+                )}
                 <p>
                   <Link
                     to={`/seetask/${task._id}`}
