@@ -5,7 +5,8 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Taskreminder.css";
-const socket = io("http://localhost:5000");
+const socket = io("https://task-management-roan-eight.vercel.app");
+
 function Taskreminder() {
   const { deletetask, markascompleted, markaspending } =
     useContext(TaskContext);
