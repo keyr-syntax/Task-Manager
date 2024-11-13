@@ -2,24 +2,25 @@ import { useState, useContext } from "react";
 import "./Createpriority.css";
 import { TaskContext } from "./Contextprovider.jsx";
 function Createpriority() {
-  const { BASEAPI } = useContext(TaskContext);
-  const [priority, setPriority] = useState("");
+  const { BASEAPI, getallpriorities } = useContext(TaskContext);
+  const [priorityname, setPriorityname] = useState("");
 
   const handlecreatepriority = async (e) => {
     e.preventDefault();
-
     try {
       const data = await fetch(`${BASEAPI}/api/priority/createpriority`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ priority }),
+        body: JSON.stringify({ priorityname }),
       });
       const response = await data.json();
       if (response.success) {
-        console.log(response.priority);
-        setPriority("");
+        console.log("priority created", response);
+        console.log("priority created", response.priority);
+        getallpriorities();
+        setPriorityname("");
       }
     } catch (error) {
       console.log("Error occurred while creating priority", error);
@@ -29,15 +30,17 @@ function Createpriority() {
   return (
     <>
       <div>
-        <form onSubmit={handlecreatepriority}>
+        <form className="form-createpriority" onSubmit={handlecreatepriority}>
           <h3>Create Priority</h3>
-          <label className="label-date-time-picker">Priority name:</label>
+          <label className="label-date-time-picker-createpriority">
+            Priority name:
+          </label>
           <input
-            value={priority}
+            value={priorityname}
             onChange={(e) => {
-              setPriority(e.target.value);
+              setPriorityname(e.target.value);
             }}
-            className="input-title"
+            className="input-title-createpriority"
             type="text"
             placeholder="Priority name ..."
             required

@@ -26,6 +26,8 @@ function Dashboard() {
         <Link to="/createtask">New Task</Link>
         <Link to="/filterbypriority">Priority</Link>
         <Link to="/createpriority">Create priority</Link>
+
+        <Link to="/prioritylist">Priority List</Link>
         <Link to="/reminder">Reminder</Link>
       </div>
       <div className="mobile-navbar-container">
@@ -83,6 +85,8 @@ function Dashboard() {
           <Link to="/createtask">Add new task</Link>
           <Link to="/filterbypriority">Filter by Priority </Link>
           <Link to="/createpriority">Create priority</Link>
+
+          <Link to="/prioritylist">Priority List</Link>
           <Link to="/reminder">Reminder</Link>
         </div>
       )}

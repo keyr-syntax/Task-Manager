@@ -4,7 +4,8 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function Pendingtask() {
-  const { alltasks, getalltasks } = useContext(TaskContext);
+  const { alltasks, getalltasks, BASEAPI, turnoffreminder } =
+    useContext(TaskContext);
   const [pendingtask, setPendingtask] = useState([]);
   useEffect(() => {
     getalltasks();
@@ -16,6 +17,25 @@ function Pendingtask() {
     };
     filterpendingtask();
   }, [alltasks]);
+  const deletetask = async (_id) => {
+    if (window.confirm("Confirm Delete")) {
+      try {
+        const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const response = await data.json();
+        if (response.success) {
+          getalltasks();
+          // navigate("/completedtasks");
+        }
+      } catch (error) {
+        console.log("Error while deleting task", error);
+      }
+    }
+  };
 
   return (
     <>
@@ -124,10 +144,7 @@ function Pendingtask() {
                       </span>
                     )}
                   </p>
-                  <p>
-                    Priority:
-                    <span>{task.priority}</span>
-                  </p>
+
                   <p>
                     Due date:{" "}
                     <span>
@@ -162,6 +179,29 @@ function Pendingtask() {
                       Open
                     </Link>
                   </p>
+                  <p>
+                    <Link
+                      onClick={() => {
+                        deletetask(task._id);
+                      }}
+                      className="mobile-open-link"
+                    >
+                      Delete
+                    </Link>
+                  </p>
+                  {task.addOnReminderlist === true && (
+                    <p>
+                      <Link
+                        onClick={() => {
+                          turnoffreminder(task._id);
+                        }}
+                        className="mobile-open-link"
+                      >
+                        Turnoff Reminder
+                      </Link>
+                    </p>
+                  )}
+
                   <div className="mobile-bottom-div"></div>
                 </div>
               </>

@@ -90,11 +90,15 @@ function Createtask() {
             required
           >
             <option value="">Select Priority Level</option>
-            {prioritylist.map((level) => (
-              <option value={level.priority} key={level._id}>
-                {level.priority}
-              </option>
-            ))}
+            {prioritylist.map(
+              (level) =>
+                level &&
+                level.priorityname && (
+                  <option value={level.priorityname} key={level._id}>
+                    {level.priorityname}
+                  </option>
+                )
+            )}
           </select>
           <label className="label-date-time-picker">
             Select Due Date and Time:

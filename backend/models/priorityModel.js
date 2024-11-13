@@ -3,9 +3,13 @@ const Schema = mongoose.Schema;
 
 const prioritySchema = new Schema(
   {
-    priority: {
+    priorityname: {
       type: String,
       required: true,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
   {

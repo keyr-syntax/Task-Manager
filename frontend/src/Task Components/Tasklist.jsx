@@ -3,10 +3,29 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 function Tasklist() {
-  const { alltasks, getalltasks } = useContext(TaskContext);
+  const { alltasks, getalltasks, BASEAPI } = useContext(TaskContext);
   useEffect(() => {
     getalltasks();
   }, []);
+  const deletetask = async (_id) => {
+    if (window.confirm("Confirm Delete")) {
+      try {
+        const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const response = await data.json();
+        if (response.success) {
+          getalltasks();
+          // navigate("/completedtasks");
+        }
+      } catch (error) {
+        console.log("Error while deleting task", error);
+      }
+    }
+  };
 
   return (
     <>
@@ -151,6 +170,16 @@ function Tasklist() {
                     className="mobile-open-link"
                   >
                     Open
+                  </Link>
+                </p>
+                <p>
+                  <Link
+                    onClick={() => {
+                      deletetask(task._id);
+                    }}
+                    className="mobile-open-link"
+                  >
+                    Delete
                   </Link>
                 </p>
                 <div className="mobile-bottom-div"></div>

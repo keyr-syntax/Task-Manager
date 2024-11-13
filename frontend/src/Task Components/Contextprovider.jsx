@@ -13,8 +13,8 @@ function Contextprovider({ children }) {
 
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
-  const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
+  const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
 
   useEffect(() => {
     getalltasks();
@@ -127,6 +127,7 @@ function Contextprovider({ children }) {
       if (response.success) {
         setTask(response.task);
         fetchtaskonreminderlist();
+        getalltasks();
       }
     } catch (error) {
       console.log("Error while turning off reminder", error);
@@ -166,6 +167,29 @@ function Contextprovider({ children }) {
     }
   };
 
+  const deletepriority = async (_id) => {
+    if (window.confirm("Confirm Delete action")) {
+      try {
+        const data = await fetch(
+          `${BASEAPI}/api/priority/deletepriority/${_id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const response = await data.json();
+        if (response.success) {
+          getallpriorities();
+          console.log("Priority deleted successfully");
+        }
+      } catch (error) {
+        console.log("Error while deleting priority", error);
+      }
+    }
+  };
+
   return (
     <>
       <TaskContext.Provider
@@ -187,6 +211,7 @@ function Contextprovider({ children }) {
           prioritylist,
           getonepriority,
           onepriority,
+          deletepriority,
         }}
       >
         {children}

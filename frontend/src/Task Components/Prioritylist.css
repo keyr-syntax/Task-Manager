@@ -1,0 +1,55 @@
+.prioritylist-container {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 40vw;
+  margin: 80px auto 40px auto;
+}
+.prioritylist-container h2 {
+  text-align: center;
+}
+.prioritylist-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: bold;
+  font-size: 18px;
+}
+.prioritylist-container p > span {
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: normal;
+  font-size: 18px;
+}
+
+@media only screen and (max-width: 800px) {
+  .prioritylist-container {
+    width: 90vw;
+    margin: 60px auto 50px auto;
+  }
+
+  .prioritylist-container p {
+    margin: 5px 5px;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  .prioritylist-container p > span {
+    font-size: 16px;
+  }
+
+  .bottom-div {
+    display: none;
+  }
+}
+.prioritylist-button {
+  text-decoration: none;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  background-color: green;
+  padding: 5px 15px;
+  margin: 2px auto;
+  border-radius: 4px;
+  display: block;
+}

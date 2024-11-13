@@ -2,9 +2,9 @@ const Priority = require("../models/priorityModel.js");
 
 const createpriority = async (req, res) => {
   try {
-    const priority = req.body.priority;
+    const priorityname = req.body.priorityname;
     const newpriority = await Priority.create({
-      priority: priority,
+      priorityname: priorityname,
     });
     if (newpriority) {
       return res.json({
@@ -23,12 +23,12 @@ const createpriority = async (req, res) => {
 const updatepriority = async (req, res) => {
   try {
     const { _id } = req.params._id;
-    const { priority } = req.body.priority;
+    const priorityname = req.body.priorityname;
     const findpriority = await Priority.findById({
       _id: req.params._id,
     });
     if (findpriority) {
-      findpriority.priority = priority;
+      findpriority.priorityname = priorityname;
       const priorityUpdated = await findpriority.save();
       return res.json({
         success: true,

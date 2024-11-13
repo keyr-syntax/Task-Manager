@@ -1,4 +1,4 @@
-.form-createpriority {
+.form-editpriority {
   display: flex;
   flex-direction: column;
   width: 80%;
@@ -6,12 +6,12 @@
   border: 0.5px solid white;
   border-radius: 8px;
 }
-.form-createpriority h3 {
+.form-editpriority h3 {
   text-align: center;
   font-weight: 500;
   font-size: 25px;
 }
-.form-createpriority button {
+.form-editpriority button {
   text-align: center;
   border: none;
   display: block;
@@ -27,7 +27,7 @@
   border-radius: 6px;
   cursor: pointer;
 }
-.input-title-createpriority {
+.input-title-editpriority {
   background-color: #151533;
   margin: 5px 25px;
   font-weight: 200;
@@ -45,11 +45,11 @@
 }
 
 @media only screen and (max-width: 800px) {
-  .form-createpriority {
+  .form-editpriority {
     width: 85%;
   }
 }
-.label-date-time-picker-createpriority {
+.label-date-time-picker-editpriority {
   margin: 5px 25px;
   font-weight: 200;
   border-radius: 6px;

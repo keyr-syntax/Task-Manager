@@ -35,7 +35,7 @@ cron.schedule("* * * * *", async () => {
   const now = new Date();
   try {
     const taskstobereminded = await Task.find({});
-    console.log("scheduler identified set of task", taskstobereminded);
+    // console.log("scheduler identified set of task", taskstobereminded);
 
     taskstobereminded.forEach(async (task) => {
       if (
@@ -46,9 +46,7 @@ cron.schedule("* * * * *", async () => {
       ) {
         task.isNotified = true;
         const savereminder = await task.save();
-        console.log("scheduler task for reminder", savereminder);
-      } else {
-        console.log("No tasks to be scheduled or reminder not set");
+        // console.log("scheduler task for reminder", savereminder);
       }
     });
   } catch (error) {

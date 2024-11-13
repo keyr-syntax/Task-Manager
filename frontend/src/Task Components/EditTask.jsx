@@ -13,8 +13,7 @@ function EditTask() {
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState("");
   const [reminder, setReminder] = useState("");
-  const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
-  // state to control add/remove buttons
+  const [category, setCategory] = useState("Miscellaneous");
   const [addreminder, setAddreminder] = useState(false);
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
   const [now, setNow] = useState("");
@@ -23,6 +22,7 @@ function EditTask() {
   const navigate = useNavigate();
   useEffect(() => {
     getonetask();
+    getallpriorities();
   }, [_id]);
 
   const getonetask = async () => {
@@ -56,7 +56,7 @@ function EditTask() {
   };
   const edittask = async (e) => {
     e.preventDefault();
-    console.log("");
+    console.log("Is this function working?");
     try {
       const data = await fetch(`${BASEAPI}/api/task/updatetask/${_id}`, {
         method: "PUT",
@@ -70,9 +70,12 @@ function EditTask() {
           priority,
           reminder,
           addOnReminderlist,
+          category,
         }),
       });
+      console.log("Is this function working?", data);
       const response = await data.json();
+      console.log("Is this function working?", response);
       if (response.success) {
         console.log("task updated", response.task);
         navigate(`/seetask/${_id}`);
@@ -144,11 +147,15 @@ function EditTask() {
           required
         >
           <option value="">Select Priority Level</option>
-          {prioritylist.map((level) => (
-            <option value={level.priority} key={level._id}>
-              {level.priority}
-            </option>
-          ))}
+          {prioritylist.map(
+            (level) =>
+              level &&
+              level.priorityname && (
+                <option value={level.priorityname} key={level._id}>
+                  {level.priorityname}
+                </option>
+              )
+          )}
         </select>
         <label className="edit-label-date-time-picker">
           Due Date and Time:
@@ -230,6 +237,7 @@ function EditTask() {
               minDate={new Date()}
               style={{ color: "white" }}
               selected={now}
+              value={reminder}
               onChange={(reminder) => {
                 setaddOnReminderlist(true);
                 setReminder(reminder);
