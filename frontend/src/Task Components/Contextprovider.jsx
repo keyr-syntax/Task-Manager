@@ -27,12 +27,12 @@ function Contextprovider({ children }) {
       const response = await data.json();
       if (response.success) {
         setAlltasks(response.task);
+        console.log("All tasks fetched successfully", response.task);
       }
     } catch (error) {
       console.log("Error while fetching tasks", error);
     }
   };
-
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
       try {
@@ -94,7 +94,6 @@ function Contextprovider({ children }) {
     );
     return setFilteredtask(filtered);
   };
-
   return (
     <>
       <TaskContext.Provider

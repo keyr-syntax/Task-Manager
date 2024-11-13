@@ -34,6 +34,16 @@ const taskSchema = new Schema(
       required: true,
       default: Date.now,
     },
+    reminder: {
+      type: Date,
+      required: false,
+      default: null,
+    },
+    isNotified: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   {
     timestamps: true,

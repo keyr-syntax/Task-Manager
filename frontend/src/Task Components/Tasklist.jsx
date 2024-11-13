@@ -25,7 +25,7 @@ function Tasklist() {
                 fontSize: "18px",
               }}
             >
-              You have {alltasks.length} tasks
+              You have a total of {alltasks.length} tasks
             </p>
             <table>
               <thead>
@@ -93,7 +93,7 @@ function Tasklist() {
           fontSize: "16px",
         }}
       >
-        You have {alltasks.length} tasks
+        You have a total of {alltasks.length} tasks
       </p>
       {alltasks && alltasks.length > 0 ? (
         alltasks.map(

@@ -37,7 +37,7 @@ function Completedtasks() {
                 fontSize: "18px",
               }}
             >
-              You have {completedtasks.length} completed tasks
+              You have completed {completedtasks.length} tasks
             </p>
             <table>
               <thead>
@@ -105,7 +105,7 @@ function Completedtasks() {
           fontSize: "16px",
         }}
       >
-        You have {completedtasks.length} completed tasks
+        You have completed {completedtasks.length} tasks
       </p>
       {completedtasks && completedtasks.length > 0 ? (
         completedtasks.map(

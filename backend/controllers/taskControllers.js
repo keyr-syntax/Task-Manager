@@ -2,15 +2,16 @@ const Task = require("../models/taskModel.js");
 
 const createTask = async (req, res) => {
   try {
-    const { title, description, scheduledFor, priority } = req.body;
+    const { title, description, scheduledFor, priority, reminder } = req.body;
     const newTask = await Task.create({
       title: title,
       description: description,
     });
     if (newTask) {
-      if (scheduledFor || priority) {
+      if (scheduledFor || priority || reminder) {
         newTask.scheduledFor = scheduledFor;
         newTask.priority = priority;
+        newTask.reminder = reminder;
         await newTask.save();
         return res.json({
           success: true,
@@ -40,29 +41,36 @@ const createTask = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { _id } = req.params;
-    const { title, description, scheduledFor, priority } = req.body;
-    const tasktobeUpdated = await Task.findByIdAndUpdate(
-      req.params._id,
-      {
-        title,
-        description,
-        scheduledFor,
-        priority,
-      },
-      {
-        new: true,
+    const { title, description, scheduledFor, priority, reminder } = req.body;
+    const tasktobeUpdated = await Task.findById({
+      _id: req.params._id,
+    });
+
+    if (tasktobeUpdated && (title || description || scheduledFor || priority)) {
+      tasktobeUpdated.title = title;
+      tasktobeUpdated.description = description;
+      tasktobeUpdated.scheduledFor = scheduledFor;
+      tasktobeUpdated.priority = priority;
+      if (reminder) {
+        tasktobeUpdated.reminder = reminder;
+        tasktobeUpdated.isNotified = false;
+        await tasktobeUpdated.save();
+        return res.json({
+          success: true,
+          message: "Task updated successfully",
+          task: tasktobeUpdated,
+        });
+      } else {
+        await tasktobeUpdated.save();
+        return res.json({
+          success: true,
+          message: "Task updated successfully",
+          task: tasktobeUpdated,
+        });
       }
-    );
-    if (tasktobeUpdated) {
-      console.log("Task updated", tasktobeUpdated);
-      return res.json({
-        success: true,
-        message: "Task update successfully",
-        task: tasktobeUpdated,
-      });
     } else {
       res.status(404);
-      throw new Error("Task update failed");
+      throw new Error("Task not found");
     }
   } catch (error) {
     res.json({
@@ -72,6 +80,42 @@ const updateTask = async (req, res) => {
     });
   }
 };
+// const updateTask = async (req, res) => {
+//   try {
+//     const { _id } = req.params;
+//     const { title, description, scheduledFor, priority, reminder } = req.body;
+//     const tasktobeUpdated = await Task.findByIdAndUpdate(
+//       req.params._id,
+//       {
+//         title,
+//         description,
+//         scheduledFor,
+//         priority,
+//         reminder,
+//       },
+//       {
+//         new: true,
+//       }
+//     );
+//     if (tasktobeUpdated) {
+//       // console.log("Task updated", tasktobeUpdated);
+//       return res.json({
+//         success: true,
+//         message: "Task update successfully",
+//         task: tasktobeUpdated,
+//       });
+//     } else {
+//       res.status(404);
+//       throw new Error("Task update failed");
+//     }
+//   } catch (error) {
+//     res.json({
+//       success: false,
+//       message: "Error while updating task",
+//       error: error,
+//     });
+//   }
+// };
 const fetchAllTasks = async (req, res) => {
   try {
     const findalltasks = await Task.find({});

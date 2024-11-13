@@ -4,11 +4,12 @@ import { TaskContext } from "./Contextprovider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 function Createtask() {
-  const { BASEAPI } = useContext(TaskContext);
+  const { BASEAPI, getalltasks } = useContext(TaskContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [priority, setPriority] = useState("");
+  const [reminder, setReminder] = useState("");
   const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
   // const BASEAPI = "http://localhost:5000";
   // const BASEAPI = "https://task-management-roan-eight.vercel.app";
@@ -26,6 +27,7 @@ function Createtask() {
           description,
           scheduledFor,
           priority,
+          reminder,
         }),
       });
       const response = await data.json();
@@ -34,6 +36,7 @@ function Createtask() {
         setTitle("");
         setScheduledFor("");
         setPriority("");
+        getalltasks();
         console.log("Task added:", response.task);
       }
     } catch (error) {
@@ -95,6 +98,19 @@ function Createtask() {
               style={{ color: "black" }}
               selected={scheduledFor}
               onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
+              showTimeSelect
+              dateFormat="Pp"
+            />
+          </div>
+          <label className="label-date-time-picker">Set Reminder:</label>
+          <div className="date-picker-div">
+            <DatePicker
+              className="date-picker"
+              placeholderText="Set Reminder date and time..."
+              minDate={new Date()}
+              style={{ color: "black" }}
+              selected={reminder}
+              onChange={(reminder) => setReminder(reminder)}
               showTimeSelect
               dateFormat="Pp"
             />

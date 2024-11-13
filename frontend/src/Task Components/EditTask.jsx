@@ -11,6 +11,7 @@ function EditTask() {
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
   const [priority, setPriority] = useState("");
+  const [reminder, setReminder] = useState("");
   const priority_Levels = ["Urgent", "Top", "Medium", "Low"];
 
   const { _id } = useParams();
@@ -29,11 +30,13 @@ function EditTask() {
       });
       const response = await data.json();
       if (response.success) {
-        const dateconverted = new Date(response.task.scheduledFor);
+        const duedate = new Date(response.task.scheduledFor);
+        const reminderdate = new Date(response.task.reminder);
         setTitle(response.task.title);
         setDescription(response.task.description);
         setPriority(response.task.priority);
-        setScheduledFor(dateconverted);
+        setScheduledFor(duedate);
+        setReminder(reminderdate);
 
         console.log("Task fetched: ", response.task);
       }
@@ -54,6 +57,7 @@ function EditTask() {
           description,
           scheduledFor,
           priority,
+          reminder,
         }),
       });
       const response = await data.json();
@@ -121,6 +125,21 @@ function EditTask() {
           selected={scheduledFor}
           onChange={(scheduledFor) => {
             setScheduledFor(scheduledFor);
+          }}
+          showTimeSelect
+          dateFormat="Pp"
+        />
+        <label className="edit-label-date-time-picker">Set Reminder:</label>
+
+        <DatePicker
+          className="date-picker"
+          placeholderText="Change Due date and time..."
+          minDate={new Date()}
+          style={{ color: "black" }}
+          value={reminder}
+          selected={reminder}
+          onChange={(reminder) => {
+            setReminder(reminder);
           }}
           showTimeSelect
           dateFormat="Pp"

@@ -8,41 +8,43 @@ function Filterbypriority() {
 
   return (
     <>
-      <div
-        style={{
-          border: "1px solid white",
-          margin: "60px auto 20px auto",
-          width: "91vw",
-          borderRadius: "4px",
-          padding: "5px",
-        }}
-      >
-        {alltasks &&
-          alltasks.length > 0 &&
-          alltasks.map(
-            (task) =>
-              task && (
-                <button
-                  onClick={() => {
-                    filtertask(task.priority);
-                  }}
-                  key={task._id}
-                  style={{
-                    backgroundColor: "#151533",
-                    color: "white",
-                    padding: "5px 8px",
-                    border: "1px solid white",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    display: "inline-block",
-                    margin: "2px 5px",
-                  }}
-                >
-                  {task.priority}
-                </button>
-              )
-          )}
-      </div>
+      {alltasks && (
+        <div
+          style={{
+            border: "1px solid white",
+            margin: "60px auto 20px auto",
+            width: "91vw",
+            borderRadius: "4px",
+            padding: "5px",
+          }}
+        >
+          {alltasks &&
+            alltasks.length > 0 &&
+            alltasks.map(
+              (task) =>
+                task && (
+                  <button
+                    onClick={() => {
+                      filtertask(task.priority);
+                    }}
+                    key={task._id}
+                    style={{
+                      backgroundColor: "#151533",
+                      color: "white",
+                      padding: "5px 8px",
+                      border: "1px solid white",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      display: "inline-block",
+                      margin: "2px 5px",
+                    }}
+                  >
+                    {task.priority}
+                  </button>
+                )
+            )}
+        </div>
+      )}
       <div className="table-container">
         {filteredtask && filteredtask.length > 0 ? (
           <>
