@@ -3,7 +3,14 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 function Tasklist() {
-  const { alltasks, getalltasks, BASEAPI } = useContext(TaskContext);
+  const {
+    alltasks,
+    getalltasks,
+    BASEAPI,
+    turnoffreminder,
+    markaspending,
+    markascompleted,
+  } = useContext(TaskContext);
   useEffect(() => {
     getalltasks();
   }, []);
@@ -164,24 +171,78 @@ function Tasklist() {
                     </span>
                   </p>
                 )}
-                <p>
-                  <Link
-                    to={`/seetask/${task._id}`}
-                    className="mobile-open-link"
-                  >
-                    Open
-                  </Link>
-                </p>
-                <p>
-                  <Link
-                    onClick={() => {
-                      deletetask(task._id);
-                    }}
-                    className="mobile-open-link"
-                  >
-                    Delete
-                  </Link>
-                </p>
+                <div className="mobile-open-link-container">
+                  <p>
+                    <Link
+                      to={`/seetask/${task._id}`}
+                      className="task-management-button"
+                    >
+                      Open
+                    </Link>
+                  </p>
+                  <p>
+                    <Link
+                      onClick={() => {
+                        deletetask(task._id);
+                      }}
+                      className="task-management-button"
+                    >
+                      Delete
+                    </Link>
+                  </p>
+                </div>
+                <div className="mobile-open-link-container">
+                  {task.addOnReminderlist === true && (
+                    <p>
+                      <Link
+                        style={{ fontSize: "12px" }}
+                        onClick={() => {
+                          turnoffreminder(task._id);
+                        }}
+                        className="task-management-button"
+                      >
+                        Turnoff Reminder
+                      </Link>
+                    </p>
+                  )}
+                  {task.addOnReminderlist === false && (
+                    <p>
+                      <Link
+                        to={`/edittask/${task._id}`}
+                        onClick={() => {
+                          turnoffreminder(task._id);
+                        }}
+                        className="task-management-button"
+                      >
+                        Add Reminder
+                      </Link>
+                    </p>
+                  )}
+                  {task.isPending === true && (
+                    <p>
+                      <Link
+                        onClick={() => {
+                          markascompleted(task._id);
+                        }}
+                        className="task-management-button"
+                      >
+                        Completed
+                      </Link>
+                    </p>
+                  )}
+                  {task.isPending === false && (
+                    <p>
+                      <Link
+                        onClick={() => {
+                          markaspending(task._id);
+                        }}
+                        className="task-management-button"
+                      >
+                        Pending
+                      </Link>
+                    </p>
+                  )}
+                </div>
                 <div className="mobile-bottom-div"></div>
               </div>
             )

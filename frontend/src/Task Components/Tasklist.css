@@ -78,7 +78,24 @@ td {
 .mobile-bottom-div {
   margin: 20px;
 }
-.mobile-open-link {
+.mobile-open-link-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+.mobile-open-link-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px auto;
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-block;
+  width: 45%;
+}
+.task-management-button {
   text-decoration: none;
   text-align: center;
   color: white;
@@ -88,4 +105,5 @@ td {
   margin: 2px auto;
   border-radius: 4px;
   display: block;
+  text-wrap: nowrap;
 }
