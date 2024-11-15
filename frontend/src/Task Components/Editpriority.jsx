@@ -6,37 +6,47 @@ import Loader from "./Loader.jsx";
 
 function Editpriority() {
   const { _id } = useParams();
-  const { BASEAPI, getallpriorities, isLoading, setIsLoading } =
+  const { BASEAPI, getallpriorities, prioritylist, isLoading, setIsLoading } =
     useContext(TaskContext);
   // const [priority, setPriority] = useState("");
   const [priorityname, setPriorityname] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
-    getonepriority(_id);
+    // getonepriority(_id);
+    filterprioritybyid(_id);
   }, []);
 
-  const getonepriority = async (_id) => {
-    try {
-      setIsLoading(true);
-      const data = await fetch(`${BASEAPI}/api/priority/fetchpriority/${_id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const response = await data.json();
-
-      if (response.success) {
-        console.log("Priority fetched", response.priority);
-        console.log("Priority name", response.priority.priorityname);
-        setPriorityname(response.priority.priorityname);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.log("Error while fetching one priority", error);
-    }
+  const filterprioritybyid = (_id) => {
+    setIsLoading(true);
+    const priorityfiltered = prioritylist.find(
+      (priority) => priority._id === _id
+    );
+    setIsLoading(false);
+    return setPriorityname(priorityfiltered.priorityname);
   };
+
+  // const getonepriority = async (_id) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const data = await fetch(`${BASEAPI}/api/priority/fetchpriority/${_id}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const response = await data.json();
+
+  //     if (response.success) {
+  //       console.log("Priority fetched", response.priority);
+  //       console.log("Priority name", response.priority.priorityname);
+  //       setPriorityname(response.priority.priorityname);
+  //       setIsLoading(false);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error while fetching one priority", error);
+  //   }
+  // };
   const handleupdatepriority = async (e) => {
     e.preventDefault();
     setIsLoading(true);
