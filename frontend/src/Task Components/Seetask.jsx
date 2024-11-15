@@ -87,41 +87,82 @@ function Seetask() {
                 </span>
               </p>
             )}
+            <div className="mobile-open-link-container">
+              <p>
+                <Link
+                  to={`/edittask/${task._id}`}
+                  className="task-management-button"
+                >
+                  Edit
+                </Link>
+              </p>
+              <p>
+                <Link
+                  onClick={() => {
+                    deletetask(task._id);
+                  }}
+                  className="task-management-button"
+                >
+                  Delete
+                </Link>
+              </p>
+            </div>
+            <div className="mobile-open-link-container">
+              {task.addOnReminderlist === true && (
+                <p>
+                  <Link
+                    style={{ fontSize: "12px" }}
+                    onClick={() => {
+                      turnoffreminder(task._id);
+                    }}
+                    className="task-management-button"
+                  >
+                    Turnoff Reminder
+                  </Link>
+                </p>
+              )}
+              {task.addOnReminderlist === false && (
+                <p>
+                  <Link
+                    to={`/edittask/${task._id}`}
+                    onClick={() => {
+                      turnoffreminder(task._id);
+                    }}
+                    className="task-management-button"
+                  >
+                    Add Reminder
+                  </Link>
+                </p>
+              )}
+              {task.isPending === true && (
+                <p>
+                  <Link
+                    onClick={() => {
+                      markascompleted(task._id);
+                    }}
+                    className="task-management-button"
+                  >
+                    Completed
+                  </Link>
+                </p>
+              )}
+              {task.isPending === false && (
+                <p>
+                  <Link
+                    onClick={() => {
+                      markaspending(task._id);
+                    }}
+                    className="task-management-button"
+                  >
+                    Pending
+                  </Link>
+                </p>
+              )}
+            </div>
             <div className="bottom-div"></div>
           </div>
-          <div className="seetask-button">
-            <Link to={`/edittask/${task._id}`} className="back">
-              Edit
-            </Link>
-            {/* <button className="edit">Edit</button> */}
-            <button className="edit">Add Reminder</button>
-            <button
-              onClick={() => {
-                deletetask(task._id);
-              }}
-              className="delete"
-            >
-              Delete{" "}
-            </button>
-            <button
-              onClick={() => {
-                markascompleted(task._id);
-              }}
-              className="completed"
-            >
-              Mark as Completed
-            </button>
-            <button
-              onClick={() => {
-                markaspending(task._id);
-              }}
-              className="completed"
-            >
-              Mark as Pending
-            </button>
-          </div>
 
-          <div style={{ position: "fixed", bottom: 0, left: "3%" }}>
+          {/* <div style={{ position: "fixed", bottom: 0, left: "3%" }}>
             <div className="mobile-task-button">
               <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
                 Edit
@@ -174,10 +215,41 @@ function Seetask() {
                 </button>
               )}
             </div>
-          </div>
+          </div> */}
         </>
       ) : (
         <div></div>
+        // <div className="seetask-button">
+        //     <Link to={`/edittask/${task._id}`} className="back">
+        //       Edit
+        //     </Link>
+        //     {/* <button className="edit">Edit</button> */}
+        //     <button className="edit">Add Reminder</button>
+        //     <button
+        //       onClick={() => {
+        //         deletetask(task._id);
+        //       }}
+        //       className="delete"
+        //     >
+        //       Delete{" "}
+        //     </button>
+        //     <button
+        //       onClick={() => {
+        //         markascompleted(task._id);
+        //       }}
+        //       className="completed"
+        //     >
+        //       Mark as Completed
+        //     </button>
+        //     <button
+        //       onClick={() => {
+        //         markaspending(task._id);
+        //       }}
+        //       className="completed"
+        //     >
+        //       Mark as Pending
+        //     </button>
+        //   </div>
       )}
     </>
   );

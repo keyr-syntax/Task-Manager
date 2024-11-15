@@ -4,26 +4,21 @@ export const TaskContext = createContext();
 
 // eslint-disable-next-line react/prop-types
 function Contextprovider({ children }) {
-  const [alltasks, setAlltasks] = useState([]);
   const [task, setTask] = useState("");
-  const [filteredtask, setFilteredtask] = useState([]);
+  const [alltasks, setAlltasks] = useState([]);
+  const [tasksfortoday, setTasksfortoday] = useState([]);
+
+  const [onepriority, setOnepriority] = useState("");
   const [reminderlist, setReminderlist] = useState([]);
   const [prioritylist, setPrioritylist] = useState([]);
-  const [onepriority, setOnepriority] = useState("");
-
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
-  const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
+  const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
 
   useEffect(() => {
     getalltasks();
   }, []);
-
-  // useEffect(()=>{
-  //   filtertask()
-  // })
-
   const getalltasks = async () => {
     try {
       const data = await fetch(`${BASEAPI}/api/task/fetchalltasks`, {
@@ -41,6 +36,23 @@ function Contextprovider({ children }) {
       console.log("Error while fetching tasks", error);
     }
   };
+  const fetchtasksfortoday = async () => {
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/fetchtasksfortoday`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        setTasksfortoday(response.task);
+      }
+    } catch (error) {
+      console.log("Error while fetching tasks for today", error);
+    }
+  };
+
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
       try {
@@ -96,12 +108,6 @@ function Contextprovider({ children }) {
       console.log("Error while marking task as completed", error);
     }
   };
-  const filtertask = (level) => {
-    const filtered = alltasks.filter(
-      (task) => task.isPending === true && task.priority === level
-    );
-    return setFilteredtask(filtered);
-  };
   const fetchtaskonreminderlist = async () => {
     try {
       const data = await fetch(`${BASEAPI}/api/task/fetchtasksonreminderlist`, {
@@ -118,7 +124,6 @@ function Contextprovider({ children }) {
       console.log("Error while fetching tasks on reminder list", error);
     }
   };
-
   const turnoffreminder = async (_id) => {
     try {
       const data = await fetch(`${BASEAPI}/api/task/turnoffreminder/${_id}`, {
@@ -132,6 +137,7 @@ function Contextprovider({ children }) {
         setTask(response.task);
         fetchtaskonreminderlist();
         getalltasks();
+        fetchtasksfortoday();
       }
     } catch (error) {
       console.log("Error while turning off reminder", error);
@@ -170,7 +176,6 @@ function Contextprovider({ children }) {
       console.log("Error while fetching one priority", error);
     }
   };
-
   const deletepriority = async (_id) => {
     if (window.confirm("Confirm Delete action")) {
       try {
@@ -206,8 +211,6 @@ function Contextprovider({ children }) {
           task,
           setTask,
           BASEAPI,
-          filtertask,
-          filteredtask,
           fetchtaskonreminderlist,
           reminderlist,
           turnoffreminder,
@@ -216,6 +219,8 @@ function Contextprovider({ children }) {
           getonepriority,
           onepriority,
           deletepriority,
+          tasksfortoday,
+          fetchtasksfortoday,
         }}
       >
         {children}

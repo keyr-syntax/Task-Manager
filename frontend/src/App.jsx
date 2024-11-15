@@ -12,6 +12,8 @@ import Taskreminder from "./Task Components/Taskreminder";
 import Createpriority from "./Task Components/Createpriority";
 import Editpriority from "./Task Components/Editpriority";
 import Prioritylist from "./Task Components/Prioritylist";
+import Tasksfortoday from "./Task Components/Tasksfortoday";
+import Filterbydate from "./Task Components/Filterbydate";
 function App() {
   return (
     <>
@@ -28,13 +30,15 @@ function App() {
           <Route exact path="/completedtasks" element={<Completedtasks />} />
           <Route
             exact
-            path="/filterbypriority"
+            path="/filterbypriority/:level"
             element={<Filterbypriority />}
           />
+          <Route exact path="/filterbydate/:date" element={<Filterbydate />} />
           <Route exact path="/reminder" element={<Taskreminder />} />
           <Route exact path="/createpriority" element={<Createpriority />} />
           <Route exact path="/editpriority/:_id" element={<Editpriority />} />
           <Route exact path="/prioritylist" element={<Prioritylist />} />
+          <Route exact path="/tasksfortoday" element={<Tasksfortoday />} />
         </Routes>
       </Contextprovider>
     </>

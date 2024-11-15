@@ -1,62 +1,119 @@
-import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import "./Filterbypriority.css";
-import Listofpriorityforfilter from "./Listofpriorityforfilter.jsx";
-
-function Filterbypriority() {
-  const [filteredtask, setFilteredtask] = useState([]);
-  const { level } = useParams();
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import "./Filterbydate.css";
+import { TaskContext } from "./Contextprovider.jsx";
+function Filterbydate() {
   const {
-    getallpriorities,
-    BASEAPI,
-    getalltasks,
-    turnoffreminder,
+    alltasks,
     markaspending,
     markascompleted,
-    alltasks,
+    turnoffreminder,
+    deletetask,
   } = useContext(TaskContext);
-  useEffect(() => {
-    getallpriorities();
-    getalltasks();
-  }, []);
+  const [selecteddate, setSelecteddate] = useState(null);
+  const [tasksfilteredbydate, setTasksfilteredbydate] = useState([]);
+  const { date } = useParams();
 
   useEffect(() => {
-    const filtertask = (level) => {
-      const filtered = alltasks.filter(
-        (task) => task.isPending === true && task.priority === level
-      );
-
-      return setFilteredtask(filtered);
-    };
-    filtertask(level);
-  }, [level, alltasks]);
-
-  const deletetask = async (_id) => {
-    if (window.confirm("Confirm Delete")) {
-      try {
-        const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const response = await data.json();
-        if (response.success) {
-          getalltasks();
-          // navigate("/completedtasks");
-        }
-      } catch (error) {
-        console.log("Error while deleting task", error);
-      }
+    if (date instanceof Date && !isNaN(date)) {
+      const changeDateString = date.toISOString().split("T")[0];
+      const filtertasks = alltasks.filter((task) => {
+        const checkfordatestring =
+          typeof task.scheduledFor === "string"
+            ? new Date(task.scheduledFor)
+            : task.scheduledFor;
+        const changeDateStringForTasks =
+          checkfordatestring instanceof Date && !isNaN(checkfordatestring)
+            ? checkfordatestring.toISOString().split("T")[0]
+            : "";
+        return changeDateString === changeDateStringForTasks;
+      });
+      setTasksfilteredbydate(filtertasks);
     }
-  };
+  }, [date, alltasks]);
 
+  // const filtertasksbydate = (date) => {
+  //   try {
+  //     const changeDateString = date.toISOString().split("T")[0];
+  //     const filtertasks = alltasks.filter((task) => {
+  //       const checkfordatestring =
+  //         typeof task.scheduledFor === "string"
+  //           ? new Date(task.scheduledFor)
+  //           : task.scheduledFor;
+  //       const changeDateStringForTasks = checkfordatestring
+  //         .toISOString()
+  //         .split("T")[0];
+  //       return changeDateString === changeDateStringForTasks;
+
+  //     });
+  //     setTasksfilteredbydate(filtertasks);
+  //   } catch (error) {
+  //     console.log("Error while filtering tasks by date", error);
+  //   }
+  // };
   return (
     <>
-      <Listofpriorityforfilter />
+      <div
+        style={{
+          margin: "65px auto 30px auto",
+          border: "1px solid white",
+          borderRadius: "6px",
+          width: "91vw",
+          padding: "5px 10px",
+          display: "flex",
+          flexDirection: "row",
+          fontSize: "22px",
+          fontWeight: "bold",
+        }}
+      >
+        <p
+          style={{
+            margin: "10px",
+            fontSize: "18px",
+          }}
+        >
+          {" "}
+          Search tasks by date
+        </p>
+        <DatePicker
+          className="datepicker-filterbydate"
+          placeholderText="Select date ..."
+          minDate={new Date()}
+          value={selecteddate}
+          selected={selecteddate}
+          onChange={(selecteddate) => {
+            setSelecteddate(selecteddate);
+          }}
+          showTimeSelect
+          // dateFormat="Pp"
+          dateFormat="yyyy-MM-dd"
+        />
+        <Link
+          to={`/filterbydate/${selecteddate}`}
+          style={{
+            textDecoration: "none",
+            textAlign: "center",
+            color: "white",
+            display: "block",
+            margin: "5px",
+            border: "1px solid white",
+            padding: "5px 35px",
+            borderRadius: "6px",
+            float: "right",
+            backgroundColor: "#151533",
+            cursor: "pointer",
+            right: "5%",
+            position: "absolute",
+            fontSize: "17px",
+          }}
+        >
+          Search
+        </Link>
+      </div>
       <div className="table-container">
-        {filteredtask && filteredtask.length > 0 ? (
+        {tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
           <>
             <p
               style={{
@@ -69,10 +126,10 @@ function Filterbypriority() {
                 fontSize: "18px",
               }}
             >
-              {filteredtask.length == 1 ? (
-                <>You have {filteredtask.length} task</>
+              {tasksfilteredbydate.length == 1 ? (
+                <>You have {tasksfilteredbydate.length} task</>
               ) : (
-                <>You have {filteredtask.length} tasks</>
+                <>You have {tasksfilteredbydate.length} tasks</>
               )}
             </p>
 
@@ -87,8 +144,8 @@ function Filterbypriority() {
                 </tr>
               </thead>
               <tbody>
-                {filteredtask &&
-                  filteredtask.map(
+                {tasksfilteredbydate &&
+                  tasksfilteredbydate.map(
                     (task) =>
                       task &&
                       task.isPending === true && (
@@ -129,7 +186,7 @@ function Filterbypriority() {
           <div className="table-heading">No tasks</div>
         )}
       </div>
-      {filteredtask && (
+      {tasksfilteredbydate && (
         <p
           className="counter"
           style={{
@@ -142,15 +199,15 @@ function Filterbypriority() {
             fontSize: "16px",
           }}
         >
-          {filteredtask.length == 1 ? (
-            <>You have {filteredtask.length} task</>
+          {tasksfilteredbydate.length == 1 ? (
+            <>You have {tasksfilteredbydate.length} task</>
           ) : (
-            <>You have {filteredtask.length} tasks</>
+            <>You have {tasksfilteredbydate.length} tasks</>
           )}
         </p>
       )}
-      {filteredtask && filteredtask.length >= 1 ? (
-        filteredtask.map(
+      {tasksfilteredbydate && tasksfilteredbydate.length >= 1 ? (
+        tasksfilteredbydate.map(
           (task) =>
             task &&
             task.isPending === true && (
@@ -279,4 +336,4 @@ function Filterbypriority() {
   );
 }
 
-export default Filterbypriority;
+export default Filterbydate;

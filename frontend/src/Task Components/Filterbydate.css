@@ -1,0 +1,15 @@
+.datepicker-filterbydate {
+  display: block;
+  margin: 6px 15px 6px 15px;
+  height: 5vh;
+  width: 25vw;
+  font-weight: bold;
+  border-radius: 6px;
+  border: 1px solid white;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #151533;
+  color: white;
+  padding: 2px;
+  text-align: center;
+}

@@ -24,11 +24,12 @@ function Dashboard() {
         <Link to="/pendingtasks">Pending Task</Link>
         <Link to="/completedtasks">Completed Task</Link>
         <Link to="/createtask">New Task</Link>
-        <Link to="/filterbypriority">Priority</Link>
+        <Link to="/filterbypriority/:level">Filter by Priority </Link>
         <Link to="/createpriority">Create priority</Link>
-
         <Link to="/prioritylist">Priority List</Link>
         <Link to="/reminder">Reminder</Link>
+        <Link to="/tasksfortoday">Todays task</Link>
+        <Link to="/filterbydate/:date">Find tasks by date</Link>
       </div>
       <div className="mobile-navbar-container">
         <Link to="/alltasks">Home</Link>
@@ -83,11 +84,12 @@ function Dashboard() {
           <Link to="/pendingtasks">Pending tasks</Link>
           <Link to="/completedtasks">Completed tasks </Link>
           <Link to="/createtask">Add new task</Link>
-          <Link to="/filterbypriority">Filter by Priority </Link>
+          <Link to="/filterbypriority/:level">Filter by Priority </Link>
           <Link to="/createpriority">Create priority</Link>
-
           <Link to="/prioritylist">Priority List</Link>
           <Link to="/reminder">Reminder</Link>
+          <Link to="/tasksfortoday">Todays task</Link>
+          <Link to="/filterbydate/:date">Find tasks by date</Link>
         </div>
       )}
     </>

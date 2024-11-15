@@ -81,42 +81,6 @@ const updateTask = async (req, res) => {
     });
   }
 };
-// const updateTask = async (req, res) => {
-//   try {
-//     const { _id } = req.params;
-//     const { title, description, scheduledFor, priority, reminder } = req.body;
-//     const tasktobeUpdated = await Task.findByIdAndUpdate(
-//       req.params._id,
-//       {
-//         title,
-//         description,
-//         scheduledFor,
-//         priority,
-//         reminder,
-//       },
-//       {
-//         new: true,
-//       }
-//     );
-//     if (tasktobeUpdated) {
-//       // console.log("Task updated", tasktobeUpdated);
-//       return res.json({
-//         success: true,
-//         message: "Task update successfully",
-//         task: tasktobeUpdated,
-//       });
-//     } else {
-//       res.status(404);
-//       throw new Error("Task update failed");
-//     }
-//   } catch (error) {
-//     res.json({
-//       success: false,
-//       message: "Error while updating task",
-//       error: error,
-//     });
-//   }
-// };
 const fetchAllTasks = async (req, res) => {
   try {
     const findalltasks = await Task.find({});
@@ -241,7 +205,6 @@ const fetchtaskonreminderlist = async (req, res) => {
     console.log("Error while fetching tasks on reminder list", error);
   }
 };
-
 const turnoffreminder = async (req, res) => {
   try {
     const { _id } = req.params._id;
@@ -267,6 +230,32 @@ const turnoffreminder = async (req, res) => {
     console.log("Error while turning off reminder", error);
   }
 };
+const fetchtaskbydate = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const tasksfortoday = await Task.find({
+      scheduledFor: {
+        $gte: today,
+        $lt: tomorrow,
+      },
+    });
+    if (tasksfortoday) {
+      return res.json({
+        success: true,
+        message: "Tasks scheduled for today is fetched successfully",
+        task: tasksfortoday,
+      });
+    } else {
+      res.status(404);
+      throw new Error("No tasks scheduled for today found");
+    }
+  } catch (error) {
+    console.log("Error while fetching tasks by date", error);
+  }
+};
 
 module.exports = {
   createTask,
@@ -278,4 +267,5 @@ module.exports = {
   markaspending,
   fetchtaskonreminderlist,
   turnoffreminder,
+  fetchtaskbydate,
 };
