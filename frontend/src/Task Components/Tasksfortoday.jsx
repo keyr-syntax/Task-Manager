@@ -32,10 +32,10 @@ function Tasksfortoday() {
             Tasks for today
           </p>
           {tasksfortoday.map(
-            (task) =>
+            (task, index) =>
               task && (
                 <>
-                  <div key={task._id} className="taskreminder-container">
+                  <div key={index} className="taskreminder-container">
                     <h2>Task</h2>
                     <p>
                       Task: <span>{task.title}</span>{" "}

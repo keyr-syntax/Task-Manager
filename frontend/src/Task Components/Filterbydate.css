@@ -2,7 +2,7 @@
   display: block;
   margin: 6px 15px 6px 15px;
   height: 5vh;
-  width: 25vw;
+  width: 40vw;
   font-weight: bold;
   border-radius: 6px;
   border: 1px solid white;
@@ -12,4 +12,113 @@
   color: white;
   padding: 2px;
   text-align: center;
+}
+.table-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-collapse: collapse;
+}
+.table-heading {
+  margin: 70px auto 5px auto;
+}
+table {
+  width: 85%;
+  margin: 15px auto;
+  border: 1px solid white;
+}
+
+th {
+  text-align: center;
+}
+
+td {
+  text-align: center;
+  border: 1px solid white;
+}
+.delete-link {
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+.delete-tr {
+  background-color: green;
+  border-radius: 4px;
+}
+.table-head th {
+  background-color: #151533;
+  color: white;
+  font-weight: 500;
+  font-size: 20px;
+  border: 1px solid white;
+}
+@media only screen and (max-width: 800px) {
+  .table-container {
+    display: none;
+  }
+}
+@media only screen and (min-width: 801px) {
+  .mobile-container {
+    display: none;
+  }
+  .counter {
+    display: none;
+  }
+}
+.mobile-container {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 90vw;
+  margin: 40px auto;
+}
+
+.mobile-container h2 {
+  text-align: center;
+}
+.mobile-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.mobile-container p > span {
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: normal;
+  font-size: 14px;
+}
+.mobile-bottom-div {
+  margin: 20px;
+}
+.mobile-open-link-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
+.mobile-open-link-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px auto;
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-block;
+  width: 45%;
+}
+.task-management-button {
+  text-decoration: none;
+  text-align: center;
+  color: white;
+  cursor: pointer;
+  background-color: green;
+  padding: 5px 15px;
+  margin: 2px auto;
+  border-radius: 4px;
+  display: block;
+  text-wrap: nowrap;
 }

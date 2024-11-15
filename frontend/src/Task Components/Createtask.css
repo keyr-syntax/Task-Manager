@@ -43,7 +43,8 @@ form button {
   margin: 5px 25px;
   font-weight: 200;
   border-radius: 6px;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   vertical-align: top;
   /* width: 100%;
   max-width: 600px; */

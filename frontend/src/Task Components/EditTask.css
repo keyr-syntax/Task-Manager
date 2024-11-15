@@ -29,30 +29,36 @@ form button {
 .input-title {
   margin: 5px 25px;
   font-weight: 200;
-  border: 1px solid white;
   border-radius: 6px;
-  padding: 5px 10px;
-  height: 6vh;
-  font-size: 16px;
+  border: 1px solid white;
+  resize: none;
+  overflow: hidden;
+  padding: 10px 10px;
+  font-size: 18px;
   background-color: #151533;
   color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  line-height: 1.5;
 }
 .input-title::placeholder {
   color: gray;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   padding: 10px 5px;
+  vertical-align: top;
 }
 .input-description {
   margin: 5px 25px;
   font-weight: 200;
   border-radius: 6px;
   border: 1px solid white;
-  resize: vertical;
-  height: 50px;
-  padding: 10px;
-  font-size: 14px;
+  resize: none;
+  overflow: hidden;
+  padding: 10px 20px;
+  font-size: 18px;
   background-color: #151533;
   color: white;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  line-height: 1.5;
 }
 .input-description::placeholder {
   color: gray;

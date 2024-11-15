@@ -7,6 +7,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 function Filterbydate() {
   const {
     alltasks,
+    BASEAPI,
     markaspending,
     markascompleted,
     turnoffreminder,
@@ -16,51 +17,81 @@ function Filterbydate() {
   const [tasksfilteredbydate, setTasksfilteredbydate] = useState([]);
   const { date } = useParams();
 
+  // useEffect(() => {
+  //   const fetchtasksbydate = async () => {
+  //     console.log("date from params", date);
+
+  //     const createDateObject = new Date(date);
+  //     console.log("date converted to date object", createDateObject);
+  //     if (isNaN(createDateObject)) {
+  //       console.log("Invalid date provided");
+  //       return;
+  //     }
+  //     const stringdate = createDateObject.toISOString().split("T")[0];
+  //     console.log("date in string format: ", stringdate);
+  //     const data = await fetch(
+  //       `${BASEAPI}/api/task/fetchtasksbydate/${stringdate}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     const response = await data.json();
+  //     if (response.success) {
+  //       setTasksfilteredbydate(response.task);
+  //       console.log("Tasks fetched by date: ", response.task);
+  //     }
+  //   };
+  //   fetchtasksbydate();
+  // }, [date, BASEAPI, alltasks]);
+
   useEffect(() => {
-    if (date instanceof Date && !isNaN(date)) {
-      const changeDateString = date.toISOString().split("T")[0];
-      const filtertasks = alltasks.filter((task) => {
-        const checkfordatestring =
-          typeof task.scheduledFor === "string"
-            ? new Date(task.scheduledFor)
-            : task.scheduledFor;
-        const changeDateStringForTasks =
-          checkfordatestring instanceof Date && !isNaN(checkfordatestring)
-            ? checkfordatestring.toISOString().split("T")[0]
-            : "";
-        return changeDateString === changeDateStringForTasks;
-      });
-      setTasksfilteredbydate(filtertasks);
-    }
+    filtertasksbydate();
   }, [date, alltasks]);
 
-  // const filtertasksbydate = (date) => {
-  //   try {
-  //     const changeDateString = date.toISOString().split("T")[0];
-  //     const filtertasks = alltasks.filter((task) => {
-  //       const checkfordatestring =
-  //         typeof task.scheduledFor === "string"
-  //           ? new Date(task.scheduledFor)
-  //           : task.scheduledFor;
-  //       const changeDateStringForTasks = checkfordatestring
-  //         .toISOString()
-  //         .split("T")[0];
-  //       return changeDateString === changeDateStringForTasks;
+  const filtertasksbydate = () => {
+    const createDateObject = new Date(date);
+    console.log("date converted to date object", createDateObject);
+    if (isNaN(createDateObject)) {
+      console.log("Invalid date provided");
+      return;
+    }
+    const stringdate = createDateObject.toISOString().split("T")[0];
+    console.log("date in string format: ", stringdate);
+    const tasksbydate = alltasks.filter((task) => {
+      const convertdatetostring = new Date(task.scheduledFor)
+        .toISOString()
+        .split("T")[0];
+      return convertdatetostring === stringdate;
+    });
+    setTasksfilteredbydate(tasksbydate);
+    console.log("Tasks fetched by date: ", tasksbydate);
+  };
 
-  //     });
-  //     setTasksfilteredbydate(filtertasks);
-  //   } catch (error) {
-  //     console.log("Error while filtering tasks by date", error);
-  //   }
-  // };
   return (
     <>
+      <p
+        style={{
+          margin: "70px auto 10px auto",
+          fontSize: "18px",
+          border: "1px solid white",
+          textAlign: "center",
+          padding: "5px 10px",
+          width: "84vw",
+          borderRadius: "6px",
+        }}
+      >
+        {" "}
+        Search tasks by date
+      </p>
       <div
         style={{
-          margin: "65px auto 30px auto",
+          margin: "15px auto 30px auto",
           border: "1px solid white",
           borderRadius: "6px",
-          width: "91vw",
+          width: "84vw",
           padding: "5px 10px",
           display: "flex",
           flexDirection: "row",
@@ -68,15 +99,6 @@ function Filterbydate() {
           fontWeight: "bold",
         }}
       >
-        <p
-          style={{
-            margin: "10px",
-            fontSize: "18px",
-          }}
-        >
-          {" "}
-          Search tasks by date
-        </p>
         <DatePicker
           className="datepicker-filterbydate"
           placeholderText="Select date ..."
@@ -85,9 +107,9 @@ function Filterbydate() {
           selected={selecteddate}
           onChange={(selecteddate) => {
             setSelecteddate(selecteddate);
+            console.log(selecteddate);
           }}
           showTimeSelect
-          // dateFormat="Pp"
           dateFormat="yyyy-MM-dd"
         />
         <Link
@@ -121,15 +143,19 @@ function Filterbydate() {
                 textAlign: "center",
                 border: "1px solid white",
                 borderRadius: "4px",
-                width: "82%",
+                width: "90%",
                 padding: "5px 10px",
                 fontSize: "18px",
               }}
             >
               {tasksfilteredbydate.length == 1 ? (
-                <>You have {tasksfilteredbydate.length} task</>
+                <>
+                  You have {tasksfilteredbydate.length} task for ${date}
+                </>
               ) : (
-                <>You have {tasksfilteredbydate.length} tasks</>
+                <>
+                  You have {tasksfilteredbydate.length} tasks for ${date}
+                </>
               )}
             </p>
 
@@ -186,7 +212,7 @@ function Filterbydate() {
           <div className="table-heading">No tasks</div>
         )}
       </div>
-      {tasksfilteredbydate && (
+      {tasksfilteredbydate && tasksfilteredbydate.length > 0 && (
         <p
           className="counter"
           style={{
@@ -194,19 +220,37 @@ function Filterbydate() {
             textAlign: "center",
             border: "1px solid white",
             borderRadius: "4px",
-            width: "86%",
+            width: "84vw",
             padding: "5px 10px",
             fontSize: "16px",
           }}
         >
           {tasksfilteredbydate.length == 1 ? (
-            <>You have {tasksfilteredbydate.length} task</>
+            <>
+              You have {tasksfilteredbydate.length} task for
+              <span style={{ display: "block" }}>
+                {new Date(date).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            </>
           ) : (
-            <>You have {tasksfilteredbydate.length} tasks</>
+            <>
+              You have {tasksfilteredbydate.length} tasks for{" "}
+              <span style={{ display: "block" }}>
+                {new Date(date).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+            </>
           )}
         </p>
       )}
-      {tasksfilteredbydate && tasksfilteredbydate.length >= 1 ? (
+      {tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
         tasksfilteredbydate.map(
           (task) =>
             task &&

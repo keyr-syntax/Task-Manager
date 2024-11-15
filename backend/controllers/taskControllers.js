@@ -256,6 +256,33 @@ const fetchtaskbydate = async (req, res) => {
     console.log("Error while fetching tasks by date", error);
   }
 };
+const searchtasksbydate = async (req, res) => {
+  try {
+    const date = req.params.date;
+
+    const today = new Date(date);
+    const tomorrow = new Date(date);
+    tomorrow.setDate(today.getDate() + 1);
+    const tasksfortoday = await Task.find({
+      scheduledFor: {
+        $gte: today,
+        $lt: tomorrow,
+      },
+    });
+    if (tasksfortoday) {
+      return res.json({
+        success: true,
+        message: `Tasks scheduled for ${date} are fetched successfully`,
+        task: tasksfortoday,
+      });
+    } else {
+      res.status(404);
+      throw new Error("No tasks scheduled for today found");
+    }
+  } catch (error) {
+    console.log("Error while fetching tasks by date", error);
+  }
+};
 
 module.exports = {
   createTask,
@@ -268,4 +295,5 @@ module.exports = {
   fetchtaskonreminderlist,
   turnoffreminder,
   fetchtaskbydate,
+  searchtasksbydate,
 };

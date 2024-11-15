@@ -13,7 +13,7 @@ function Contextprovider({ children }) {
   const [prioritylist, setPrioritylist] = useState([]);
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
-  const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
   // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
 
   useEffect(() => {
@@ -65,6 +65,7 @@ function Contextprovider({ children }) {
         const response = await data.json();
         if (response.success) {
           getalltasks();
+          fetchtasksfortoday();
           navigate("/alltasks");
         }
       } catch (error) {
@@ -83,6 +84,7 @@ function Contextprovider({ children }) {
       const response = await data.json();
       if (response.success) {
         setTask(response.task);
+        fetchtasksfortoday();
         getalltasks();
         console.log(response.task);
       }
@@ -102,6 +104,7 @@ function Contextprovider({ children }) {
       if (response.success) {
         setTask(response.task);
         getalltasks();
+        fetchtasksfortoday();
         console.log(response.task);
       }
     } catch (error) {

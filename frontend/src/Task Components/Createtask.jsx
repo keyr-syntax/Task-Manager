@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import "./Createtask.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import DatePicker from "react-datepicker";
@@ -12,6 +12,7 @@ function Createtask() {
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState(false);
   const [reminder, setReminder] = useState("");
+  const textAreaRef = useRef(null);
 
   // const BASEAPI = "http://localhost:5000";
   // const BASEAPI = "https://task-management-roan-eight.vercel.app";
@@ -19,7 +20,15 @@ function Createtask() {
   useEffect(() => {
     getallpriorities();
   }, []);
-
+  const adjustHeight = () => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  };
+  useEffect(() => {
+    adjustHeight();
+  }, [description, title]);
   const handleCreateTask = async (e) => {
     e.preventDefault();
     console.log("addOnReminderlist on form submission", addOnReminderlist);
@@ -59,21 +68,26 @@ function Createtask() {
         <form onSubmit={handleCreateTask}>
           <h3>Add new task</h3>
           <label className="label-date-time-picker">Task Title:</label>
-          <input
+          <textarea
+            ref={textAreaRef}
             value={title}
             onChange={(e) => {
               setTitle(e.target.value);
+              adjustHeight();
             }}
-            className="input-title"
+            // className="input-title"
+            className="input-description"
             type="text"
             placeholder="Title..."
             required
           />
           <label className="label-date-time-picker">Task Description:</label>
           <textarea
+            ref={textAreaRef}
             value={description}
             onChange={(e) => {
               setDescription(e.target.value);
+              adjustHeight();
             }}
             className="input-description"
             type="text"
@@ -144,7 +158,7 @@ function Createtask() {
                 className="date-picker"
                 placeholderText="Set Reminder date and time..."
                 minDate={new Date()}
-                style={{ color: "black" }}
+                style={{ color: "white" }}
                 selected={reminder}
                 onChange={(reminder) => setReminder(reminder)}
                 showTimeSelect

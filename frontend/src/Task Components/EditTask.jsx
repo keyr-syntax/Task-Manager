@@ -1,6 +1,6 @@
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ function EditTask() {
   const [addreminder, setAddreminder] = useState(false);
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
   const [now, setNow] = useState("");
+  const textAreaRef = useRef(null);
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -24,6 +25,16 @@ function EditTask() {
     getonetask();
     getallpriorities();
   }, [_id]);
+  const adjustHeight = () => {
+    if (textAreaRef.current) {
+      textAreaRef.current.style.height = "auto";
+      textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustHeight();
+  }, [description, title]);
 
   const getonetask = async () => {
     try {
@@ -47,7 +58,7 @@ function EditTask() {
         setcontrolforremovebutton(response.task.addOnReminderlist);
         setAddreminder(false);
         setNow(now);
-
+        adjustHeight();
         console.log("Task fetched: ", response.task);
       }
     } catch (error) {
@@ -116,21 +127,26 @@ function EditTask() {
       <form onSubmit={edittask}>
         <h3>Edit task</h3>
         <label className="edit-label-date-time-picker">Task Title:</label>
-        <input
+        <textarea
+          ref={textAreaRef}
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
+            adjustHeight();
           }}
-          className="input-title"
+          // className="input-title"
+          className="input-description"
           type="text"
           placeholder="Title..."
           required
         />
         <label className="edit-label-date-time-picker">Task Description:</label>
         <textarea
+          ref={textAreaRef}
           value={description}
           onChange={(e) => {
             setDescription(e.target.value);
+            adjustHeight();
           }}
           className="input-description"
           type="text"

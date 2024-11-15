@@ -131,10 +131,10 @@ function Pendingtask() {
       </p>
       {pendingtask && pendingtask.length > 0 ? (
         pendingtask.map(
-          (task) =>
+          (task, index) =>
             task && (
               <>
-                <div key={task._id} className="mobile-container">
+                <div key={index} className="mobile-container">
                   <h2>Task</h2>
                   <p>
                     Task: <span>{task.title}</span>{" "}
