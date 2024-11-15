@@ -66,7 +66,7 @@ form button {
     display: block;
     margin: 5px 25px;
     padding: 10px 15px;
-    text-wrap: nowrap;
+    white-space: nowrap;
     width: 85vw;
   }
 }
@@ -106,9 +106,10 @@ form button {
   display: block;
   margin: 5px 25px;
   padding: 10px 15px;
-  text-wrap: nowrap;
+  white-space: nowrap;
   width: 255px;
 }
+
 @media only screen and (max-width: 800px) {
   .add-reminder-button {
     width: 82vw;
