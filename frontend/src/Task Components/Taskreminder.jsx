@@ -1,29 +1,49 @@
 // import io from "socket.io-client";
-import { ToastContainer } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 import { TaskContext } from "./Contextprovider.jsx";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Taskreminder.css";
 
 function Taskreminder() {
+  const [reminderlist, setReminderlist] = useState([]);
   const {
-    fetchtaskonreminderlist,
-    reminderlist,
+    // fetchtaskonreminderlist,
     turnoffreminder,
     markaspending,
     markascompleted,
     deletetask,
+    alltasks,
+    getalltasks,
   } = useContext(TaskContext);
 
   useEffect(() => {
-    fetchtaskonreminderlist();
+    getalltasks();
     const interval = setInterval(() => {
-      fetchtaskonreminderlist();
-    }, 10000);
+      getalltasks();
+    }, 5000);
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    // fetchtaskonreminderlist();
+    filtertasksonreminderlist();
+    const interval = setInterval(() => {
+      // fetchtaskonreminderlist();
+      filtertasksonreminderlist();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [alltasks]);
+
+  const filtertasksonreminderlist = () => {
+    const tasksonreminderlist = alltasks.filter(
+      (task) => task.addOnReminderlist === true && task.isNotified === true
+    );
+    setReminderlist(tasksonreminderlist);
+  };
 
   return (
     <>
@@ -143,7 +163,6 @@ function Taskreminder() {
       ) : (
         <div></div>
       )}
-      <ToastContainer />
     </>
   );
 }

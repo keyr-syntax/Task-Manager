@@ -2,9 +2,10 @@ import "./Prioritylist.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Loader from "./Loader.jsx";
 
 function Prioritylist() {
-  const { prioritylist, getallpriorities, deletepriority } =
+  const { prioritylist, getallpriorities, deletepriority, isLoading } =
     useContext(TaskContext);
   useEffect(() => {
     getallpriorities();
@@ -12,7 +13,9 @@ function Prioritylist() {
 
   return (
     <>
-      {prioritylist &&
+      {isLoading && <Loader />}
+      {!isLoading &&
+        prioritylist &&
         prioritylist.length > 0 &&
         prioritylist.map(
           (priority) =>

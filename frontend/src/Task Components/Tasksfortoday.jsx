@@ -2,6 +2,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Tasksfortoday.css";
+import Loader from "./Loader.jsx";
 function Tasksfortoday() {
   const {
     tasksfortoday,
@@ -10,6 +11,7 @@ function Tasksfortoday() {
     markaspending,
     markascompleted,
     deletetask,
+    isLoading,
   } = useContext(TaskContext);
 
   useEffect(() => {
@@ -18,7 +20,8 @@ function Tasksfortoday() {
 
   return (
     <>
-      {tasksfortoday && tasksfortoday.length > 0 ? (
+      {isLoading && <Loader />}
+      {!isLoading && tasksfortoday && tasksfortoday.length > 0 ? (
         <>
           <p
             style={{
@@ -156,17 +159,18 @@ function Tasksfortoday() {
           )}
         </>
       ) : (
-        <p
-          style={{
-            margin: "65px 20px 30px 20px",
-            textAlign: "center",
-            border: "1px solid white",
-            borderRadius: "6px",
-            padding: "5px 5px",
-          }}
-        >
-          No tasks for today
-        </p>
+        // <p
+        //   style={{
+        //     margin: "65px 20px 30px 20px",
+        //     textAlign: "center",
+        //     border: "1px solid white",
+        //     borderRadius: "6px",
+        //     padding: "5px 5px",
+        //   }}
+        // >
+        //   No tasks for today
+        // </p>
+        ""
       )}
     </>
   );

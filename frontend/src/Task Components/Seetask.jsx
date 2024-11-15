@@ -2,42 +2,56 @@ import "./Seetask.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import Loader from "./Loader.jsx";
 function Seetask() {
   const {
-    BASEAPI,
+    // BASEAPI,
     task,
     setTask,
     markascompleted,
     deletetask,
     markaspending,
     turnoffreminder,
+    alltasks,
+    getalltasks,
+    isLoading,
+    setIsLoading,
   } = useContext(TaskContext);
   const { _id } = useParams();
   useEffect(() => {
-    getonetask();
+    getalltasks();
+    filteronetaskbyid();
   }, [_id]);
 
-  const getonetask = async () => {
-    try {
-      const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const response = await data.json();
-      if (response.success) {
-        setTask(response.task);
-        console.log("Task fetched: ", response.task);
-      }
-    } catch (error) {
-      console.log("Error while fetching task", error);
-    }
+  // const getonetask = async () => {
+  //   try {
+  //     const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
+  //       method: "GET",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+  //     const response = await data.json();
+  //     if (response.success) {
+  //       setTask(response.task);
+  //       console.log("Task fetched: ", response.task);
+  //     }
+  //   } catch (error) {
+  //     console.log("Error while fetching task", error);
+  //   }
+  // };
+
+  const filteronetaskbyid = () => {
+    setIsLoading(true);
+    const filteredtask = alltasks.find((task) => task._id === _id);
+    setTask(filteredtask);
+    setIsLoading(false);
   };
 
   return (
     <>
-      {task ? (
+      {isLoading && <Loader />}
+      {!isLoading && task ? (
         <>
           <div className="seetask-container">
             <h2>Task</h2>

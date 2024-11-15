@@ -3,9 +3,11 @@ import "./Createtask.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Loader from "./Loader.jsx";
 function Createtask() {
   const { BASEAPI, getalltasks, prioritylist, getallpriorities } =
     useContext(TaskContext);
+  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
@@ -31,6 +33,7 @@ function Createtask() {
   }, [description, title]);
   const handleCreateTask = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     console.log("addOnReminderlist on form submission", addOnReminderlist);
     try {
       const data = await fetch(`${BASEAPI}/api/task/createtask`, {
@@ -55,6 +58,7 @@ function Createtask() {
         setPriority("");
         setReminder("");
         getalltasks();
+        setIsLoading(false);
         console.log("Task added:", response.task);
       }
     } catch (error) {
@@ -64,112 +68,115 @@ function Createtask() {
 
   return (
     <>
-      <div>
-        <form onSubmit={handleCreateTask}>
-          <h3>Add new task</h3>
-          <label className="label-date-time-picker">Task Title:</label>
-          <textarea
-            ref={textAreaRef}
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              adjustHeight();
-            }}
-            // className="input-title"
-            className="input-description"
-            type="text"
-            placeholder="Title..."
-            required
-          />
-          <label className="label-date-time-picker">Task Description:</label>
-          <textarea
-            ref={textAreaRef}
-            value={description}
-            onChange={(e) => {
-              setDescription(e.target.value);
-              adjustHeight();
-            }}
-            className="input-description"
-            type="text"
-            placeholder="write your task description..."
-            required
-          />
-          <label className="label-date-time-picker">Priority:</label>
-          <select
-            className="select-priority"
-            value={priority}
-            onChange={(e) => {
-              setPriority(e.target.value);
-            }}
-            required
-          >
-            <option value="">Select Priority Level</option>
-            {prioritylist.map(
-              (level) =>
-                level &&
-                level.priorityname && (
-                  <option value={level.priorityname} key={level._id}>
-                    {level.priorityname}
-                  </option>
-                )
-            )}
-          </select>
-          <label className="label-date-time-picker">
-            Select Due Date and Time:
-          </label>
-          <div className="date-picker-div">
-            <DatePicker
-              className="date-picker"
-              placeholderText="Select Due date and time..."
-              minDate={new Date()}
-              style={{ color: "black" }}
-              selected={scheduledFor}
-              onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
-              showTimeSelect
-              dateFormat="Pp"
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <div>
+          <form onSubmit={handleCreateTask}>
+            <h3>Add new task</h3>
+            <label className="label-date-time-picker">Task Title:</label>
+            <textarea
+              ref={textAreaRef}
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                adjustHeight();
+              }}
+              // className="input-title"
+              className="input-description"
+              type="text"
+              placeholder="Title..."
+              required
             />
-          </div>
-          {addOnReminderlist === false ? (
-            <button
-              type="button"
-              className="add-reminder-button"
-              onClick={() => {
-                setaddOnReminderlist(true);
-                console.log(addOnReminderlist);
+            <label className="label-date-time-picker">Task Description:</label>
+            <textarea
+              ref={textAreaRef}
+              value={description}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                adjustHeight();
               }}
-            >
-              Add Reminder
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="add-reminder-button"
-              onClick={() => {
-                setaddOnReminderlist(false);
-                console.log(addOnReminderlist);
+              className="input-description"
+              type="text"
+              placeholder="write your task description..."
+              required
+            />
+            <label className="label-date-time-picker">Priority:</label>
+            <select
+              className="select-priority"
+              value={priority}
+              onChange={(e) => {
+                setPriority(e.target.value);
               }}
+              required
             >
-              Remove Reminder
-            </button>
-          )}
-          {addOnReminderlist && (
+              <option value="">Select Priority Level</option>
+              {prioritylist.map(
+                (level) =>
+                  level &&
+                  level.priorityname && (
+                    <option value={level.priorityname} key={level._id}>
+                      {level.priorityname}
+                    </option>
+                  )
+              )}
+            </select>
+            <label className="label-date-time-picker">
+              Select Due Date and Time:
+            </label>
             <div className="date-picker-div">
               <DatePicker
                 className="date-picker"
-                placeholderText="Set Reminder date and time..."
+                placeholderText="Select Due date and time..."
                 minDate={new Date()}
-                style={{ color: "white" }}
-                selected={reminder}
-                onChange={(reminder) => setReminder(reminder)}
+                style={{ color: "black" }}
+                selected={scheduledFor}
+                onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
                 showTimeSelect
                 dateFormat="Pp"
-                required
               />
             </div>
-          )}
-          <button type="submit">Submit</button>
-        </form>
-      </div>
+            {addOnReminderlist === false ? (
+              <button
+                type="button"
+                className="add-reminder-button"
+                onClick={() => {
+                  setaddOnReminderlist(true);
+                  console.log(addOnReminderlist);
+                }}
+              >
+                Add Reminder
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="add-reminder-button"
+                onClick={() => {
+                  setaddOnReminderlist(false);
+                  console.log(addOnReminderlist);
+                }}
+              >
+                Remove Reminder
+              </button>
+            )}
+            {addOnReminderlist && (
+              <div className="date-picker-div">
+                <DatePicker
+                  className="date-picker"
+                  placeholderText="Set Reminder date and time..."
+                  minDate={new Date()}
+                  style={{ color: "white" }}
+                  selected={reminder}
+                  onChange={(reminder) => setReminder(reminder)}
+                  showTimeSelect
+                  dateFormat="Pp"
+                  required
+                />
+              </div>
+            )}
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      )}
     </>
   );
 }

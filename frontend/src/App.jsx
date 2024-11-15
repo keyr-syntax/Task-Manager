@@ -14,6 +14,7 @@ import Editpriority from "./Task Components/Editpriority";
 import Prioritylist from "./Task Components/Prioritylist";
 import Tasksfortoday from "./Task Components/Tasksfortoday";
 import Filterbydate from "./Task Components/Filterbydate";
+import Loader from "./Task Components/Loader";
 function App() {
   return (
     <>
@@ -21,6 +22,7 @@ function App() {
         {" "}
         <Dashboard />
         <Routes>
+          <Route exact path="/loader" element={<Loader />} />
           <Route exact path="/createtask" element={<Createtask />} />
           <Route exact path="/updatetask/:_id" element={<EditTask />} />
           <Route exact path="/alltasks" element={<Tasklist />} />

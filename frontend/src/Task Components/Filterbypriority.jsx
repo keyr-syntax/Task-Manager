@@ -15,6 +15,8 @@ function Filterbypriority() {
     markaspending,
     markascompleted,
     alltasks,
+    isLoading,
+    setIsLoading,
   } = useContext(TaskContext);
   useEffect(() => {
     getallpriorities();
@@ -23,10 +25,11 @@ function Filterbypriority() {
 
   useEffect(() => {
     const filtertask = (level) => {
+      setIsLoading(true);
       const filtered = alltasks.filter(
         (task) => task.isPending === true && task.priority === level
       );
-
+      setIsLoading(false);
       return setFilteredtask(filtered);
     };
     filtertask(level);
@@ -34,6 +37,7 @@ function Filterbypriority() {
 
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
+      setIsLoading(true);
       try {
         const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
           method: "DELETE",
@@ -44,6 +48,7 @@ function Filterbypriority() {
         const response = await data.json();
         if (response.success) {
           getalltasks();
+          setIsLoading(false);
           // navigate("/completedtasks");
         }
       } catch (error) {
@@ -55,81 +60,83 @@ function Filterbypriority() {
   return (
     <>
       <Listofpriorityforfilter />
-      <div className="table-container">
-        {filteredtask && filteredtask.length > 0 ? (
-          <>
-            <p
-              style={{
-                margin: "20px auto 20px auto",
-                textAlign: "center",
-                border: "1px solid white",
-                borderRadius: "4px",
-                width: "82%",
-                padding: "5px 10px",
-                fontSize: "18px",
-              }}
-            >
-              {filteredtask.length == 1 ? (
-                <>You have {filteredtask.length} task</>
-              ) : (
-                <>You have {filteredtask.length} tasks</>
-              )}
-            </p>
+      {!isLoading && (
+        <div className="table-container">
+          {filteredtask && filteredtask.length > 0 ? (
+            <>
+              <p
+                style={{
+                  margin: "20px auto 20px auto",
+                  textAlign: "center",
+                  border: "1px solid white",
+                  borderRadius: "4px",
+                  width: "82%",
+                  padding: "5px 10px",
+                  fontSize: "18px",
+                }}
+              >
+                {filteredtask.length == 1 ? (
+                  <>You have {filteredtask.length} task</>
+                ) : (
+                  <>You have {filteredtask.length} tasks</>
+                )}
+              </p>
 
-            <table>
-              <thead>
-                <tr className="table-head">
-                  <th>Task</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>See Task</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredtask &&
-                  filteredtask.map(
-                    (task) =>
-                      task &&
-                      task.isPending === true && (
-                        <tr key={task._id}>
-                          <td>{task.title}</td>
-                          <td>
-                            {new Date(task.scheduledFor).toLocaleString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                              }
+              <table>
+                <thead>
+                  <tr className="table-head">
+                    <th>Task</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>See Task</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredtask &&
+                    filteredtask.map(
+                      (task) =>
+                        task &&
+                        task.isPending === true && (
+                          <tr key={task._id}>
+                            <td>{task.title}</td>
+                            <td>
+                              {new Date(task.scheduledFor).toLocaleString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "numeric",
+                                  minute: "numeric",
+                                }
+                              )}
+                            </td>
+                            {task.isPending && (
+                              <td style={{ color: "red" }}>Pending</td>
                             )}
-                          </td>
-                          {task.isPending && (
-                            <td style={{ color: "red" }}>Pending</td>
-                          )}
-                          <td>{task.priority}</td>
+                            <td>{task.priority}</td>
 
-                          <td className="delete-tr">
-                            <Link
-                              to={`/seetask/${task._id}`}
-                              className="delete-link"
-                            >
-                              Open
-                            </Link>
-                          </td>
-                        </tr>
-                      )
-                  )}
-              </tbody>
-            </table>
-          </>
-        ) : (
-          <div className="table-heading">No tasks</div>
-        )}
-      </div>
-      {filteredtask && (
+                            <td className="delete-tr">
+                              <Link
+                                to={`/seetask/${task._id}`}
+                                className="delete-link"
+                              >
+                                Open
+                              </Link>
+                            </td>
+                          </tr>
+                        )
+                    )}
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <div className="table-heading">No tasks</div>
+          )}
+        </div>
+      )}
+      {!isLoading && filteredtask && (
         <p
           className="counter"
           style={{
@@ -149,7 +156,7 @@ function Filterbypriority() {
           )}
         </p>
       )}
-      {filteredtask && filteredtask.length >= 1 ? (
+      {!isLoading && filteredtask && filteredtask.length >= 1 ? (
         filteredtask.map(
           (task) =>
             task &&

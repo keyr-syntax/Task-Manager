@@ -1,14 +1,16 @@
 import { useContext } from "react";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useNavigate } from "react-router-dom";
+import Loader from "./Loader.jsx";
 
 function Listofpriorityforfilter() {
-  const { prioritylist } = useContext(TaskContext);
+  const { prioritylist, isLoading } = useContext(TaskContext);
   const navigate = useNavigate();
 
   return (
     <>
-      {prioritylist && (
+      {isLoading && <Loader />}
+      {!isLoading && prioritylist && (
         <div
           style={{
             border: "1px solid white",

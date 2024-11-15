@@ -4,10 +4,12 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Filterbydate.css";
 import { TaskContext } from "./Contextprovider.jsx";
+import Loader from "./Loader.jsx";
 function Filterbydate() {
   const {
     alltasks,
-    BASEAPI,
+    isLoading,
+    setIsLoading,
     markaspending,
     markascompleted,
     turnoffreminder,
@@ -51,7 +53,12 @@ function Filterbydate() {
     filtertasksbydate();
   }, [date, alltasks]);
 
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
   const filtertasksbydate = () => {
+    setIsLoading(true);
     const createDateObject = new Date(date);
     console.log("date converted to date object", createDateObject);
     if (isNaN(createDateObject)) {
@@ -67,152 +74,158 @@ function Filterbydate() {
       return convertdatetostring === stringdate;
     });
     setTasksfilteredbydate(tasksbydate);
+    setIsLoading(false);
     console.log("Tasks fetched by date: ", tasksbydate);
   };
 
   return (
     <>
-      <p
-        style={{
-          margin: "70px auto 10px auto",
-          fontSize: "18px",
-          border: "1px solid white",
-          textAlign: "center",
-          padding: "5px 10px",
-          width: "84vw",
-          borderRadius: "6px",
-        }}
-      >
-        {" "}
-        Search tasks by date
-      </p>
-      <div
-        style={{
-          margin: "15px auto 30px auto",
-          border: "1px solid white",
-          borderRadius: "6px",
-          width: "84vw",
-          padding: "5px 10px",
-          display: "flex",
-          flexDirection: "row",
-          fontSize: "22px",
-          fontWeight: "bold",
-        }}
-      >
-        <DatePicker
-          className="datepicker-filterbydate"
-          placeholderText="Select date ..."
-          minDate={new Date()}
-          value={selecteddate}
-          selected={selecteddate}
-          onChange={(selecteddate) => {
-            setSelecteddate(selecteddate);
-            console.log(selecteddate);
-          }}
-          showTimeSelect
-          dateFormat="yyyy-MM-dd"
-        />
-        <Link
-          to={`/filterbydate/${selecteddate}`}
-          style={{
-            textDecoration: "none",
-            textAlign: "center",
-            color: "white",
-            display: "block",
-            margin: "5px",
-            border: "1px solid white",
-            padding: "5px 35px",
-            borderRadius: "6px",
-            float: "right",
-            backgroundColor: "#151533",
-            cursor: "pointer",
-            right: "5%",
-            position: "absolute",
-            fontSize: "17px",
-          }}
-        >
-          Search
-        </Link>
-      </div>
-      <div className="table-container">
-        {tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
-          <>
-            <p
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <>
+          <p
+            style={{
+              margin: "70px auto 10px auto",
+              fontSize: "18px",
+              border: "1px solid white",
+              textAlign: "center",
+              padding: "5px 10px",
+              width: "84vw",
+              borderRadius: "6px",
+            }}
+          >
+            {" "}
+            Search tasks by date
+          </p>
+          <div
+            style={{
+              margin: "15px auto 30px auto",
+              border: "1px solid white",
+              borderRadius: "6px",
+              width: "84vw",
+              padding: "5px 10px",
+              display: "flex",
+              flexDirection: "row",
+              fontSize: "22px",
+              fontWeight: "bold",
+            }}
+          >
+            <DatePicker
+              className="datepicker-filterbydate"
+              placeholderText="Select date ..."
+              minDate={new Date()}
+              value={selecteddate}
+              selected={selecteddate}
+              onChange={(selecteddate) => {
+                setSelecteddate(selecteddate);
+                console.log(selecteddate);
+              }}
+              showTimeSelect
+              dateFormat="yyyy-MM-dd"
+            />
+            <Link
+              to={`/filterbydate/${selecteddate}`}
               style={{
-                margin: "20px auto 20px auto",
+                textDecoration: "none",
                 textAlign: "center",
+                color: "white",
+                display: "block",
+                margin: "5px",
                 border: "1px solid white",
-                borderRadius: "4px",
-                width: "90%",
-                padding: "5px 10px",
-                fontSize: "18px",
+                padding: "5px 35px",
+                borderRadius: "6px",
+                float: "right",
+                backgroundColor: "#151533",
+                cursor: "pointer",
+                right: "5%",
+                position: "absolute",
+                fontSize: "17px",
               }}
             >
-              {tasksfilteredbydate.length == 1 ? (
-                <>
-                  You have {tasksfilteredbydate.length} task for ${date}
-                </>
-              ) : (
-                <>
-                  You have {tasksfilteredbydate.length} tasks for ${date}
-                </>
-              )}
-            </p>
-
-            <table>
-              <thead>
-                <tr className="table-head">
-                  <th>Task</th>
-                  <th>Due Date</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>See Task</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasksfilteredbydate &&
-                  tasksfilteredbydate.map(
-                    (task) =>
-                      task &&
-                      task.isPending === true && (
-                        <tr key={task._id}>
-                          <td>{task.title}</td>
-                          <td>
-                            {new Date(task.scheduledFor).toLocaleString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                              }
-                            )}
-                          </td>
-                          {task.isPending && (
-                            <td style={{ color: "red" }}>Pending</td>
-                          )}
-                          <td>{task.priority}</td>
-
-                          <td className="delete-tr">
-                            <Link
-                              to={`/seetask/${task._id}`}
-                              className="delete-link"
-                            >
-                              Open
-                            </Link>
-                          </td>
-                        </tr>
-                      )
+              Search
+            </Link>
+          </div>
+          <div className="table-container">
+            {tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
+              <>
+                <p
+                  style={{
+                    margin: "20px auto 20px auto",
+                    textAlign: "center",
+                    border: "1px solid white",
+                    borderRadius: "4px",
+                    width: "90%",
+                    padding: "5px 10px",
+                    fontSize: "18px",
+                  }}
+                >
+                  {tasksfilteredbydate.length == 1 ? (
+                    <>
+                      You have {tasksfilteredbydate.length} task for ${date}
+                    </>
+                  ) : (
+                    <>
+                      You have {tasksfilteredbydate.length} tasks for ${date}
+                    </>
                   )}
-              </tbody>
-            </table>
-          </>
-        ) : (
-          <div className="table-heading">No tasks</div>
-        )}
-      </div>
-      {tasksfilteredbydate && tasksfilteredbydate.length > 0 && (
+                </p>
+
+                <table>
+                  <thead>
+                    <tr className="table-head">
+                      <th>Task</th>
+                      <th>Due Date</th>
+                      <th>Status</th>
+                      <th>Priority</th>
+                      <th>See Task</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tasksfilteredbydate &&
+                      tasksfilteredbydate.map(
+                        (task) =>
+                          task &&
+                          task.isPending === true && (
+                            <tr key={task._id}>
+                              <td>{task.title}</td>
+                              <td>
+                                {new Date(task.scheduledFor).toLocaleString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "short",
+                                    day: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                  }
+                                )}
+                              </td>
+                              {task.isPending && (
+                                <td style={{ color: "red" }}>Pending</td>
+                              )}
+                              <td>{task.priority}</td>
+
+                              <td className="delete-tr">
+                                <Link
+                                  to={`/seetask/${task._id}`}
+                                  className="delete-link"
+                                >
+                                  Open
+                                </Link>
+                              </td>
+                            </tr>
+                          )
+                      )}
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <div className="table-heading">No tasks</div>
+            )}
+          </div>
+        </>
+      )}
+      {!isLoading && tasksfilteredbydate && tasksfilteredbydate.length > 0 && (
         <p
           className="counter"
           style={{
@@ -250,7 +263,7 @@ function Filterbydate() {
           )}
         </p>
       )}
-      {tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
+      {!isLoading && tasksfilteredbydate && tasksfilteredbydate.length > 0 ? (
         tasksfilteredbydate.map(
           (task) =>
             task &&

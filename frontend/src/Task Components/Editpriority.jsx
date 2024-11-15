@@ -2,10 +2,12 @@ import { useState, useContext, useEffect } from "react";
 import "./Editpriority.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useNavigate, useParams } from "react-router-dom";
+import Loader from "./Loader.jsx";
 
 function Editpriority() {
   const { _id } = useParams();
-  const { BASEAPI, getallpriorities } = useContext(TaskContext);
+  const { BASEAPI, getallpriorities, isLoading, setIsLoading } =
+    useContext(TaskContext);
   // const [priority, setPriority] = useState("");
   const [priorityname, setPriorityname] = useState("");
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ function Editpriority() {
 
   const getonepriority = async (_id) => {
     try {
+      setIsLoading(true);
       const data = await fetch(`${BASEAPI}/api/priority/fetchpriority/${_id}`, {
         method: "GET",
         headers: {
@@ -28,6 +31,7 @@ function Editpriority() {
         console.log("Priority fetched", response.priority);
         console.log("Priority name", response.priority.priorityname);
         setPriorityname(response.priority.priorityname);
+        setIsLoading(false);
       }
     } catch (error) {
       console.log("Error while fetching one priority", error);
@@ -35,6 +39,7 @@ function Editpriority() {
   };
   const handleupdatepriority = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     console.log("handleupdatepriority is working");
     try {
       const data = await fetch(
@@ -51,6 +56,7 @@ function Editpriority() {
       if (response.success) {
         console.log("priority updated", response.priority);
         getallpriorities();
+        setIsLoading(false);
         navigate("/prioritylist");
       }
     } catch (error) {
@@ -60,26 +66,29 @@ function Editpriority() {
 
   return (
     <>
-      <div>
-        <form onSubmit={handleupdatepriority} className="form-editpriority">
-          <h3>Update Priority</h3>
-          <label className="label-date-time-picker-editpriority">
-            Priority name:
-          </label>
-          <input
-            value={priorityname}
-            onChange={(e) => {
-              setPriorityname(e.target.value);
-            }}
-            className="input-title-editpriority"
-            type="text"
-            placeholder="Priority name ..."
-            required
-          />
+      {isLoading && <Loader />}
+      {!isLoading && (
+        <div>
+          <form onSubmit={handleupdatepriority} className="form-editpriority">
+            <h3>Update Priority</h3>
+            <label className="label-date-time-picker-editpriority">
+              Priority name:
+            </label>
+            <input
+              value={priorityname}
+              onChange={(e) => {
+                setPriorityname(e.target.value);
+              }}
+              className="input-title-editpriority"
+              type="text"
+              placeholder="Priority name ..."
+              required
+            />
 
-          <button type="submit">Update</button>
-        </form>
-      </div>
+            <button type="submit">Update</button>
+          </form>
+        </div>
+      )}
     </>
   );
 }
