@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./EditTask.css";
 import Loader from "./Loader.jsx";
-import { Editor } from "@tinymce/tinymce-react";
+
 function EditTask() {
   const { getalltasks, BASEAPI, prioritylist, getallpriorities, alltasks } =
     useContext(TaskContext);
@@ -23,7 +23,6 @@ function EditTask() {
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
   const [now, setNow] = useState("");
   const textAreaRef = useRef(null);
-  const editorRef = useRef(null);
 
   const { _id } = useParams();
   const navigate = useNavigate();
@@ -149,9 +148,6 @@ function EditTask() {
       console.log("Error while turning off reminder", error);
     }
   };
-  const handleEditorChange = (content, editor) => {
-    setDescription({ ...description, description: content });
-  };
 
   return (
     <>
@@ -176,7 +172,7 @@ function EditTask() {
           <label className="edit-label-date-time-picker">
             Task Description:
           </label>
-          {/* <textarea
+          <textarea
             ref={textAreaRef}
             value={description}
             onChange={(e) => {
@@ -187,68 +183,8 @@ function EditTask() {
             type="text"
             placeholder="write your task description..."
             required
-          /> */}
-          <Editor
-            onInit={(evt, editor) => (editorRef.current = editor)}
-            // apiKey="x8azhf2t3vo07m8hnf207hemlel93uivm5e1xxtwpo4p79xn"
-            textareaName="description"
-            // value={description}
-            // initialValue={description}
-            value={description.description}
-            onEditorChange={handleEditorChange}
-            tinymceScriptSrc="/tinymce/tinymce.min.js"
-            licenseKey="gpl"
-            init={{
-              skin: "oxide-dark",
-              height: 550,
-              plugins: [
-                // Core editing features]
-                "fullscreen",
-                "anchor",
-                "autolink",
-                "charmap",
-                "codesample",
-                "emoticons",
-                "image",
-                "link",
-                "lists",
-                "media",
-                "searchreplace",
-                "table",
-                "visualblocks",
-                "wordcount",
-              ],
-              toolbar:
-                " undo redo | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat ",
-              fullscreen_native: true,
-              tinycomments_mode: "embedded",
-              tinycomments_author: "Author name",
-              mergetags_list: [
-                { value: "First.Name", title: "First Name" },
-                { value: "Email", title: "Email" },
-              ],
-              // ai_request: (request, respondWith) =>
-              //   respondWith.string(() =>
-              //     Promise.reject("See docs to implement AI Assistant")
-              //   ),
-              // exportpdf_converter_options: {
-              //   format: "Letter",
-              //   margin_top: "1in",
-              //   margin_right: "1in",
-              //   margin_bottom: "1in",
-              //   margin_left: "1in",
-              // },
-              // exportword_converter_options: { document: { size: "Letter" } },
-              // importword_converter_options: {
-              //   formatting: {
-              //     styles: "inline",
-              //     resets: "inline",
-              //     defaults: "inline",
-              //   },
-              // },
-            }}
-            // initialValue="Welcome to TinyMCE!"
           />
+
           <label className="edit-label-date-time-picker">Priority:</label>
           <select
             className="select-priority"

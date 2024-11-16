@@ -5,48 +5,51 @@ import { Link, useParams } from "react-router-dom";
 import Loader from "./Loader.jsx";
 function Seetask() {
   const {
-    // BASEAPI,
+    BASEAPI,
     task,
     setTask,
     markascompleted,
     deletetask,
     markaspending,
     turnoffreminder,
-    alltasks,
-    getalltasks,
+    // alltasks,
+    // getalltasks,
     isLoading,
     setIsLoading,
   } = useContext(TaskContext);
   const { _id } = useParams();
   useEffect(() => {
-    getalltasks();
-    filteronetaskbyid();
+    getonetask();
+    // getalltasks();
+    // filteronetaskbyid();
   }, [_id]);
 
-  // const getonetask = async () => {
-  //   try {
-  //     const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const response = await data.json();
-  //     if (response.success) {
-  //       setTask(response.task);
-  //       console.log("Task fetched: ", response.task);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error while fetching task", error);
-  //   }
-  // };
-
-  const filteronetaskbyid = () => {
+  const getonetask = async () => {
     setIsLoading(true);
-    const filteredtask = alltasks.find((task) => task._id === _id);
-    setTask(filteredtask);
-    setIsLoading(false);
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        setTask(response.task);
+        setIsLoading(false);
+        console.log("Task fetched: ", response.task);
+      }
+    } catch (error) {
+      console.log("Error while fetching task", error);
+    }
   };
+
+  // const filteronetaskbyid = () => {
+  //   setIsLoading(true);
+  //   const filteredtask = alltasks.find((task) => task._id === _id);
+  //   setTask(filteredtask);
+  //   setIsLoading(false);
+  // };
 
   return (
     <>

@@ -34,7 +34,7 @@ function Dashboard() {
       </div>
       <div className="mobile-navbar-container">
         <Link to="/alltasks">Home</Link>
-        <Link to="/editor">Editor</Link>
+
         {!menuopen ? (
           <Menu
             onClick={() => {
