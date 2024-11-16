@@ -55,13 +55,16 @@ function Seetask() {
         <>
           <div className="seetask-container">
             <h2>Task</h2>
-            <p>
+            <p className="seetask-container-paragraph">
               Task: <span>{task.title}</span>{" "}
             </p>
-            <p>
-              Description: <span>{task.description}</span>
+            <p className="seetask-container-paragraph">
+              Description:{" "}
+              <span
+                dangerouslySetInnerHTML={{ __html: task.description }}
+              ></span>
             </p>
-            <p>
+            <p className="seetask-container-paragraph">
               Status:{" "}
               {task.isPending ? (
                 <span style={{ color: "red" }}>Pending</span>
@@ -71,11 +74,11 @@ function Seetask() {
                 </span>
               )}
             </p>
-            <p>
+            <p className="seetask-container-paragraph">
               Priority:
               <span>{task.priority}</span>
             </p>
-            <p>
+            <p className="seetask-container-paragraph">
               Due date:{" "}
               <span>
                 {new Date(task.scheduledFor).toLocaleString("en-US", {
@@ -88,7 +91,7 @@ function Seetask() {
               </span>
             </p>
             {task.addOnReminderlist === true && (
-              <p>
+              <p className="seetask-container-paragraph">
                 Reminder set for:{" "}
                 <span>
                   {new Date(task.reminder).toLocaleString("en-US", {
@@ -102,7 +105,7 @@ function Seetask() {
               </p>
             )}
             <div className="mobile-open-link-container">
-              <p>
+              <p className="seetask-container-paragraph">
                 <Link
                   to={`/edittask/${task._id}`}
                   className="task-management-button"
@@ -110,7 +113,7 @@ function Seetask() {
                   Edit
                 </Link>
               </p>
-              <p>
+              <p className="seetask-container-paragraph">
                 <Link
                   onClick={() => {
                     deletetask(task._id);
@@ -123,7 +126,7 @@ function Seetask() {
             </div>
             <div className="mobile-open-link-container">
               {task.addOnReminderlist === true && (
-                <p>
+                <p className="seetask-container-paragraph">
                   <Link
                     style={{ fontSize: "12px" }}
                     onClick={() => {
@@ -136,7 +139,7 @@ function Seetask() {
                 </p>
               )}
               {task.addOnReminderlist === false && (
-                <p>
+                <p className="seetask-container-paragraph">
                   <Link
                     to={`/edittask/${task._id}`}
                     onClick={() => {
@@ -149,7 +152,7 @@ function Seetask() {
                 </p>
               )}
               {task.isPending === true && (
-                <p>
+                <p className="seetask-container-paragraph">
                   <Link
                     onClick={() => {
                       markascompleted(task._id);
@@ -161,7 +164,7 @@ function Seetask() {
                 </p>
               )}
               {task.isPending === false && (
-                <p>
+                <p className="seetask-container-paragraph">
                   <Link
                     onClick={() => {
                       markaspending(task._id);

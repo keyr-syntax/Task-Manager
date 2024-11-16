@@ -20,6 +20,7 @@ function Dashboard() {
   return (
     <>
       <div className="navbar-container">
+        <Link to="/editor">Editor</Link>
         <Link to="/alltasks">All Tasks</Link>
         <Link to="/pendingtasks">Pending Task</Link>
         <Link to="/completedtasks">Completed Task</Link>
@@ -33,6 +34,7 @@ function Dashboard() {
       </div>
       <div className="mobile-navbar-container">
         <Link to="/alltasks">Home</Link>
+        <Link to="/editor">Editor</Link>
         {!menuopen ? (
           <Menu
             onClick={() => {

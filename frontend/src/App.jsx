@@ -15,6 +15,7 @@ import Prioritylist from "./Task Components/Prioritylist";
 import Tasksfortoday from "./Task Components/Tasksfortoday";
 import Filterbydate from "./Task Components/Filterbydate";
 import Loader from "./Task Components/Loader";
+import Texteditor from "./Task Components/Texteditor";
 function App() {
   return (
     <>
@@ -41,6 +42,7 @@ function App() {
           <Route exact path="/editpriority/:_id" element={<Editpriority />} />
           <Route exact path="/prioritylist" element={<Prioritylist />} />
           <Route exact path="/tasksfortoday" element={<Tasksfortoday />} />
+          <Route exact path="/editor" element={<Texteditor />} />
         </Routes>
       </Contextprovider>
     </>
