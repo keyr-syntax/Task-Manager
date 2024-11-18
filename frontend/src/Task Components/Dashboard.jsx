@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { X } from "lucide-react";
 
@@ -28,11 +28,12 @@ function Dashboard() {
         <Link to="/createpriority">Create priority</Link>
         <Link to="/prioritylist">Priority List</Link>
         <Link to="/reminder">Reminder</Link>
+        <Link to="/repeat">Repeat</Link>
         <Link to="/tasksfortoday">Todays task</Link>
         <Link to="/filterbydate/:date">Find tasks by date</Link>
       </div>
       <div className="mobile-navbar-container">
-        <Link to="/alltasks">Home</Link>
+        <Link to="/">Home</Link>
 
         {!menuopen ? (
           <Menu
@@ -63,7 +64,7 @@ function Dashboard() {
           />
         )}
 
-        <Link className="mobile-navbar-container-link" to="/alltasks">
+        {/* <Link className="mobile-navbar-container-link" to="/alltasks">
           All{" "}
         </Link>
         <Link className="mobile-navbar-container-link" to="/pendingtasks">
@@ -77,8 +78,9 @@ function Dashboard() {
         </Link>
         <Link className="mobile-navbar-container-link" to="/filterbypriority">
           Priority{" "}
-        </Link>
+        </Link> */}
       </div>
+
       {menuopen && (
         <div ref={menuref} className="mobile-side-navbar">
           <Link to="/alltasks">All tasks</Link>
@@ -89,10 +91,12 @@ function Dashboard() {
           <Link to="/createpriority">Create priority</Link>
           <Link to="/prioritylist">Priority List</Link>
           <Link to="/reminder">Reminder</Link>
+          <Link to="/repeat">Repeat</Link>
           <Link to="/tasksfortoday">Todays task</Link>
           <Link to="/filterbydate/:date">Find tasks by date</Link>
         </div>
       )}
+      <Outlet />
     </>
   );
 }

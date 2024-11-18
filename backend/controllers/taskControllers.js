@@ -1,44 +1,5 @@
 const Task = require("../models/taskModel.js");
 
-// const createTask = async (req, res) => {
-//   try {
-//     const {
-//       title,
-//       description,
-//       scheduledFor,
-//       priority,
-//       category,
-//       reminder,
-//       addOnReminderlist,
-//     } = req.body;
-//     const newTask = await Task.create({
-//       title: title,
-//       description: description,
-//       scheduledFor: scheduledFor,
-//       priority: priority,
-//       category: category,
-//       reminder: reminder,
-//       addOnReminderlist: addOnReminderlist,
-//     });
-//     if (newTask) {
-//       return res.json({
-//         success: true,
-//         message: "Task added successfully",
-//         task: newTask,
-//       });
-//     } else {
-//       res.status(404);
-//       throw new Error("Task not found");
-//     }
-//   } catch (error) {
-//     console.log("Error while creating task", error);
-//     res.json({
-//       success: false,
-//       message: "Error while creating task",
-//       error: error,
-//     });
-//   }
-// };
 const createTask = async (req, res) => {
   try {
     const {
@@ -83,7 +44,6 @@ const createTask = async (req, res) => {
 };
 const updateTask = async (req, res) => {
   try {
-    const { _id } = req.params;
     const {
       title,
       description,
@@ -157,7 +117,6 @@ const fetchAllTasks = async (req, res) => {
 };
 const fetchonetask = async (req, res) => {
   try {
-    const { _id } = req.params;
     const taskbyid = await Task.findById({
       _id: req.params._id,
     });
@@ -283,6 +242,30 @@ const turnoffreminder = async (req, res) => {
     console.log("Error while turning off reminder", error);
   }
 };
+const turnoffrepeat = async (req, res) => {
+  try {
+    const taskonrepeatlist = await Task.findById({
+      _id: req.params._id,
+    });
+
+    if (taskonrepeatlist) {
+      taskonrepeatlist.addOnRepeatlist = false;
+      taskonrepeatlist.repeatDate = null;
+      taskonrepeatlist.isRepeat = false;
+      await taskonrepeatlist.save();
+      return res.json({
+        success: true,
+        message: "Repeat turned-off successfully",
+        task: taskonrepeatlist,
+      });
+    } else {
+      res.status(404);
+      throw new Error("Task not found");
+    }
+  } catch (error) {
+    console.log("Error while turning off repeat", error);
+  }
+};
 const fetchtaskbydate = async (req, res) => {
   try {
     const today = new Date();
@@ -349,4 +332,5 @@ module.exports = {
   turnoffreminder,
   fetchtaskbydate,
   searchtasksbydate,
+  turnoffrepeat,
 };

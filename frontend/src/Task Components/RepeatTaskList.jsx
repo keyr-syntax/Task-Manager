@@ -2,20 +2,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "./Taskreminder.css";
-
-function Taskreminder() {
-  const [reminderlist, setReminderlist] = useState([]);
+import "./RepeatTaskList.css";
+function RepeatTaskList() {
+  const [repeatlist, setRepeatlist] = useState([]);
   const {
-    // fetchtaskonreminderlist,
-    turnoffreminder,
+    turnoffrepeat,
     markaspending,
     markascompleted,
     deletetask,
     alltasks,
     getalltasks,
   } = useContext(TaskContext);
-
   useEffect(() => {
     getalltasks();
     const interval = setInterval(() => {
@@ -26,26 +23,23 @@ function Taskreminder() {
   }, []);
 
   useEffect(() => {
-    // fetchtaskonreminderlist();
-    filtertasksonreminderlist();
+    filtertasksonrepeatlist();
     const interval = setInterval(() => {
-      // fetchtaskonreminderlist();
-      filtertasksonreminderlist();
+      filtertasksonrepeatlist();
     }, 5000);
 
     return () => clearInterval(interval);
   }, [alltasks]);
 
-  const filtertasksonreminderlist = () => {
-    const tasksonreminderlist = alltasks.filter(
-      (task) => task.addOnReminderlist === true && task.isNotified === true
+  const filtertasksonrepeatlist = () => {
+    const tasksonrepeatlist = alltasks.filter(
+      (task) => task.addOnRepeatlist === true
     );
-    setReminderlist(tasksonreminderlist);
+    setRepeatlist(tasksonrepeatlist);
   };
-
   return (
     <>
-      {reminderlist && reminderlist.length > 0 ? (
+      {repeatlist && repeatlist.length > 0 ? (
         <>
           <p
             style={{
@@ -56,22 +50,22 @@ function Taskreminder() {
               padding: "5px 5px",
             }}
           >
-            Only Tasks on reminder List are listed here
+            Only Tasks on repeat List are listed here
           </p>
-          {reminderlist.map(
+          {repeatlist.map(
             (task) =>
               task && (
                 <>
-                  <div key={task._id} className="taskreminder-container">
+                  <div key={task._id} className="taskrepeat-container">
                     <h2>Task</h2>
                     <p>
                       Task: <span>{task.title}</span>{" "}
                     </p>
 
                     <p>
-                      Reminder set for:{" "}
+                      Repeat Date:{" "}
                       <span>
-                        {new Date(task.reminder).toLocaleString("en-US", {
+                        {new Date(task.repeatDate).toLocaleString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",
@@ -79,6 +73,9 @@ function Taskreminder() {
                           minute: "numeric",
                         })}
                       </span>
+                    </p>
+                    <p>
+                      Repeat Interval: <span>{task.repeatInterval}</span>
                     </p>
                     <div className="mobile-open-link-container">
                       <p>
@@ -101,29 +98,26 @@ function Taskreminder() {
                       </p>
                     </div>
                     <div className="mobile-open-link-container">
-                      {task.addOnReminderlist === true && (
+                      {task.addOnRepeatlist === true && (
                         <p>
                           <Link
                             style={{ fontSize: "12px" }}
                             onClick={() => {
-                              turnoffreminder(task._id);
+                              turnoffrepeat(task._id);
                             }}
                             className="task-management-button"
                           >
-                            Turnoff Reminder
+                            Turnoff Repeat
                           </Link>
                         </p>
                       )}
-                      {task.addOnReminderlist === false && (
+                      {task.addOnRepeatlist === false && (
                         <p>
                           <Link
                             to={`/edittask/${task._id}`}
-                            onClick={() => {
-                              turnoffreminder(task._id);
-                            }}
                             className="task-management-button"
                           >
-                            Add Reminder
+                            Add Repeat
                           </Link>
                         </p>
                       )}
@@ -165,4 +159,4 @@ function Taskreminder() {
   );
 }
 
-export default Taskreminder;
+export default RepeatTaskList;

@@ -46,12 +46,15 @@ cron.schedule("* * * * *", async () => {
         const savereminder = await task.save();
       }
       if (
-        task.repeat &&
-        task.repeat instanceof Date &&
+        task.repeatDate &&
+        task.repeatDate instanceof Date &&
         task.addOnRepeatlist === true &&
-        now.getTime() >= task.repeat.getTime()
+        now.getTime() >= task.repeatDate.getTime()
       ) {
         task.isRepeat = true;
+        task.addOnReminderlist === true;
+        task.isNotified = true;
+        task.reminder = task.repeatDate;
         const saveRepeat = await task.save();
       }
     });

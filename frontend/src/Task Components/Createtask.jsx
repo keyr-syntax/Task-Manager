@@ -17,23 +17,23 @@ function Createtask() {
   const [reminder, setReminder] = useState("");
   const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
   const [repeatInterval, setRepeatInterval] = useState("");
-  const [repeat, setRepeat] = useState(null);
+  const [repeatDate, setRepeatDate] = useState(null);
 
   const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
   const textAreaRef = useRef(null);
   useEffect(() => {
     const now = new Date();
     if (repeatInterval === "Daily") {
-      const repeat = new Date();
-      setRepeat(repeat.setDate(now.getDate() + 1));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setDate(now.getDate() + 1));
     } else if (repeatInterval === "Weekly") {
-      const repeat = new Date();
-      setRepeat(repeat.setDate(now.getDate() + 7));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setDate(now.getDate() + 7));
     } else if (repeatInterval === "Monthly") {
-      const repeat = new Date();
-      setRepeat(repeat.setMonth(now.getMonth() + 1));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setMonth(now.getMonth() + 1));
     } else if (repeatInterval === "None") {
-      setRepeat(null);
+      setRepeatDate(null);
     }
   }, [repeatInterval]);
 
@@ -68,7 +68,7 @@ function Createtask() {
           reminder,
           addOnRepeatlist,
           repeatInterval,
-          repeatDate: repeat,
+          repeatDate,
         }),
       });
       const response = await data.json();
@@ -78,6 +78,10 @@ function Createtask() {
         setScheduledFor("");
         setPriority("");
         setReminder("");
+        setaddOnReminderlist(false);
+        setaddOnRepeatlist(false);
+        setRepeatInterval("");
+        setRepeatDate(null);
         getalltasks();
         setIsLoading(false);
         console.log("Task added:", response.task);

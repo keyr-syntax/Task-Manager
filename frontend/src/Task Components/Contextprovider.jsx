@@ -13,8 +13,8 @@ function Contextprovider({ children }) {
   const [prioritylist, setPrioritylist] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  // const BASEAPI = "http://localhost:5000";
+  const BASEAPI = "https://task-management-roan-eight.vercel.app";
   // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
 
   useEffect(() => {
@@ -162,6 +162,26 @@ function Contextprovider({ children }) {
       console.log("Error while turning off reminder", error);
     }
   };
+  const turnoffrepeat = async (_id) => {
+    try {
+      setIsLoading(true);
+      const data = await fetch(`${BASEAPI}/api/task/turnoffrepeat/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        setTask(response.task);
+        getalltasks();
+        fetchtasksfortoday();
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("Error while turning off reminder", error);
+    }
+  };
   const getallpriorities = async () => {
     try {
       setIsLoading(true);
@@ -248,6 +268,7 @@ function Contextprovider({ children }) {
           fetchtasksfortoday,
           isLoading,
           setIsLoading,
+          turnoffrepeat,
         }}
       >
         {children}

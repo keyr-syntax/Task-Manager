@@ -11,6 +11,7 @@ const {
   markaspending,
   fetchtaskonreminderlist,
   turnoffreminder,
+  turnoffrepeat,
   fetchtaskbydate,
   searchtasksbydate,
 } = require("../controllers/taskControllers.js");
@@ -26,5 +27,5 @@ router.put("/markascompleted/:_id", markascompleted);
 router.put("/markaspending/:_id", markaspending);
 router.put("/updatetask/:_id", updateTask);
 router.put("/turnoffreminder/:_id", turnoffreminder);
-
+router.put("/turnoffrepeat/:_id", turnoffrepeat);
 module.exports = router;

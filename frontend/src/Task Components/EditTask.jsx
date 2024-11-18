@@ -8,7 +8,7 @@ import "./EditTask.css";
 import Loader from "./Loader.jsx";
 
 function EditTask() {
-  const { getalltasks, BASEAPI, prioritylist, getallpriorities, alltasks } =
+  const { getalltasks, BASEAPI, prioritylist, getallpriorities } =
     useContext(TaskContext);
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
@@ -19,11 +19,15 @@ function EditTask() {
   const [reminder, setReminder] = useState("");
   const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
   const [repeatInterval, setRepeatInterval] = useState("");
-  const [repeat, setRepeat] = useState(null);
+  const [repeatDate, setRepeatDate] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [category, setCategory] = useState("Miscellaneous");
   const [addreminder, setAddreminder] = useState(false);
+  const [addrepeat, setAddrepeat] = useState(false);
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
+  const [controlforremoverepeatbutton, setcontrolforremoverepeatbutton] =
+    useState(false);
+
   const [now, setNow] = useState("");
   const textAreaRef = useRef(null);
   const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
@@ -32,21 +36,21 @@ function EditTask() {
   useEffect(() => {
     const now = new Date();
     if (repeatInterval === "Daily") {
-      const repeat = new Date();
-      setRepeat(repeat.setDate(now.getDate() + 1));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setDate(now.getDate() + 1));
     } else if (repeatInterval === "Weekly") {
-      const repeat = new Date();
-      setRepeat(repeat.setDate(now.getDate() + 7));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setDate(now.getDate() + 7));
     } else if (repeatInterval === "Monthly") {
-      const repeat = new Date();
-      setRepeat(repeat.setMonth(now.getMonth() + 1));
+      const repeatDate = new Date();
+      setRepeatDate(repeatDate.setMonth(now.getMonth() + 1));
     } else if (repeatInterval === "None") {
-      setRepeat(null);
+      setRepeatDate(null);
     }
   }, [repeatInterval]);
   useEffect(() => {
-    // getonetask();
-    filteronetaskbyid();
+    getonetask();
+    // filteronetaskbyid();
     getallpriorities();
   }, [_id]);
   const adjustHeight = () => {
@@ -60,50 +64,62 @@ function EditTask() {
     adjustHeight();
   }, [description, title]);
 
-  const filteronetaskbyid = () => {
+  const getonetask = async () => {
     setIsLoading(true);
-    const filteredtask = alltasks.find((task) => task._id === _id);
-    const now = new Date();
-    const duedate = new Date(filteredtask.scheduledFor);
-    const reminderdate = new Date(filteredtask.reminder);
-    setTitle(filteredtask.title);
-    setDescription(filteredtask.description);
-    setPriority(filteredtask.priority);
-    setScheduledFor(duedate);
-    setReminder(reminderdate);
-    setaddOnReminderlist(filteredtask.addOnReminderlist);
-    setcontrolforremovebutton(filteredtask.addOnReminderlist);
-    setAddreminder(false);
-    setNow(now);
-    setIsLoading(false);
+    try {
+      const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        const duedate = new Date(response.task.scheduledFor);
+        const reminderdate = new Date(response.task.reminder);
+        const repeatdate = new Date(response.task.repeatDate);
+        setTitle(response.task.title);
+        setDescription(response.task.description);
+        setPriority(response.task.priority);
+        setScheduledFor(duedate);
+        setReminder(reminderdate);
+        setaddOnReminderlist(response.task.addOnReminderlist);
+        setcontrolforremovebutton(response.task.addOnReminderlist);
+        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
+        setaddOnRepeatlist(response.task.addOnRepeatlist);
+        setRepeatDate(repeatdate);
+        setRepeatInterval(response.task.repeatInterval);
+        setAddreminder(false);
+        setAddrepeat(false);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("Error fetching task:", error);
+    }
   };
-  // const getonetask = async () => {
-  //   try {
-  //     const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
-  //       method: "GET",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-  //     const response = await data.json();
-  //     if (response.success) {
-  //       const now = new Date();
-  //       const duedate = new Date(response.task.scheduledFor);
-  //       const reminderdate = new Date(response.task.reminder);
-  //       setTitle(response.task.title);
-  //       setDescription(response.task.description);
-  //       setPriority(response.task.priority);
-  //       setScheduledFor(duedate);
-  //       setReminder(reminderdate);
-  //       setaddOnReminderlist(response.task.addOnReminderlist);
-  //       setcontrolforremovebutton(response.task.addOnReminderlist);
-  //       setAddreminder(false);
-  //       setNow(now);
-  //       console.log("Task fetched: ", response.task);
-  //     }
-  //   } catch (error) {
-  //     console.log("Error while fetching task", error);
-  //   }
+  // const filteronetaskbyid = () => {
+  //   setIsLoading(true);
+  //   const filteredtask = alltasks.find((task) => task._id === _id);
+  //   const now = new Date();
+  //   const duedate = new Date(filteredtask.scheduledFor);
+  //   const reminderdate = new Date(filteredtask.reminder);
+  //   const repeatdate = new Date(filteredtask.repeatDate);
+  //   setRepeatDate(repeatdate);
+  //   setTitle(filteredtask.title);
+  //   setDescription(filteredtask.description);
+  //   setPriority(filteredtask.priority);
+  //   setScheduledFor(duedate);
+  //   setReminder(reminderdate);
+  //   setaddOnReminderlist(filteredtask.addOnReminderlist);
+  //   setaddOnRepeatlist(filteredtask.addOnRepeatlist);
+  //   setRepeatDate(filteredtask.repeatDate);
+  //   setRepeatInterval(filteredtask.repeatInterval);
+  //   setcontrolforremovebutton(filteredtask.addOnReminderlist);
+  //   setcontrolforremoverepeatbutton(filteredtask.addOnRepeatlist);
+  //   setAddreminder(false);
+  //   setAddrepeat(false);
+  //   setNow(now);
+  //   setIsLoading(false);
   // };
   const edittask = async (e) => {
     e.preventDefault();
@@ -125,7 +141,7 @@ function EditTask() {
           category,
           addOnRepeatlist,
           repeatInterval,
-          repeatDate: repeat,
+          repeatDate,
         }),
       });
       console.log("Is this function working?", data);
@@ -155,6 +171,7 @@ function EditTask() {
         console.log("Reminder turnedoff", response.task);
         const duedate = new Date(response.task.scheduledFor);
         const reminderdate = new Date(response.task.reminder);
+        const repeatdate = new Date(response.task.repeatDate);
         setTitle(response.task.title);
         setDescription(response.task.description);
         setPriority(response.task.priority);
@@ -162,7 +179,46 @@ function EditTask() {
         setReminder(reminderdate);
         setaddOnReminderlist(response.task.addOnReminderlist);
         setcontrolforremovebutton(response.task.addOnReminderlist);
+        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
+        setaddOnRepeatlist(response.task.addOnRepeatlist);
+        setRepeatDate(repeatdate);
+        setRepeatInterval(response.task.repeatInterval);
         setAddreminder(false);
+        setAddrepeat(false);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log("Error while turning off reminder", error);
+    }
+  };
+  const turnoffrepeat = async (_id) => {
+    try {
+      setIsLoading(true);
+      const data = await fetch(`${BASEAPI}/api/task/turnoffrepeat/${_id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const response = await data.json();
+      if (response.success) {
+        console.log("Repeat turned-off", response.task);
+        const duedate = new Date(response.task.scheduledFor);
+        const reminderdate = new Date(response.task.reminder);
+        const repeatdate = new Date(response.task.repeatDate);
+        setTitle(response.task.title);
+        setDescription(response.task.description);
+        setPriority(response.task.priority);
+        setScheduledFor(duedate);
+        setReminder(reminderdate);
+        setaddOnReminderlist(response.task.addOnReminderlist);
+        setcontrolforremovebutton(response.task.addOnReminderlist);
+        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
+        setaddOnRepeatlist(response.task.addOnRepeatlist);
+        setRepeatDate(repeatdate);
+        setRepeatInterval(response.task.repeatInterval);
+        setAddreminder(false);
+        setAddrepeat(false);
         setIsLoading(false);
       }
     } catch (error) {
@@ -176,6 +232,7 @@ function EditTask() {
       {!isLoading && (
         <form onSubmit={edittask}>
           <h3>Edit task</h3>
+
           <label className="edit-label-date-time-picker">Task Title:</label>
           <textarea
             ref={textAreaRef}
@@ -208,6 +265,7 @@ function EditTask() {
 
           <label className="edit-label-date-time-picker">Priority:</label>
           <select
+            style={{ color: "white" }}
             className="select-priority"
             value={priority}
             onChange={(e) => {
@@ -215,12 +273,18 @@ function EditTask() {
             }}
             required
           >
-            <option value="">Select Priority Level</option>
+            <option style={{ color: "white" }} value="">
+              Select Priority Level
+            </option>
             {prioritylist.map(
               (level) =>
                 level &&
                 level.priorityname && (
-                  <option value={level.priorityname} key={level._id}>
+                  <option
+                    style={{ color: "white" }}
+                    value={level.priorityname}
+                    key={level._id}
+                  >
                     {level.priorityname}
                   </option>
                 )
@@ -268,7 +332,7 @@ function EditTask() {
           )}
           {controlforremovebutton === true && (
             <button
-              style={{ backgroundColor: "red" }}
+              style={{ backgroundColor: "green" }}
               type="button"
               className="add-reminder-button"
               onClick={() => {
@@ -286,7 +350,6 @@ function EditTask() {
                 placeholderText="Set Reminder date and time..."
                 minDate={new Date()}
                 style={{ color: "white" }}
-                // value={reminder}
                 selected={reminder}
                 onChange={(reminder) => {
                   setaddOnReminderlist(true);
@@ -304,7 +367,7 @@ function EditTask() {
                 className="date-picker"
                 placeholderText="Set Reminder date and time..."
                 minDate={new Date()}
-                style={{ color: "white" }}
+                style={{ color: "white", width: "88%" }}
                 selected={now}
                 value={reminder}
                 onChange={(reminder) => {
@@ -318,7 +381,93 @@ function EditTask() {
               />
             </div>
           )}
+          {addOnRepeatlist === false && addrepeat === false && (
+            <button
+              style={{ width: "88%" }}
+              type="button"
+              className="add-reminder-button"
+              onClick={() => {
+                setaddOnRepeatlist(true);
+                setAddrepeat(true);
+              }}
+            >
+              Repeat
+            </button>
+          )}
 
+          {addOnRepeatlist === true && addrepeat === true && (
+            <button
+              style={{ width: "88%" }}
+              type="button"
+              className="add-reminder-button"
+              onClick={() => {
+                setaddOnRepeatlist(false);
+                setAddrepeat(false);
+              }}
+            >
+              Donot Repeat
+            </button>
+          )}
+
+          {controlforremoverepeatbutton === true && (
+            <button
+              style={{ backgroundColor: "green", width: "88%" }}
+              type="button"
+              className="add-reminder-button"
+              onClick={() => {
+                turnoffrepeat(_id);
+              }}
+            >
+              Remove Repeat
+            </button>
+          )}
+
+          {controlforremoverepeatbutton && (
+            <p
+              style={{
+                border: "1px solid white",
+                margin: "12px 26px",
+                padding: "8px 25px",
+                width: "77%",
+                borderRadius: "6px",
+              }}
+            >
+              {new Date(repeatDate).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })}
+            </p>
+          )}
+          {addOnRepeatlist === true && (
+            <>
+              <label className="label-date-time-picker">Repeat Interval</label>
+              <select
+                style={{ color: "white", width: "88%" }}
+                className="select-priority"
+                value={repeatInterval}
+                onChange={(e) => {
+                  setRepeatInterval(e.target.value);
+                }}
+                required
+              >
+                <option value="">Select Repeat Interval</option>
+                {repeatIntervalList.map(
+                  (interval, index) =>
+                    interval && (
+                      <option value={interval} key={index}>
+                        {interval}
+                      </option>
+                    )
+                )}
+              </select>
+            </>
+          )}
+          {/* {addrepeat && addOnRepeatlist && (
+            <div className="date-picker-div">{repeatDate}</div>
+          )} */}
           <button type="submit">Update</button>
         </form>
       )}

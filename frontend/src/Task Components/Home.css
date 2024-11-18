@@ -1,0 +1,41 @@
+.menu-options {
+  margin: 80px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+}
+.menu-options-link {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 18px;
+  margin: 5px auto;
+  font-weight: 400;
+}
+.submenu-container {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: 5px auto;
+  justify-content: center;
+  align-items: center;
+}
+.submenu-container a {
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 18px;
+  margin: 5px auto;
+}

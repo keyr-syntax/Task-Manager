@@ -1,0 +1,44 @@
+.taskrepeat-container {
+  border: 1px solid white;
+  border-radius: 8px;
+  width: 40vw;
+  margin: 80px auto;
+}
+.taskrepeat-container h2 {
+  text-align: center;
+}
+.taskrepeat-container p {
+  border: 1px solid white;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: bold;
+}
+.taskrepeat-container p > span {
+  border-radius: 4px;
+  padding: 10px;
+  margin: 5px 5px;
+  font-weight: normal;
+}
+
+@media only screen and (max-width: 800px) {
+  .taskrepeat-container {
+    width: 90vw;
+    margin: 20px auto 100px auto;
+  }
+
+  .taskrepeat-container p {
+    margin: 5px 5px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .taskrepeat-container p > span {
+    font-size: 14px;
+  }
+  .seetask-button {
+    display: none;
+  }
+  .bottom-div {
+    display: none;
+  }
+}
