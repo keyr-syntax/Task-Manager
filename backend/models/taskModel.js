@@ -28,7 +28,6 @@ const taskSchema = new Schema(
       required: true,
       default: true,
     },
-
     scheduledFor: {
       type: Date,
       required: true,
@@ -44,6 +43,25 @@ const taskSchema = new Schema(
       default: false,
     },
     isNotified: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    repeatDate: {
+      type: Date,
+      required: false,
+    },
+    repeatInterval: {
+      type: String,
+      required: false,
+      default: "None",
+    },
+    addOnRepeatlist: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isRepeat: {
       type: Boolean,
       required: false,
       default: false,

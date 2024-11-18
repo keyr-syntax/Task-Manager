@@ -1,5 +1,44 @@
 const Task = require("../models/taskModel.js");
 
+// const createTask = async (req, res) => {
+//   try {
+//     const {
+//       title,
+//       description,
+//       scheduledFor,
+//       priority,
+//       category,
+//       reminder,
+//       addOnReminderlist,
+//     } = req.body;
+//     const newTask = await Task.create({
+//       title: title,
+//       description: description,
+//       scheduledFor: scheduledFor,
+//       priority: priority,
+//       category: category,
+//       reminder: reminder,
+//       addOnReminderlist: addOnReminderlist,
+//     });
+//     if (newTask) {
+//       return res.json({
+//         success: true,
+//         message: "Task added successfully",
+//         task: newTask,
+//       });
+//     } else {
+//       res.status(404);
+//       throw new Error("Task not found");
+//     }
+//   } catch (error) {
+//     console.log("Error while creating task", error);
+//     res.json({
+//       success: false,
+//       message: "Error while creating task",
+//       error: error,
+//     });
+//   }
+// };
 const createTask = async (req, res) => {
   try {
     const {
@@ -10,26 +49,29 @@ const createTask = async (req, res) => {
       category,
       reminder,
       addOnReminderlist,
+      repeatInterval,
+      addOnRepeatlist,
+      repeatDate,
     } = req.body;
+
     const newTask = await Task.create({
-      title: title,
-      description: description,
-      scheduledFor: scheduledFor,
-      priority: priority,
-      category: category,
-      reminder: reminder,
-      addOnReminderlist: addOnReminderlist,
+      title,
+      description,
+      scheduledFor,
+      priority,
+      category,
+      reminder,
+      addOnReminderlist,
+      repeatInterval,
+      addOnRepeatlist,
+      repeatDate,
     });
-    if (newTask) {
-      return res.json({
-        success: true,
-        message: "Task added successfully",
-        task: newTask,
-      });
-    } else {
-      res.status(404);
-      throw new Error("Task not found");
-    }
+
+    return res.json({
+      success: true,
+      message: "Task added successfully",
+      task: newTask,
+    });
   } catch (error) {
     console.log("Error while creating task", error);
     res.json({
@@ -50,20 +92,31 @@ const updateTask = async (req, res) => {
       category,
       reminder,
       addOnReminderlist,
+      repeatInterval,
+      addOnRepeatlist,
+      repeatDate,
     } = req.body;
-    const tasktobeUpdated = await Task.findById({
-      _id: req.params._id,
-    });
+
+    const tasktobeUpdated = await Task.findByIdAndUpdate(
+      { _id: req.params._id },
+      {
+        title,
+        description,
+        scheduledFor,
+        priority,
+        category,
+        reminder,
+        addOnReminderlist,
+        repeatInterval,
+        addOnRepeatlist,
+        repeatDate,
+      },
+      {
+        new: true,
+      }
+    );
 
     if (tasktobeUpdated) {
-      tasktobeUpdated.title = title;
-      tasktobeUpdated.description = description;
-      tasktobeUpdated.scheduledFor = scheduledFor;
-      tasktobeUpdated.priority = priority;
-      tasktobeUpdated.category = category;
-      tasktobeUpdated.reminder = reminder;
-      tasktobeUpdated.addOnReminderlist = addOnReminderlist;
-      await tasktobeUpdated.save();
       return res.json({
         success: true,
         message: "Task updated successfully",
@@ -71,7 +124,7 @@ const updateTask = async (req, res) => {
       });
     } else {
       res.status(404);
-      throw new Error("Task not found");
+      throw new Error("Task not updated");
     }
   } catch (error) {
     res.json({

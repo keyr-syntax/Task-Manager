@@ -20,7 +20,6 @@ function Dashboard() {
   return (
     <>
       <div className="navbar-container">
-        <Link to="/editor">Editor</Link>
         <Link to="/alltasks">All Tasks</Link>
         <Link to="/pendingtasks">Pending Task</Link>
         <Link to="/completedtasks">Completed Task</Link>

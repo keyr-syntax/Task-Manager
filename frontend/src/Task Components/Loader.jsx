@@ -2,16 +2,6 @@ import styled from "styled-components";
 
 function Loader() {
   return (
-    // <div
-    //   style={{
-    //     backgroundColor: "#151533",
-    //     margin: "300px auto",
-    //     fontSize: "30px",
-    //     textAlign: "center",
-    //   }}
-    // >
-    //   Loading...
-    // </div>
     <StyledWrapper>
       <div id="page">
         <div id="container">

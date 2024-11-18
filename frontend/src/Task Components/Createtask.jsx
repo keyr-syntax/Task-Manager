@@ -15,10 +15,27 @@ function Createtask() {
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState(false);
   const [reminder, setReminder] = useState("");
-  const textAreaRef = useRef(null);
+  const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
+  const [repeatInterval, setRepeatInterval] = useState("");
+  const [repeat, setRepeat] = useState(null);
 
-  // const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
+  const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
+  const textAreaRef = useRef(null);
+  useEffect(() => {
+    const now = new Date();
+    if (repeatInterval === "Daily") {
+      const repeat = new Date();
+      setRepeat(repeat.setDate(now.getDate() + 1));
+    } else if (repeatInterval === "Weekly") {
+      const repeat = new Date();
+      setRepeat(repeat.setDate(now.getDate() + 7));
+    } else if (repeatInterval === "Monthly") {
+      const repeat = new Date();
+      setRepeat(repeat.setMonth(now.getMonth() + 1));
+    } else if (repeatInterval === "None") {
+      setRepeat(null);
+    }
+  }, [repeatInterval]);
 
   useEffect(() => {
     getallpriorities();
@@ -35,7 +52,7 @@ function Createtask() {
   const handleCreateTask = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("addOnReminderlist on form submission", addOnReminderlist);
+    console.log("addOnRepeatlist on form submission", addOnRepeatlist);
     try {
       const data = await fetch(`${BASEAPI}/api/task/createtask`, {
         method: "POST",
@@ -49,6 +66,9 @@ function Createtask() {
           priority,
           addOnReminderlist,
           reminder,
+          addOnRepeatlist,
+          repeatInterval,
+          repeatDate: repeat,
         }),
       });
       const response = await data.json();
@@ -143,7 +163,6 @@ function Createtask() {
                 className="add-reminder-button"
                 onClick={() => {
                   setaddOnReminderlist(true);
-                  console.log(addOnReminderlist);
                 }}
               >
                 Add Reminder
@@ -154,7 +173,6 @@ function Createtask() {
                 className="add-reminder-button"
                 onClick={() => {
                   setaddOnReminderlist(false);
-                  console.log(addOnReminderlist);
                 }}
               >
                 Remove Reminder
@@ -174,6 +192,52 @@ function Createtask() {
                   required
                 />
               </div>
+            )}
+            {addOnRepeatlist === false ? (
+              <button
+                type="button"
+                className="add-reminder-button"
+                onClick={() => {
+                  setaddOnRepeatlist(true);
+                }}
+              >
+                Repeat
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="add-reminder-button"
+                onClick={() => {
+                  setaddOnRepeatlist(false);
+                }}
+              >
+                Donot Repeat
+              </button>
+            )}
+            {addOnRepeatlist && (
+              <>
+                <label className="label-date-time-picker">
+                  Repeat Interval
+                </label>
+                <select
+                  className="select-priority"
+                  value={repeatInterval}
+                  onChange={(e) => {
+                    setRepeatInterval(e.target.value);
+                  }}
+                  required
+                >
+                  <option value="">Select Repeat Interval</option>
+                  {repeatIntervalList.map(
+                    (interval, index) =>
+                      interval && (
+                        <option value={interval} key={index}>
+                          {interval}
+                        </option>
+                      )
+                  )}
+                </select>
+              </>
             )}
             <button type="submit">Submit</button>
           </form>

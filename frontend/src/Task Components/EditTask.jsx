@@ -17,15 +17,33 @@ function EditTask() {
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState("");
   const [reminder, setReminder] = useState("");
+  const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
+  const [repeatInterval, setRepeatInterval] = useState("");
+  const [repeat, setRepeat] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [category, setCategory] = useState("Miscellaneous");
   const [addreminder, setAddreminder] = useState(false);
   const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
   const [now, setNow] = useState("");
   const textAreaRef = useRef(null);
-
+  const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
   const { _id } = useParams();
   const navigate = useNavigate();
+  useEffect(() => {
+    const now = new Date();
+    if (repeatInterval === "Daily") {
+      const repeat = new Date();
+      setRepeat(repeat.setDate(now.getDate() + 1));
+    } else if (repeatInterval === "Weekly") {
+      const repeat = new Date();
+      setRepeat(repeat.setDate(now.getDate() + 7));
+    } else if (repeatInterval === "Monthly") {
+      const repeat = new Date();
+      setRepeat(repeat.setMonth(now.getMonth() + 1));
+    } else if (repeatInterval === "None") {
+      setRepeat(null);
+    }
+  }, [repeatInterval]);
   useEffect(() => {
     // getonetask();
     filteronetaskbyid();
@@ -105,6 +123,9 @@ function EditTask() {
           reminder,
           addOnReminderlist,
           category,
+          addOnRepeatlist,
+          repeatInterval,
+          repeatDate: repeat,
         }),
       });
       console.log("Is this function working?", data);

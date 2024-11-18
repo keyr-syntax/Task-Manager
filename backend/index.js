@@ -35,8 +35,6 @@ cron.schedule("* * * * *", async () => {
   const now = new Date();
   try {
     const taskstobereminded = await Task.find({});
-    // console.log("scheduler identified set of task", taskstobereminded);
-
     taskstobereminded.forEach(async (task) => {
       if (
         task.reminder &&
@@ -46,7 +44,15 @@ cron.schedule("* * * * *", async () => {
       ) {
         task.isNotified = true;
         const savereminder = await task.save();
-        // console.log("scheduler task for reminder", savereminder);
+      }
+      if (
+        task.repeat &&
+        task.repeat instanceof Date &&
+        task.addOnRepeatlist === true &&
+        now.getTime() >= task.repeat.getTime()
+      ) {
+        task.isRepeat = true;
+        const saveRepeat = await task.save();
       }
     });
   } catch (error) {
