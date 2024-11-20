@@ -1,5 +1,6 @@
 {
   "name": "frontend",
+  "homepage": "https://task-manager.keyrunasir.com",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,7 +9,6 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
-    
   },
   "dependencies": {
     "lucide-react": "^0.460.0",
