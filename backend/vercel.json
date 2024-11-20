@@ -11,5 +11,10 @@
       "src": "/(.*)",
       "dest": "/"
     }
-  ]
+  ],
+"rewrites": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }]
 }
