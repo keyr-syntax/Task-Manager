@@ -268,9 +268,10 @@ const turnoffrepeat = async (req, res) => {
 };
 const fetchtaskbydate = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
+    const date = req.params.date;
+
+    const today = new Date(date);
+    const tomorrow = new Date(date);
     tomorrow.setDate(today.getDate() + 1);
     const tasksfortoday = await Task.find({
       scheduledFor: {
@@ -281,7 +282,7 @@ const fetchtaskbydate = async (req, res) => {
     if (tasksfortoday) {
       return res.json({
         success: true,
-        message: "Tasks scheduled for today is fetched successfully",
+        message: `Tasks scheduled for ${date} are fetched successfully`,
         task: tasksfortoday,
       });
     } else {
