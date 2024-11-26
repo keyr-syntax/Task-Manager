@@ -156,8 +156,20 @@ function Createtask() {
                 minDate={new Date()}
                 style={{ color: "black" }}
                 selected={scheduledFor}
-                onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
-                showTimeSelect
+                onChange={(date) => {
+   
+      const utcDate = new Date(
+        Date.UTC(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          date.getHours(),
+          date.getMinutes(),
+          date.getSeconds()
+        )
+      );
+      setScheduledFor(utcDate); 
+    }} showTimeSelect
                 dateFormat="Pp"
               />
             </div>
