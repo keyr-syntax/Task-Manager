@@ -266,31 +266,39 @@ const turnoffrepeat = async (req, res) => {
     console.log("Error while turning off repeat", error);
   }
 };
+
 const fetchtaskbydate = async (req, res) => {
   try {
-    const date = req.params.date;
+    // Set up today's date range in UTC
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0); // Start of the day
+    const tomorrow = new Date(today);
+    tomorrow.setUTCDate(today.getUTCDate() + 1); // Start of the next day
 
-    const today = new Date(date);
-    const tomorrow = new Date(date);
-    tomorrow.setDate(today.getDate() + 1);
+    // Fetch tasks within the date range
     const tasksfortoday = await Task.find({
-      scheduledFor: {
-        $gte: today,
-        $lt: tomorrow,
-      },
+      scheduledFor: { $gte: today, $lt: tomorrow },
     });
-    if (tasksfortoday) {
+
+    if (tasksfortoday.length > 0) {
       return res.json({
         success: true,
-        message: `Tasks scheduled for ${date} are fetched successfully`,
-        task: tasksfortoday,
+        message: "Tasks scheduled for today fetched successfully",
+        task: tasksfortoday, // Changed `task` to `tasks` for clarity
       });
     } else {
-      res.status(404);
-      throw new Error("No tasks scheduled for today found");
+      return res.status(404).json({
+        success: false,
+        message: "No tasks scheduled for today found",
+      });
     }
   } catch (error) {
-    console.log("Error while fetching tasks by date", error);
+    console.error("Error while fetching tasks by date", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching tasks by date",
+      error: error.message,
+    });
   }
 };
 const searchtasksbydate = async (req, res) => {
