@@ -303,11 +303,11 @@ const turnoffrepeat = async (req, res) => {
 // };
 const fetchtaskbydate = async (req, res) => {
   try {
+    // Set up today's date range in UTC
     const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
-    tomorrow.setUTCDate(today.getUTCDate() + 1);
-
+    tomorrow.setDate(today.getDate() + 1);
     const tasksfortoday = await Task.find({
       scheduledFor: { $gte: today, $lt: tomorrow },
     });
@@ -315,22 +315,15 @@ const fetchtaskbydate = async (req, res) => {
     if (tasksfortoday.length > 0) {
       return res.json({
         success: true,
-        message: "Tasks scheduled for today fetched successfully",
+        message: "Tasks scheduled for today is fetched successfully",
         task: tasksfortoday,
       });
     } else {
-      return res.status(404).json({
-        success: false,
-        message: "No tasks scheduled for today",
-      });
+      res.status(404);
+      throw new Error("No tasks scheduled for today found");
     }
   } catch (error) {
-    console.error("Error while fetching tasks by date", error);
-    res.status(500).json({
-      success: false,
-      message: "Server error while fetching tasks by date",
-      error: error.message,
-    });
+    console.log("Error while fetching tasks by date", error);
   }
 };
 // to search by indexing, use the following function
