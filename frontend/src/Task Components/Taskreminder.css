@@ -1,5 +1,5 @@
 .taskreminder-container {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   width: 40vw;
   margin: 80px auto;
@@ -8,7 +8,7 @@
   text-align: center;
 }
 .taskreminder-container p {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 10px;
   margin: 5px 5px;

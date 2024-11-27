@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 // eslint-disable-next-line react-refresh/only-export-components
 export const TaskContext = createContext();
 
@@ -12,10 +13,12 @@ function Contextprovider({ children }) {
   const [reminderlist, setReminderlist] = useState([]);
   const [prioritylist, setPrioritylist] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // eslint-disable-next-line no-unused-vars
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
-  // const BASEAPI = "https://task-management-roan-eight.vercel.app";
-  const BASEAPI = "https://task-manager-backend-woad.vercel.app";
+  const BASEAPI = "https://backend-task-manager.keyrunasir.com";
+  // const BASEAPI = "https://task-manager-backend-woad.vercel.app";
   // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
   // const BASEAPI = "https://node.backend.keyrunasir.com";
   // const BASEAPI = "https://backend.task-manager.keyrunasir.com";
@@ -53,8 +56,12 @@ function Contextprovider({ children }) {
         },
       });
       const response = await data.json();
-      if (response.success) {
+      if (response.success === true) {
         setTasksfortoday(response.task);
+        setIsLoading(false);
+      }
+      if (response.success === false) {
+        toast.success(response.message);
         setIsLoading(false);
       }
     } catch (error) {
@@ -64,7 +71,6 @@ function Contextprovider({ children }) {
 
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
-      setIsLoading(true);
       try {
         const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
           method: "DELETE",
@@ -76,8 +82,8 @@ function Contextprovider({ children }) {
         if (response.success) {
           getalltasks();
           fetchtasksfortoday();
-          setIsLoading(false);
-          navigate("/alltasks");
+
+          // navigate("/alltasks");
         }
       } catch (error) {
         console.log("Error while deleting task", error);
@@ -225,7 +231,6 @@ function Contextprovider({ children }) {
   const deletepriority = async (_id) => {
     if (window.confirm("Confirm Delete action")) {
       try {
-        setIsLoading(true);
         const data = await fetch(
           `${BASEAPI}/api/priority/deletepriority/${_id}`,
           {
@@ -238,7 +243,7 @@ function Contextprovider({ children }) {
         const response = await data.json();
         if (response.success) {
           getallpriorities();
-          setIsLoading(false);
+
           console.log("Priority deleted successfully");
         }
       } catch (error) {
@@ -275,6 +280,34 @@ function Contextprovider({ children }) {
         }}
       >
         {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            success: {
+              style: {
+                background: "white",
+                position: "top-right",
+                color: "green",
+                iconTheme: {
+                  primary: "white",
+                  secondary: "green",
+                },
+              },
+            },
+            error: {
+              style: {
+                duration: 4000,
+                background: "white",
+                position: "top-right",
+                color: "red",
+                iconTheme: {
+                  primary: "white",
+                  secondary: "red",
+                },
+              },
+            },
+          }}
+        />
       </TaskContext.Provider>
     </>
   );

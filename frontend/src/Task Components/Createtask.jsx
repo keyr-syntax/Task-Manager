@@ -1,12 +1,14 @@
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
 import { useState, useContext, useEffect, useRef } from "react";
-import "./Createtask.css";
 import { TaskContext } from "./Contextprovider.jsx";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader.jsx";
+import toast from "react-hot-toast";
 
 function Createtask() {
-  const { BASEAPI, getalltasks, prioritylist, getallpriorities } =
+  const { BASEAPI, getalltasks, getallpriorities, prioritylist } =
     useContext(TaskContext);
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
@@ -18,20 +20,47 @@ function Createtask() {
   const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
   const [repeatInterval, setRepeatInterval] = useState("");
   const [repeatDate, setRepeatDate] = useState(null);
-
   const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
+
   const textAreaRef = useRef(null);
   useEffect(() => {
     const now = new Date();
     if (repeatInterval === "Daily") {
-      const repeatDate = new Date();
-      setRepeatDate(repeatDate.setDate(now.getDate() + 1));
+      const repeatDate = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() + 1,
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        )
+      );
+      setRepeatDate(repeatDate);
     } else if (repeatInterval === "Weekly") {
-      const repeatDate = new Date();
-      setRepeatDate(repeatDate.setDate(now.getDate() + 7));
+      const repeatDate = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() + 7,
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        )
+      );
+      setRepeatDate(repeatDate);
     } else if (repeatInterval === "Monthly") {
-      const repeatDate = new Date();
-      setRepeatDate(repeatDate.setMonth(now.getMonth() + 1));
+      const repeatDate = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth() + 1,
+          now.getUTCDate(),
+          now.getUTCHours(),
+          now.getUTCMinutes(),
+          now.getUTCSeconds()
+        )
+      );
+      setRepeatDate(repeatDate);
     } else if (repeatInterval === "None") {
       setRepeatDate(null);
     }
@@ -51,8 +80,7 @@ function Createtask() {
   }, [description, title]);
   const handleCreateTask = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    console.log("addOnRepeatlist on form submission", addOnRepeatlist);
+    console.log("scheduledFor:", scheduledFor);
     try {
       const data = await fetch(`${BASEAPI}/api/task/createtask`, {
         method: "POST",
@@ -83,169 +111,164 @@ function Createtask() {
         setRepeatInterval("");
         setRepeatDate(null);
         getalltasks();
-        setIsLoading(false);
+        toast.success("Task added successfully");
         console.log("Task added:", response.task);
       }
     } catch (error) {
       console.log("Error while creating new task", error);
     }
   };
-
   return (
     <>
-      {isLoading && <Loader />}
+      {isLoading === true && <Loader />}
       {!isLoading && (
-        <div>
-          <form onSubmit={handleCreateTask}>
-            <h3>Add new task</h3>
-            <label className="label-date-time-picker">Task Title:</label>
-            <textarea
-              ref={textAreaRef}
-              value={title}
-              onChange={(e) => {
-                setTitle(e.target.value);
-                adjustHeight();
-              }}
-              // className="input-title"
-              className="input-description"
-              type="text"
-              placeholder="Title..."
-              required
-            />
-            <label className="label-date-time-picker">Task Description:</label>
-            <textarea
-              ref={textAreaRef}
-              value={description}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                adjustHeight();
-              }}
-              className="input-description"
-              type="text"
-              placeholder="write your task description..."
-              required
-            />
-
-            <label className="label-date-time-picker">Priority:</label>
-            <select
-              className="select-priority"
-              value={priority}
-              onChange={(e) => {
-                setPriority(e.target.value);
-              }}
-              required
-            >
-              <option value="">Select Priority Level</option>
-              {prioritylist.map(
-                (level) =>
-                  level &&
-                  level.priorityname && (
-                    <option value={level.priorityname} key={level._id}>
-                      {level.priorityname}
-                    </option>
-                  )
-              )}
-            </select>
-            <label className="label-date-time-picker">
-              Select Due Date and Time:
-            </label>
-            <div className="date-picker-div">
-              <DatePicker
-                className="date-picker"
-                placeholderText="Select Due date and time..."
-                minDate={new Date()}
-                style={{ color: "black" }}
-                selected={scheduledFor}
-                onChange={(scheduledFor) => setScheduledFor(scheduledFor)}
-                showTimeSelect
-                dateFormat="Pp"
+        <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
+          <Form
+            style={{
+              backgroundColor: "#151533",
+              border: "1px solid rgb(255,255,255,0.2)",
+              padding: "10px 20px",
+            }}
+            onSubmit={handleCreateTask}
+            className="mb-5"
+          >
+            <h4 className="text-center text-light">Add new task</h4>
+            <Form.Group className="mb-3" controlId="title">
+              <Form.Label className="text-light">Task Title</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Title of task"
+                name="title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                required
               />
-            </div>
-            {addOnReminderlist === false ? (
-              <button
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnReminderlist(true);
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="description">
+              <Form.Label className="text-light">Task Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                ref={textAreaRef}
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  adjustHeight();
                 }}
-              >
-                Add Reminder
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnReminderlist(false);
+                rows={2}
+                placeholder="Task description"
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="priority">
+              <Form.Label className="text-light">Task Category</Form.Label>
+              <Form.Select
+                value={priority}
+                onChange={(e) => {
+                  setPriority(e.target.value);
                 }}
+                aria-label="task priority"
               >
-                Remove Reminder
-              </button>
-            )}
-            {addOnReminderlist && (
-              <div className="date-picker-div">
-                <DatePicker
-                  className="date-picker"
-                  placeholderText="Set Reminder date and time..."
-                  minDate={new Date()}
-                  style={{ color: "white" }}
-                  selected={reminder}
-                  onChange={(reminder) => setReminder(reminder)}
-                  showTimeSelect
-                  dateFormat="Pp"
-                  required
-                />
-              </div>
-            )}
-            {addOnRepeatlist === false ? (
-              <button
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnRepeatlist(true);
+                <option value="">Select Task Category</option>
+                {prioritylist.map(
+                  (level) =>
+                    level &&
+                    level.priorityname && (
+                      <option value={level.priorityname} key={level._id}>
+                        {level.priorityname}
+                      </option>
+                    )
+                )}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="due date and time">
+              <Form.Label className="text-light">Due Date and Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                placeholder="Title of task"
+                name="datetime-local"
+                min={new Date().toISOString().slice(0, 16)}
+                value={
+                  scheduledFor ? scheduledFor.toISOString().slice(0, 16) : ""
+                }
+                onChange={(event) => {
+                  const localDateString = event.target.value;
+                  const localDate = new Date(localDateString);
+                  const utcDate = new Date(
+                    Date.UTC(
+                      localDate.getFullYear(),
+                      localDate.getMonth(),
+                      localDate.getDate(),
+                      localDate.getHours(),
+                      localDate.getMinutes(),
+                      localDate.getSeconds()
+                    )
+                  );
+                  setScheduledFor(utcDate);
                 }}
-              >
-                Repeat
-              </button>
-            ) : (
-              <button
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnRepeatlist(false);
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="add reminder">
+              <Form.Label className="text-light">Add Reminder</Form.Label>
+
+              <Form.Control
+                type="datetime-local"
+                placeholder="Add reminder"
+                name="datetime-local"
+                min={new Date().toISOString().slice(0, 16)}
+                value={reminder ? reminder.toISOString().slice(0, 16) : ""}
+                selected={reminder}
+                onChange={(event) => {
+                  const localDateString = event.target.value;
+                  const localDate = new Date(localDateString);
+                  const utcDate = new Date(
+                    Date.UTC(
+                      localDate.getFullYear(),
+                      localDate.getMonth(),
+                      localDate.getDate(),
+                      localDate.getHours(),
+                      localDate.getMinutes(),
+                      localDate.getSeconds()
+                    )
+                  );
+                  setReminder(utcDate);
                 }}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="repeat task">
+              <Form.Label className="text-light">Repeat Task</Form.Label>
+              <Form.Select
+                value={repeatInterval}
+                onChange={(e) => {
+                  setRepeatInterval(e.target.value);
+                }}
+                aria-label="repeat task"
               >
-                Donot Repeat
-              </button>
-            )}
-            {addOnRepeatlist && (
-              <>
-                <label className="label-date-time-picker">
-                  Repeat Interval
-                </label>
-                <select
-                  className="select-priority"
-                  value={repeatInterval}
-                  onChange={(e) => {
-                    setRepeatInterval(e.target.value);
-                  }}
-                  required
-                >
-                  <option value="">Select Repeat Interval</option>
-                  {repeatIntervalList.map(
-                    (interval, index) =>
-                      interval && (
-                        <option value={interval} key={index}>
-                          {interval}
-                        </option>
-                      )
-                  )}
-                </select>
-              </>
-            )}
-            <button type="submit">Submit</button>
-          </form>
-        </div>
+                <option value="">Select Repeat Interval</option>
+                {repeatIntervalList.map(
+                  (interval, index) =>
+                    interval && (
+                      <option value={interval} key={index}>
+                        {interval}
+                      </option>
+                    )
+                )}
+              </Form.Select>
+            </Form.Group>
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+              }}
+              type="submit"
+              className="w-100"
+            >
+              Create Task
+            </Button>
+          </Form>
+        </Container>
       )}
     </>
   );

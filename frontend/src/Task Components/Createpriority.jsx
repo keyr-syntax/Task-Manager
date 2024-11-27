@@ -2,14 +2,14 @@ import { useState, useContext } from "react";
 import "./Createpriority.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import Loader from "./Loader.jsx";
+import toast from "react-hot-toast";
 function Createpriority() {
-  const { BASEAPI, getallpriorities, isLoading, setIsLoading } =
-    useContext(TaskContext);
+  const { BASEAPI, getallpriorities, isLoading } = useContext(TaskContext);
   const [priorityname, setPriorityname] = useState("");
 
   const handlecreatepriority = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+
     try {
       const data = await fetch(`${BASEAPI}/api/priority/createpriority`, {
         method: "POST",
@@ -24,7 +24,7 @@ function Createpriority() {
         console.log("priority created", response.priority);
         getallpriorities();
         setPriorityname("");
-        setIsLoading(false);
+        toast.success("Category added successfully");
       }
     } catch (error) {
       console.log("Error occurred while creating priority", error);
@@ -37,9 +37,9 @@ function Createpriority() {
       {!isLoading && (
         <div>
           <form className="form-createpriority" onSubmit={handlecreatepriority}>
-            <h3>Create Priority</h3>
+            <h3>Create Category</h3>
             <label className="label-date-time-picker-createpriority">
-              Priority name:
+              Category name:
             </label>
             <input
               value={priorityname}

@@ -17,6 +17,7 @@ function Filterbydate() {
   } = useContext(TaskContext);
   const [selecteddate, setSelecteddate] = useState(null);
   const [tasksfilteredbydate, setTasksfilteredbydate] = useState([]);
+
   const { date } = useParams();
 
   // useEffect(() => {
@@ -57,25 +58,27 @@ function Filterbydate() {
     setIsLoading(false);
   }, []);
 
-  const filtertasksbydate = () => {
+  const filtertasksbydate = async () => {
     setIsLoading(true);
     const createDateObject = new Date(date);
-    console.log("date converted to date object", createDateObject);
+
     if (isNaN(createDateObject)) {
-      console.log("Invalid date provided");
       return;
     }
     const stringdate = createDateObject.toISOString().split("T")[0];
-    console.log("date in string format: ", stringdate);
-    const tasksbydate = alltasks.filter((task) => {
+    const tasksbydate = await alltasks.filter((task) => {
       const convertdatetostring = new Date(task.scheduledFor)
         .toISOString()
         .split("T")[0];
       return convertdatetostring === stringdate;
     });
-    setTasksfilteredbydate(tasksbydate);
+
+    const tasksFilteredBydateAndPending = tasksbydate.filter(
+      (task) => task.isPending === true
+    );
+
+    setTasksfilteredbydate(tasksFilteredBydateAndPending);
     setIsLoading(false);
-    console.log("Tasks fetched by date: ", tasksbydate);
   };
 
   return (
@@ -116,9 +119,19 @@ function Filterbydate() {
               minDate={new Date()}
               value={selecteddate}
               selected={selecteddate}
-              onChange={(selecteddate) => {
-                setSelecteddate(selecteddate);
-                console.log(selecteddate);
+              onChange={(date) => {
+                const utcDate = new Date(
+                  Date.UTC(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate(),
+                    date.getHours(),
+                    date.getMinutes(),
+                    date.getSeconds()
+                  )
+                );
+
+                setSelecteddate(utcDate);
               }}
               showTimeSelect
               dateFormat="yyyy-MM-dd"
@@ -137,7 +150,7 @@ function Filterbydate() {
                 float: "right",
                 backgroundColor: "#151533",
                 cursor: "pointer",
-                right: "5%",
+                right: "15%",
                 position: "absolute",
                 fontSize: "17px",
               }}
@@ -154,70 +167,21 @@ function Filterbydate() {
                     textAlign: "center",
                     border: "1px solid white",
                     borderRadius: "4px",
-                    width: "90%",
+                    width: "84%",
                     padding: "5px 10px",
                     fontSize: "18px",
                   }}
                 >
                   {tasksfilteredbydate.length == 1 ? (
                     <>
-                      You have {tasksfilteredbydate.length} task for ${date}
+                      You have {tasksfilteredbydate.length} task for {date}
                     </>
                   ) : (
                     <>
-                      You have {tasksfilteredbydate.length} tasks for ${date}
+                      You have {tasksfilteredbydate.length} tasks for {date}
                     </>
                   )}
                 </p>
-
-                <table>
-                  <thead>
-                    <tr className="table-head">
-                      <th>Task</th>
-                      <th>Due Date</th>
-                      <th>Status</th>
-                      <th>Priority</th>
-                      <th>See Task</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasksfilteredbydate &&
-                      tasksfilteredbydate.map(
-                        (task) =>
-                          task &&
-                          task.isPending === true && (
-                            <tr key={task._id}>
-                              <td>{task.title}</td>
-                              <td>
-                                {new Date(task.scheduledFor).toLocaleString(
-                                  "en-US",
-                                  {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                  }
-                                )}
-                              </td>
-                              {task.isPending && (
-                                <td style={{ color: "red" }}>Pending</td>
-                              )}
-                              <td>{task.priority}</td>
-
-                              <td className="delete-tr">
-                                <Link
-                                  to={`/seetask/${task._id}`}
-                                  className="delete-link"
-                                >
-                                  Open
-                                </Link>
-                              </td>
-                            </tr>
-                          )
-                      )}
-                  </tbody>
-                </table>
               </>
             ) : (
               <div className="table-heading">No tasks</div>
@@ -281,7 +245,7 @@ function Filterbydate() {
                   )}
                 </p>
                 <p>
-                  Priority:
+                  Category:
                   <span>{task.priority}</span>
                 </p>
                 <p>

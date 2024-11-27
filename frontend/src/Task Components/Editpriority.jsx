@@ -3,6 +3,7 @@ import "./Editpriority.css";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "./Loader.jsx";
+import toast from "react-hot-toast";
 
 function Editpriority() {
   const { _id } = useParams();
@@ -49,7 +50,7 @@ function Editpriority() {
   // };
   const handleupdatepriority = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+
     console.log("handleupdatepriority is working");
     try {
       const data = await fetch(
@@ -66,7 +67,7 @@ function Editpriority() {
       if (response.success) {
         console.log("priority updated", response.priority);
         getallpriorities();
-        setIsLoading(false);
+        toast.success("Task updated successfully");
         navigate("/prioritylist");
       }
     } catch (error) {
@@ -80,9 +81,9 @@ function Editpriority() {
       {!isLoading && (
         <div>
           <form onSubmit={handleupdatepriority} className="form-editpriority">
-            <h3>Update Priority</h3>
+            <h3>Update Category</h3>
             <label className="label-date-time-picker-editpriority">
-              Priority name:
+              Category name:
             </label>
             <input
               value={priorityname}

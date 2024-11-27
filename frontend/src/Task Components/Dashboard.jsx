@@ -1,101 +1,182 @@
 import { Link, Outlet } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { X } from "lucide-react";
-
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
+import Offcanvas from "react-bootstrap/Offcanvas";
 import "./Dashboard.css";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 function Dashboard() {
-  const [menuopen, setMenuopen] = useState(false);
-  const menuref = useRef(null);
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (menuref.current && !menuref.current.contains(event.target)) {
-        setMenuopen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const [showOffcanvas, setShowOffcanvas] = useState(false);
+  const handleClose = () => setShowOffcanvas(false);
+  const handleShow = () => setShowOffcanvas(true);
 
   return (
     <>
-      <div className="navbar-container">
-        <Link to="/alltasks">All Tasks</Link>
-        <Link to="/pendingtasks">Pending Task</Link>
-        <Link to="/completedtasks">Completed Task</Link>
-        <Link to="/createtask">New Task</Link>
-        <Link to="/filterbypriority/:level">Filter by Priority </Link>
-        <Link to="/createpriority">Create priority</Link>
-        <Link to="/prioritylist">Priority List</Link>
-        <Link to="/reminder">Reminder</Link>
-        <Link to="/repeat">Repeat</Link>
-        <Link to="/tasksfortoday">Todays task</Link>
-        <Link to="/filterbydate/:date">Find tasks by date</Link>
-      </div>
-      <div className="mobile-navbar-container">
-        <Link to="/">Home</Link>
-
-        {!menuopen ? (
-          <Menu
-            onClick={() => {
-              setMenuopen(!menuopen);
-            }}
-            size={35}
-            style={{
-              float: "right",
-              margin: "10px 20px 5px auto",
-              right: 0,
-              position: "absolute",
-            }}
-            className="menu-icon"
+      <Navbar
+        fixed="top"
+        style={{
+          backgroundColor: "#151533",
+          color: "white",
+          border: "1px solid rgb(255,255,255,0.2)",
+        }}
+        expand="md"
+        className=" mb-3"
+      >
+        <Container fluid>
+          <Navbar.Brand className="fs-4 text-light" as={Link} to="/">
+            Afro-Syntax
+          </Navbar.Brand>
+          <Navbar.Toggle
+            className="toggler"
+            aria-controls="offcanvasNavbar-expand-md"
+            onClick={handleShow}
           />
-        ) : (
-          <X
-            onClick={() => {
-              setMenuopen(!menuopen);
-            }}
-            size={35}
+          <Navbar.Offcanvas
             style={{
-              float: "right",
-              margin: "10px 20px 5px auto",
-              right: 0,
-              position: "absolute",
+              backgroundColor: "#151533",
+              color: "white",
+              width: "250px",
             }}
-          />
-        )}
+            id="offcanvasNavbar-expand-md"
+            aria-labelledby="offcanvasNavbarLabel-expand-md"
+            placement="start"
+            show={showOffcanvas}
+            onHide={handleClose}
+          >
+            <Offcanvas.Header closeButton>
+              <Offcanvas.Title
+                style={{ color: "white" }}
+                id="offcanvasNavbarLabel-expand-md"
+              >
+                Afro-Syntax
+              </Offcanvas.Title>
+            </Offcanvas.Header>
+            <Offcanvas.Body>
+              <Nav className="justify-content-evenly flex-grow-1 pe-3">
+                <NavDropdown
+                  className="dropdown"
+                  title="Task"
+                  id="offcanvasNavbarDropdown-expand-md"
+                  drop="down-centered"
+                >
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/createtask"
+                    onClick={handleClose}
+                  >
+                    Add New Task
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/alltasks"
+                    onClick={handleClose}
+                  >
+                    All Tasks
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/pendingtasks"
+                    onClick={handleClose}
+                  >
+                    Pending Tasks
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/completedtasks"
+                    onClick={handleClose}
+                  >
+                    Completed Tasks
+                  </NavDropdown.Item>
 
-        {/* <Link className="mobile-navbar-container-link" to="/alltasks">
-          All{" "}
-        </Link>
-        <Link className="mobile-navbar-container-link" to="/pendingtasks">
-          Pending{" "}
-        </Link>
-        <Link className="mobile-navbar-container-link" to="/completedtasks">
-          Completed{" "}
-        </Link>
-        <Link className="mobile-navbar-container-link" to="/createtask">
-          New{" "}
-        </Link>
-        <Link className="mobile-navbar-container-link" to="/filterbypriority">
-          Priority{" "}
-        </Link> */}
-      </div>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/reminder"
+                    onClick={handleClose}
+                    style={{ wordWrap: "nowrap" }}
+                  >
+                    Tasks on Reminder List
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/repeat"
+                    onClick={handleClose}
+                    style={{ wordWrap: "nowrap" }}
+                  >
+                    Tasks on Repeat List
+                  </NavDropdown.Item>
 
-      {menuopen && (
-        <div ref={menuref} className="mobile-side-navbar">
-          <Link to="/alltasks">All tasks</Link>
-          <Link to="/pendingtasks">Pending tasks</Link>
-          <Link to="/completedtasks">Completed tasks </Link>
-          <Link to="/createtask">Add new task</Link>
-          <Link to="/filterbypriority/:level">Filter by Priority </Link>
-          <Link to="/createpriority">Create priority</Link>
-          <Link to="/prioritylist">Priority List</Link>
-          <Link to="/reminder">Reminder</Link>
-          <Link to="/repeat">Repeat</Link>
-          <Link to="/tasksfortoday">Todays task</Link>
-          <Link to="/filterbydate/:date">Find tasks by date</Link>
-        </div>
-      )}
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/tasksfortoday"
+                    onClick={handleClose}
+                  >
+                    Today&apos;'s Tasks
+                  </NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown
+                  className="dropdown"
+                  title="Filter Tasks"
+                  id="offcanvasNavbarDropdown-expand-md"
+                  drop="down-centered"
+                >
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/filterbypriority/:level"
+                    onClick={handleClose}
+                  >
+                    Filter by Category
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/filterbydate/:date"
+                    onClick={handleClose}
+                  >
+                    Filter by Date
+                  </NavDropdown.Item>
+                </NavDropdown>
+                <NavDropdown
+                  className="dropdown"
+                  title="Category"
+                  id="offcanvasNavbarDropdown-expand-md"
+                  drop="down-centered"
+                >
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/createpriority"
+                    onClick={handleClose}
+                  >
+                    Create Category
+                  </NavDropdown.Item>
+                  <NavDropdown.Item
+                    as={Link}
+                    to="/prioritylist"
+                    onClick={handleClose}
+                  >
+                    Category List
+                  </NavDropdown.Item>
+                </NavDropdown>
+                <Nav.Link
+                  style={{ fontSize: "18px", color: "white" }}
+                  as={Link}
+                  to="/tasksfortoday"
+                  onClick={handleClose}
+                >
+                  Today&apos;s Tasks
+                </Nav.Link>
+                <Nav.Link
+                  style={{ fontSize: "18px", color: "white" }}
+                  as={Link}
+                  to="/createtask"
+                  onClick={handleClose}
+                >
+                  New Task
+                </Nav.Link>
+              </Nav>
+            </Offcanvas.Body>
+          </Navbar.Offcanvas>
+        </Container>
+      </Navbar>
       <Outlet />
     </>
   );

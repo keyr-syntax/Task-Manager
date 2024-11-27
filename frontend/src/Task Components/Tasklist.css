@@ -1,74 +1,22 @@
-.table-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  border-collapse: collapse;
-}
-.table-heading {
-  margin: 70px auto 5px auto;
-}
-table {
-  width: 85%;
-  margin: 15px auto;
-  border: 1px solid white;
-}
-
-th {
-  text-align: center;
-}
-
-td {
-  text-align: center;
-  border: 1px solid white;
-}
-.delete-link {
-  text-decoration: none;
-  color: white;
-  cursor: pointer;
-}
-.delete-tr {
-  background-color: green;
-  border-radius: 4px;
-}
-.table-head th {
-  background-color: #151533;
-  color: white;
-  font-weight: 500;
-  font-size: 20px;
-  border: 1px solid white;
-}
-@media only screen and (max-width: 800px) {
-  .table-container {
-    display: none;
-  }
-}
-@media only screen and (min-width: 801px) {
-  .mobile-container {
-    display: none;
-  }
-  .counter {
-    display: none;
-  }
-}
-.mobile-container {
-  border: 1px solid white;
+.mobile-container-div {
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   width: 90vw;
   margin: 40px auto;
 }
 
-.mobile-container h2 {
+.mobile-container-div h2 {
   text-align: center;
 }
-.mobile-container p {
-  border: 1px solid white;
+.mobile-container-div p {
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 10px;
   margin: 5px 5px;
   font-weight: bold;
   font-size: 14px;
 }
-.mobile-container p > span {
+.mobile-container-div p > span {
   border-radius: 4px;
   padding: 10px;
   margin: 5px 5px;
@@ -86,7 +34,7 @@ td {
   justify-content: space-around;
 }
 .mobile-open-link-container p {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 10px;
   margin: 5px auto;
@@ -106,4 +54,23 @@ td {
   border-radius: 4px;
   display: block;
   text-wrap: nowrap;
+}
+.tasks-for-today {
+  width: 88vw;
+  margin: 65px auto 10px auto;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 5px;
+}
+@media only screen and (max-width: 800px) {
+}
+@media only screen and (min-width: 801px) {
+  .mobile-container-div {
+    width: 40vw;
+  }
+  .tasks-for-today {
+    width: 40%;
+    margin: 65px auto 10px auto;
+  }
 }

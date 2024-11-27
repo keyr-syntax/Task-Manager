@@ -12,16 +12,12 @@ function Seetask() {
     deletetask,
     markaspending,
     turnoffreminder,
-    // alltasks,
-    // getalltasks,
     isLoading,
     setIsLoading,
   } = useContext(TaskContext);
   const { _id } = useParams();
   useEffect(() => {
     getonetask();
-    // getalltasks();
-    // filteronetaskbyid();
   }, [_id]);
 
   const getonetask = async () => {
@@ -44,47 +40,51 @@ function Seetask() {
     }
   };
 
-  // const filteronetaskbyid = () => {
-  //   setIsLoading(true);
-  //   const filteredtask = alltasks.find((task) => task._id === _id);
-  //   setTask(filteredtask);
-  //   setIsLoading(false);
-  // };
-
   return (
     <>
-      {isLoading && <Loader />}
-      {!isLoading && task ? (
-        <>
-          <div className="seetask-container">
-            <h2>Task</h2>
+      {isLoading === true && <Loader />}
+
+      {isLoading === false && task && (
+        <div className="seetask-container">
+          <h2>Task</h2>
+          <p className="seetask-container-paragraph">
+            Task: <span>{task.title}</span>{" "}
+          </p>
+          <p className="seetask-container-paragraph">
+            Description:{" "}
+            <span dangerouslySetInnerHTML={{ __html: task.description }}></span>
+          </p>
+          <p className="seetask-container-paragraph">
+            Status:{" "}
+            {task.isPending ? (
+              <span style={{ color: "red" }}>Pending</span>
+            ) : (
+              <span style={{ color: "green", fontWeight: "bold" }}>
+                Completed
+              </span>
+            )}
+          </p>
+          <p className="seetask-container-paragraph">
+            Category:
+            <span>{task.priority}</span>
+          </p>
+          <p className="seetask-container-paragraph">
+            Due date:{" "}
+            <span>
+              {new Date(task.scheduledFor).toLocaleString("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })}
+            </span>
+          </p>
+          {task.addOnReminderlist === true && (
             <p className="seetask-container-paragraph">
-              Task: <span>{task.title}</span>{" "}
-            </p>
-            <p className="seetask-container-paragraph">
-              Description:{" "}
-              <span
-                dangerouslySetInnerHTML={{ __html: task.description }}
-              ></span>
-            </p>
-            <p className="seetask-container-paragraph">
-              Status:{" "}
-              {task.isPending ? (
-                <span style={{ color: "red" }}>Pending</span>
-              ) : (
-                <span style={{ color: "green", fontWeight: "bold" }}>
-                  Completed
-                </span>
-              )}
-            </p>
-            <p className="seetask-container-paragraph">
-              Priority:
-              <span>{task.priority}</span>
-            </p>
-            <p className="seetask-container-paragraph">
-              Due date:{" "}
+              Reminder set for:{" "}
               <span>
-                {new Date(task.scheduledFor).toLocaleString("en-US", {
+                {new Date(task.reminder).toLocaleString("en-US", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
@@ -93,183 +93,80 @@ function Seetask() {
                 })}
               </span>
             </p>
-            {task.addOnReminderlist === true && (
-              <p className="seetask-container-paragraph">
-                Reminder set for:{" "}
-                <span>
-                  {new Date(task.reminder).toLocaleString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                  })}
-                </span>
-              </p>
-            )}
-            <div className="mobile-open-link-container">
-              <p className="seetask-container-paragraph">
-                <Link
-                  to={`/edittask/${task._id}`}
-                  className="task-management-button"
-                >
-                  Edit
-                </Link>
-              </p>
-              <p className="seetask-container-paragraph">
-                <Link
-                  onClick={() => {
-                    deletetask(task._id);
-                  }}
-                  className="task-management-button"
-                >
-                  Delete
-                </Link>
-              </p>
-            </div>
-            <div className="mobile-open-link-container">
-              {task.addOnReminderlist === true && (
-                <p className="seetask-container-paragraph">
-                  <Link
-                    style={{ fontSize: "12px" }}
-                    onClick={() => {
-                      turnoffreminder(task._id);
-                    }}
-                    className="task-management-button"
-                  >
-                    Turnoff Reminder
-                  </Link>
-                </p>
-              )}
-              {task.addOnReminderlist === false && (
-                <p className="seetask-container-paragraph">
-                  <Link
-                    to={`/edittask/${task._id}`}
-                    onClick={() => {
-                      turnoffreminder(task._id);
-                    }}
-                    className="task-management-button"
-                  >
-                    Add Reminder
-                  </Link>
-                </p>
-              )}
-              {task.isPending === true && (
-                <p className="seetask-container-paragraph">
-                  <Link
-                    onClick={() => {
-                      markascompleted(task._id);
-                    }}
-                    className="task-management-button"
-                  >
-                    Completed
-                  </Link>
-                </p>
-              )}
-              {task.isPending === false && (
-                <p className="seetask-container-paragraph">
-                  <Link
-                    onClick={() => {
-                      markaspending(task._id);
-                    }}
-                    className="task-management-button"
-                  >
-                    Pending
-                  </Link>
-                </p>
-              )}
-            </div>
-            <div className="bottom-div"></div>
-          </div>
-
-          {/* <div style={{ position: "fixed", bottom: 0, left: "3%" }}>
-            <div className="mobile-task-button">
-              <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
+          )}
+          <div className="mobile-open-link-container">
+            <p className="seetask-container-paragraph">
+              <Link
+                to={`/edittask/${task._id}`}
+                className="task-management-button"
+              >
                 Edit
               </Link>
-              {task.addOnReminderlist === true && (
-                <button
-                  onClick={() => {
-                    turnoffreminder(task._id);
-                  }}
-                  className="remove"
-                >
-                  Remove Reminder
-                </button>
-              )}
-              {task.addOnReminderlist === false && (
-                <Link to={`/edittask/${task._id}`} className="mobile-task-edit">
-                  Add Reminder
-                </Link>
-              )}
-
-              <button
+            </p>
+            <p className="seetask-container-paragraph">
+              <Link
                 onClick={() => {
                   deletetask(task._id);
                 }}
-                className="delete"
+                className="task-management-button"
               >
-                Delete{" "}
-              </button>
-            </div>
-            <div className="mobile-task-button">
-              {task.isPending === false && (
-                <button
+                Delete
+              </Link>
+            </p>
+          </div>
+          <div className="mobile-open-link-container">
+            {task.addOnReminderlist === true && (
+              <p className="seetask-container-paragraph">
+                <Link
+                  style={{ fontSize: "12px" }}
                   onClick={() => {
-                    markaspending(task._id);
+                    turnoffreminder(task._id);
                   }}
-                  className="completed"
+                  className="task-management-button"
                 >
-                  Mark as Pending
-                </button>
-              )}
-
-              {task.isPending === true && (
-                <button
+                  Turnoff Reminder
+                </Link>
+              </p>
+            )}
+            {task.addOnReminderlist === false && (
+              <p className="seetask-container-paragraph">
+                <Link
+                  to={`/edittask/${task._id}`}
+                  onClick={() => {
+                    turnoffreminder(task._id);
+                  }}
+                  className="task-management-button"
+                >
+                  Add Reminder
+                </Link>
+              </p>
+            )}
+            {task.isPending === true && (
+              <p className="seetask-container-paragraph">
+                <Link
                   onClick={() => {
                     markascompleted(task._id);
                   }}
-                  className="completed"
+                  className="task-management-button"
                 >
-                  Mark as Completed
-                </button>
-              )}
-            </div>
-          </div> */}
-        </>
-      ) : (
-        <div></div>
-        // <div className="seetask-button">
-        //     <Link to={`/edittask/${task._id}`} className="back">
-        //       Edit
-        //     </Link>
-        //     {/* <button className="edit">Edit</button> */}
-        //     <button className="edit">Add Reminder</button>
-        //     <button
-        //       onClick={() => {
-        //         deletetask(task._id);
-        //       }}
-        //       className="delete"
-        //     >
-        //       Delete{" "}
-        //     </button>
-        //     <button
-        //       onClick={() => {
-        //         markascompleted(task._id);
-        //       }}
-        //       className="completed"
-        //     >
-        //       Mark as Completed
-        //     </button>
-        //     <button
-        //       onClick={() => {
-        //         markaspending(task._id);
-        //       }}
-        //       className="completed"
-        //     >
-        //       Mark as Pending
-        //     </button>
-        //   </div>
+                  Completed
+                </Link>
+              </p>
+            )}
+            {task.isPending === false && (
+              <p className="seetask-container-paragraph">
+                <Link
+                  onClick={() => {
+                    markaspending(task._id);
+                  }}
+                  className="task-management-button"
+                >
+                  Pending
+                </Link>
+              </p>
+            )}
+          </div>
+        </div>
       )}
     </>
   );

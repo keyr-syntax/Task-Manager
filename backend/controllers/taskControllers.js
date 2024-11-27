@@ -28,17 +28,23 @@ const createTask = async (req, res) => {
       repeatDate,
     });
 
-    return res.json({
-      success: true,
-      message: "Task added successfully",
-      task: newTask,
-    });
+    if (newTask) {
+      return res.status(201).json({
+        success: true,
+        message: "Task added successfully",
+        task: newTask,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "Task not added",
+      });
+    }
   } catch (error) {
     console.log("Error while creating task", error);
-    res.json({
+    res.status(500).json({
       success: false,
-      message: "Error while creating task",
-      error: error,
+      message: "Server error while creating task",
     });
   }
 };
@@ -83,13 +89,14 @@ const updateTask = async (req, res) => {
         task: tasktobeUpdated,
       });
     } else {
-      res.status(404);
-      throw new Error("Task not updated");
+      return res
+        .status(404)
+        .json({ success: false, message: "Task Update failed" });
     }
   } catch (error) {
-    res.json({
+    res.status(500).json({
       success: false,
-      message: "Error while updating task",
+      message: "Server error while updating task",
       error: error,
     });
   }
@@ -210,8 +217,10 @@ const fetchtaskonreminderlist = async (req, res) => {
         task: tasks,
       });
     } else {
-      res.status(404);
-      throw new Error("No tasks on reminder list found");
+      res.status(404).json({
+        success: false,
+        message: "No Tasks on the reminder list",
+      });
     }
   } catch (error) {
     console.log("Error while fetching tasks on reminder list", error);
@@ -266,60 +275,141 @@ const turnoffrepeat = async (req, res) => {
     console.log("Error while turning off repeat", error);
   }
 };
+// const fetchtaskbydate = async (req, res) => {
+//   try {
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0);
+//     const tomorrow = new Date(today);
+//     tomorrow.setDate(today.getDate() + 1);
+//     const tasksfortoday = await Task.find({
+//       scheduledFor: {
+//         $gte: today,
+//         $lt: tomorrow,
+//       },
+//     });
+//     if (tasksfortoday) {
+//       return res.json({
+//         success: true,
+//         message: "Tasks scheduled for today is fetched successfully",
+//         task: tasksfortoday,
+//       });
+//     } else {
+//       res.status(404);
+//       throw new Error("No tasks scheduled for today found");
+//     }
+//   } catch (error) {
+//     console.log("Error while fetching tasks by date", error);
+//   }
+// };
 const fetchtaskbydate = async (req, res) => {
   try {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+    tomorrow.setUTCDate(today.getUTCDate() + 1);
+
     const tasksfortoday = await Task.find({
-      scheduledFor: {
-        $gte: today,
-        $lt: tomorrow,
-      },
+      scheduledFor: { $gte: today, $lt: tomorrow },
     });
-    if (tasksfortoday) {
+
+    if (tasksfortoday.length > 0) {
       return res.json({
         success: true,
-        message: "Tasks scheduled for today is fetched successfully",
+        message: "Tasks scheduled for today fetched successfully",
         task: tasksfortoday,
       });
     } else {
-      res.status(404);
-      throw new Error("No tasks scheduled for today found");
+      return res.status(404).json({
+        success: false,
+        message: "No tasks scheduled for today",
+      });
     }
   } catch (error) {
-    console.log("Error while fetching tasks by date", error);
+    console.error("Error while fetching tasks by date", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching tasks by date",
+      error: error.message,
+    });
   }
 };
-const searchtasksbydate = async (req, res) => {
+// to search by indexing, use the following function
+// const searchtasks = async (req, res) => {
+//   try {
+//     const { keyword } = req.query;
+
+//     if (!keyword) {
+//       return res.json({
+//         success: false,
+//         message: "Please write something in the search box",
+//       });
+//     }
+//     const searchtasksbykeyword = await Task.find({
+//       $text: { $search: keyword },
+//     });
+
+//     if (searchtasksbykeyword.length === 0) {
+//       return res.json({
+//         success: false,
+//         message: "No Tasks match your search",
+//       });
+//     } else {
+//       return res.json({
+//         success: true,
+//         message: "Tasks matching your search are fetched successfully",
+//         task: searchtasksbykeyword,
+//       });
+//     }
+//   } catch (error) {
+//     console.log("Server error while searching tasks by keyword", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while searching tasks by keyword",
+//     });
+//   }
+// };
+const searchtasks = async (req, res) => {
   try {
-    const date = req.params.date;
+    const { keyword } = req.query;
 
-    const today = new Date(date);
-    const tomorrow = new Date(date);
-    tomorrow.setDate(today.getDate() + 1);
-    const tasksfortoday = await Task.find({
-      scheduledFor: {
-        $gte: today,
-        $lt: tomorrow,
-      },
-    });
-    if (tasksfortoday) {
+    if (!keyword) {
       return res.json({
-        success: true,
-        message: `Tasks scheduled for ${date} are fetched successfully`,
-        task: tasksfortoday,
+        success: false,
+        message: "Please write something in the search box",
+      });
+    }
+    const regex = new RegExp(keyword.trim(), "i");
+
+    const searchtasksbykeyword = await Task.find({
+      $or: [
+        { title: regex },
+        { description: regex },
+        { priority: regex },
+        { category: regex },
+        { repeatInterval: regex },
+      ],
+    });
+
+    if (searchtasksbykeyword.length === 0) {
+      return res.json({
+        success: false,
+        message: "No Tasks match your search",
       });
     } else {
-      res.status(404);
-      throw new Error("No tasks scheduled for today found");
+      return res.json({
+        success: true,
+        message: "Tasks matching your search are fetched successfully",
+        task: searchtasksbykeyword,
+      });
     }
   } catch (error) {
-    console.log("Error while fetching tasks by date", error);
+    console.log("Server error while searching tasks by keyword", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while searching tasks by keyword",
+    });
   }
 };
-
 module.exports = {
   createTask,
   updateTask,
@@ -331,6 +421,6 @@ module.exports = {
   fetchtaskonreminderlist,
   turnoffreminder,
   fetchtaskbydate,
-  searchtasksbydate,
+  searchtasks,
   turnoffrepeat,
 };

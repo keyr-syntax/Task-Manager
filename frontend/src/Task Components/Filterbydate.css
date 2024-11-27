@@ -5,7 +5,7 @@
   width: 40vw;
   font-weight: bold;
   border-radius: 6px;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 16px;
   cursor: pointer;
   background-color: #151533;
@@ -25,7 +25,7 @@
 table {
   width: 85%;
   margin: 15px auto;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 th {
@@ -34,7 +34,7 @@ th {
 
 td {
   text-align: center;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 .delete-link {
   text-decoration: none;
@@ -50,7 +50,7 @@ td {
   color: white;
   font-weight: 500;
   font-size: 20px;
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 @media only screen and (max-width: 800px) {
   .table-container {
@@ -66,7 +66,7 @@ td {
   }
 }
 .mobile-container {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   width: 90vw;
   margin: 40px auto;
@@ -76,7 +76,7 @@ td {
   text-align: center;
 }
 .mobile-container p {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 10px;
   margin: 5px 5px;
@@ -101,7 +101,7 @@ td {
   justify-content: space-around;
 }
 .mobile-open-link-container p {
-  border: 1px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   padding: 10px;
   margin: 5px auto;

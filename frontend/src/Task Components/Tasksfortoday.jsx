@@ -1,7 +1,7 @@
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./Tasksfortoday.css";
+import "./Tasklist.css";
 import Loader from "./Loader.jsx";
 function Tasksfortoday() {
   const {
@@ -23,17 +23,7 @@ function Tasksfortoday() {
       {isLoading && <Loader />}
       {!isLoading && tasksfortoday && tasksfortoday.length > 0 ? (
         <>
-          <p
-            style={{
-              margin: "65px 20px 30px 20px",
-              textAlign: "center",
-              border: "1px solid white",
-              borderRadius: "6px",
-              padding: "5px 5px",
-            }}
-          >
-            Tasks for today
-          </p>
+          <p className="tasks-for-today">Tasks for today</p>
           {tasksfortoday.map(
             (task, index) =>
               task && (
@@ -152,25 +142,24 @@ function Tasksfortoday() {
                         </p>
                       )}
                     </div>
-                    <div className="bottom-div"></div>
                   </div>
                 </>
               )
           )}
         </>
       ) : (
-        // <p
-        //   style={{
-        //     margin: "65px 20px 30px 20px",
-        //     textAlign: "center",
-        //     border: "1px solid white",
-        //     borderRadius: "6px",
-        //     padding: "5px 5px",
-        //   }}
-        // >
-        //   No tasks for today
-        // </p>
-        ""
+        <p
+          style={{
+            margin: "165px auto 30px auto",
+            textAlign: "center",
+            border: "1px solid white",
+            borderRadius: "6px",
+            padding: "5px 5px",
+            width: "50%",
+          }}
+        >
+          No tasks for today
+        </p>
       )}
     </>
   );

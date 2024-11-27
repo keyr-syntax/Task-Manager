@@ -3,7 +3,7 @@
   flex-direction: column;
   width: 80%;
   margin: 80px auto;
-  border: 0.5px solid white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
 }
 .form-editpriority h3 {

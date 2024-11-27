@@ -3,6 +3,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Loader from "./Loader.jsx";
+import toast from "react-hot-toast";
 
 function Completedtasks() {
   const {
@@ -34,7 +35,6 @@ function Completedtasks() {
   }, [alltasks]);
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
-      setIsLoading(true);
       try {
         const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
           method: "DELETE",
@@ -45,7 +45,8 @@ function Completedtasks() {
         const response = await data.json();
         if (response.success) {
           getalltasks();
-          setIsLoading(false);
+          toast.success("Task Deleted successfully");
+
           // navigate("/completedtasks");
         }
       } catch (error) {
@@ -80,7 +81,7 @@ function Completedtasks() {
                     <th>Title</th>
                     <th>Due Date</th>
                     <th>Status</th>
-                    <th>Priority</th>
+                    <th>Category</th>
                     <th>See Task</th>
                   </tr>
                 </thead>

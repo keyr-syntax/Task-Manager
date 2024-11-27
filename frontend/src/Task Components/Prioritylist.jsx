@@ -14,40 +14,42 @@ function Prioritylist() {
   return (
     <>
       {isLoading && <Loader />}
-      {!isLoading &&
-        prioritylist &&
-        prioritylist.length > 0 &&
-        prioritylist.map(
-          (priority) =>
-            priority &&
-            priority.priorityname && (
-              <div key={priority._id} className="prioritylist-container">
-                <h2>Priority</h2>
-                <p>
-                  Priority name: <span>{priority.priorityname}</span>{" "}
-                </p>
-                <p>
-                  <Link
-                    to={`/editpriority/${priority._id}`}
-                    className="prioritylist-button"
-                  >
-                    Update
-                  </Link>
-                </p>
-                <p>
-                  <Link
-                    onClick={() => {
-                      deletepriority(priority._id);
-                    }}
-                    className="prioritylist-button"
-                  >
-                    Delete
-                  </Link>
-                </p>
-                <div className="bottom-div"></div>
-              </div>
-            )
-        )}
+      {!isLoading && (
+        <div className="priority-whole-wrapper">
+          {prioritylist &&
+            prioritylist.length > 0 &&
+            prioritylist.map(
+              (priority) =>
+                priority &&
+                priority.priorityname && (
+                  <div key={priority._id} className="prioritylist-container">
+                    <h2>Category</h2>
+                    <p>
+                      Category name: <span>{priority.priorityname}</span>{" "}
+                    </p>
+                    <p>
+                      <Link
+                        to={`/editpriority/${priority._id}`}
+                        className="prioritylist-button"
+                      >
+                        Update
+                      </Link>
+                    </p>
+                    <p>
+                      <Link
+                        onClick={() => {
+                          deletepriority(priority._id);
+                        }}
+                        className="prioritylist-button"
+                      >
+                        Delete
+                      </Link>
+                    </p>
+                  </div>
+                )
+            )}
+        </div>
+      )}
     </>
   );
 }
