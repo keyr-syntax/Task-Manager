@@ -21,7 +21,7 @@ function Dashboard() {
           border: "1px solid rgb(255,255,255,0.2)",
         }}
         expand="md"
-        className=" mb-3"
+        className="mb-3"
       >
         <Container fluid>
           <Navbar.Brand className="fs-4 text-light" as={Link} to="/">
@@ -46,8 +46,11 @@ function Dashboard() {
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title
-                style={{ color: "white" }}
+                style={{ color: "white", textDecoration: "none" }}
+                className="fs-4 text-light"
                 id="offcanvasNavbarLabel-expand-md"
+                as={Link}
+                to="/"
               >
                 Afro-Syntax
               </Offcanvas.Title>
@@ -111,7 +114,7 @@ function Dashboard() {
                     to="/tasksfortoday"
                     onClick={handleClose}
                   >
-                    Today&apos;'s Tasks
+                    Today&apos;&apos;s Tasks
                   </NavDropdown.Item>
                 </NavDropdown>
                 <NavDropdown
@@ -122,7 +125,7 @@ function Dashboard() {
                 >
                   <NavDropdown.Item
                     as={Link}
-                    to="/filterbypriority/:level"
+                    to="/filterbypriority"
                     onClick={handleClose}
                   >
                     Filter by Category

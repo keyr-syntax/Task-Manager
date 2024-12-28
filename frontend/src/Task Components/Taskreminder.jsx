@@ -3,6 +3,7 @@ import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./Taskreminder.css";
+import Dropdown from "react-bootstrap/Dropdown";
 
 function Taskreminder() {
   const [reminderlist, setReminderlist] = useState([]);
@@ -14,6 +15,7 @@ function Taskreminder() {
     deletetask,
     alltasks,
     getalltasks,
+    turnoffrepeat,
   } = useContext(TaskContext);
 
   useEffect(() => {
@@ -80,79 +82,92 @@ function Taskreminder() {
                         })}
                       </span>
                     </p>
-                    <div className="mobile-open-link-container">
-                      <p>
-                        <Link
-                          to={`/seetask/${task._id}`}
-                          className="task-management-button"
-                        >
-                          Open
-                        </Link>
-                      </p>
-                      <p>
-                        <Link
+                    <Dropdown
+                      style={{
+                        margin: "15px auto",
+                        width: "50%",
+                        display: "block",
+                      }}
+                    >
+                      <Dropdown.Toggle
+                        style={{
+                          backgroundColor: "green",
+                          border: "none",
+                          borderRadius: "4px",
+                          padding: "5px 30px",
+                        }}
+                        id="dropdown-basic"
+                      >
+                        Manage Task
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        <Dropdown.Item as={Link} to={`/seetask/${task._id}`}>
+                          See Task Details
+                        </Dropdown.Item>
+                        <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                          Edit Task
+                        </Dropdown.Item>
+                        <Dropdown.Item
                           onClick={() => {
                             deletetask(task._id);
                           }}
-                          className="task-management-button"
+                          as={Link}
                         >
-                          Delete
-                        </Link>
-                      </p>
-                    </div>
-                    <div className="mobile-open-link-container">
-                      {task.addOnReminderlist === true && (
-                        <p>
-                          <Link
-                            style={{ fontSize: "12px" }}
+                          Delete Task
+                        </Dropdown.Item>
+                        {task.addOnReminderlist === true && (
+                          <Dropdown.Item
                             onClick={() => {
                               turnoffreminder(task._id);
                             }}
-                            className="task-management-button"
+                            as={Link}
                           >
-                            Turnoff Reminder
-                          </Link>
-                        </p>
-                      )}
-                      {task.addOnReminderlist === false && (
-                        <p>
-                          <Link
-                            to={`/edittask/${task._id}`}
-                            onClick={() => {
-                              turnoffreminder(task._id);
-                            }}
-                            className="task-management-button"
-                          >
+                            Turn-off Reminder
+                          </Dropdown.Item>
+                        )}
+                        {task.addOnReminderlist === false && (
+                          <Dropdown.Item to={`/edittask/${task._id}`} as={Link}>
                             Add Reminder
-                          </Link>
-                        </p>
-                      )}
-                      {task.isPending === true && (
-                        <p>
-                          <Link
+                          </Dropdown.Item>
+                        )}
+                        {task.addOnRepeatlist === true && (
+                          <Dropdown.Item
                             onClick={() => {
-                              markascompleted(task._id);
+                              turnoffrepeat(task._id);
                             }}
-                            className="task-management-button"
+                            as={Link}
                           >
-                            Completed
-                          </Link>
-                        </p>
-                      )}
-                      {task.isPending === false && (
-                        <p>
-                          <Link
+                            Turn-off Repeat
+                          </Dropdown.Item>
+                        )}
+                        {task.addOnRepeatlist === false && (
+                          <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                            Add Repeat
+                          </Dropdown.Item>
+                        )}
+                        {task.isPending === false && (
+                          <Dropdown.Item
                             onClick={() => {
                               markaspending(task._id);
                             }}
-                            className="task-management-button"
+                            as={Link}
                           >
-                            Pending
-                          </Link>
-                        </p>
-                      )}
-                    </div>
-                    <div className="bottom-div"></div>
+                            Mark as Pending
+                          </Dropdown.Item>
+                        )}
+                        {task.isPending === true && (
+                          <Dropdown.Item
+                            onClick={() => {
+                              markascompleted(task._id);
+                            }}
+                            as={Link}
+                          >
+                            Mark as Completed
+                          </Dropdown.Item>
+                        )}
+                      </Dropdown.Menu>
+                    </Dropdown>
                   </div>
                 </>
               )

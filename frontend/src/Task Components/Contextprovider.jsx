@@ -18,10 +18,6 @@ function Contextprovider({ children }) {
   const navigate = useNavigate();
   // const BASEAPI = "http://localhost:5000";
   const BASEAPI = "https://backend-task-manager.keyrunasir.com";
-  // const BASEAPI = "https://task-manager-backend-woad.vercel.app";
-  // const BASEAPI = "https://n8gx23hb-5000.inc1.devtunnels.ms";
-  // const BASEAPI = "https://node.backend.keyrunasir.com";
-  // const BASEAPI = "https://backend.task-manager.keyrunasir.com";
 
   useEffect(() => {
     getalltasks();
@@ -68,7 +64,6 @@ function Contextprovider({ children }) {
       console.log("Error while fetching tasks for today", error);
     }
   };
-
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
       try {

@@ -37,7 +37,7 @@ function App() {
             <Route exact path="/completedtasks" element={<Completedtasks />} />
             <Route
               exact
-              path="/filterbypriority/:level"
+              path="/filterbypriority"
               element={<Filterbypriority />}
             />
             <Route

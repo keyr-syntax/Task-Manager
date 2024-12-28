@@ -31,7 +31,7 @@ const taskSchema = new Schema(
     scheduledFor: {
       type: Date,
       required: false,
-      default: Date.now,
+      default: "Not added",
     },
     reminder: {
       type: Date,
@@ -76,14 +76,6 @@ const taskSchema = new Schema(
     timestamps: true,
   }
 );
-
-taskSchema.index({
-  title: "text",
-  description: "text",
-  priority: "text",
-  category: "text",
-  repeatInterval: "text",
-});
 
 const Task = mongoose.model("Task", taskSchema);
 module.exports = Task;

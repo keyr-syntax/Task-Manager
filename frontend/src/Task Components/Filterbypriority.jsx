@@ -1,13 +1,15 @@
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./Filterbypriority.css";
-import Listofpriorityforfilter from "./Listofpriorityforfilter.jsx";
+import Dropdown from "react-bootstrap/Dropdown";
 import toast from "react-hot-toast";
 
 function Filterbypriority() {
-  const [filteredtask, setFilteredtask] = useState([]);
-  const { level } = useParams();
+  // const [filteredtask, setFilteredtask] = useState([]);
+  // const { level } = useParams();
+  const [keyword, setKeyword] = useState(null);
+  const [searchResult, setSearchResult] = useState([]);
   const {
     getallpriorities,
     BASEAPI,
@@ -15,9 +17,9 @@ function Filterbypriority() {
     turnoffreminder,
     markaspending,
     markascompleted,
-    alltasks,
     isLoading,
-    setIsLoading,
+    prioritylist,
+    turnoffrepeat,
   } = useContext(TaskContext);
   useEffect(() => {
     getallpriorities();
@@ -25,16 +27,40 @@ function Filterbypriority() {
   }, []);
 
   useEffect(() => {
-    const filtertask = (level) => {
-      setIsLoading(true);
-      const filtered = alltasks.filter(
-        (task) => task.isPending === true && task.priority === level
+    searchTasks();
+  }, [keyword]);
+
+  const searchTasks = async () => {
+    if (keyword === null) {
+      return;
+    }
+    try {
+      const data = await fetch(
+        `${BASEAPI}/api/task/searchtasks?keyword=${encodeURIComponent(keyword)}`
       );
-      setIsLoading(false);
-      return setFilteredtask(filtered);
-    };
-    filtertask(level);
-  }, [level, alltasks]);
+      const response = await data.json();
+      if (response.success === true) {
+        setSearchResult(response.task);
+        toast.success("Tasks fetched successfully");
+      } else if (response.success === false) {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      console.log("Error while fetching search result", error);
+      toast.error("Error while fetching search result");
+    }
+  };
+  // useEffect(() => {
+  //   const filtertask = (level) => {
+  //     setIsLoading(true);
+  //     const filtered = alltasks.filter(
+  //       (task) => task.isPending === true && task.priority === level
+  //     );
+  //     setIsLoading(false);
+  //     return setFilteredtask(filtered);
+  //   };
+  //   filtertask(level);
+  // }, [level, alltasks]);
 
   const deletetask = async (_id) => {
     if (window.confirm("Confirm Delete")) {
@@ -59,8 +85,46 @@ function Filterbypriority() {
 
   return (
     <>
-      <Listofpriorityforfilter />
-      {!isLoading && filteredtask && (
+      {!isLoading && prioritylist && (
+        <div
+          style={{
+            border: "1px solid white",
+            margin: "60px auto 20px auto",
+            width: "91vw",
+            borderRadius: "4px",
+            padding: "5px",
+          }}
+        >
+          {prioritylist &&
+            prioritylist.length > 0 &&
+            prioritylist.map(
+              (priority) =>
+                priority &&
+                priority.priorityname && (
+                  <button
+                    onClick={() => {
+                      setKeyword(priority.priorityname);
+                      console.log(priority.priorityname);
+                    }}
+                    key={priority._id}
+                    style={{
+                      backgroundColor: "#151533",
+                      color: "white",
+                      padding: "5px 8px",
+                      border: "1px solid white",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      display: "inline-block",
+                      margin: "2px 5px",
+                    }}
+                  >
+                    {priority.priorityname}
+                  </button>
+                )
+            )}
+        </div>
+      )}
+      {!isLoading && searchResult && (
         <p
           className="counter"
           style={{
@@ -73,18 +137,17 @@ function Filterbypriority() {
             fontSize: "16px",
           }}
         >
-          {filteredtask.length == 1 ? (
-            <>You have {filteredtask.length} task</>
+          {searchResult.length == 1 ? (
+            <>You have {searchResult.length} task</>
           ) : (
-            <>You have {filteredtask.length} tasks</>
+            <>You have {searchResult.length} tasks</>
           )}
         </p>
       )}
-      {!isLoading && filteredtask && filteredtask.length >= 1 ? (
-        filteredtask.map(
+      {!isLoading && searchResult && searchResult.length >= 1 ? (
+        searchResult.map(
           (task) =>
-            task &&
-            task.isPending === true && (
+            task && (
               <div key={task._id} className="mobile-container-div">
                 <h2>Task</h2>
                 <p>
@@ -95,6 +158,11 @@ function Filterbypriority() {
                   Status:{" "}
                   {task.isPending === true && (
                     <span style={{ color: "red" }}>Pending</span>
+                  )}
+                  {task.isPending === false && (
+                    <span style={{ color: "green", fontWeight: "bold" }}>
+                      Completed
+                    </span>
                   )}
                 </p>
                 <p>
@@ -127,79 +195,92 @@ function Filterbypriority() {
                     </span>
                   </p>
                 )}
-                <div className="mobile-open-link-container">
-                  <p>
-                    <Link
-                      to={`/seetask/${task._id}`}
-                      className="task-management-button"
-                    >
-                      Open
-                    </Link>
-                  </p>
-                  <p>
-                    <Link
+                <Dropdown
+                  style={{
+                    margin: "15px auto",
+                    width: "50%",
+                    display: "block",
+                  }}
+                >
+                  <Dropdown.Toggle
+                    style={{
+                      backgroundColor: "green",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "5px 30px",
+                    }}
+                    id="dropdown-basic"
+                  >
+                    Manage Task
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to={`/seetask/${task._id}`}>
+                      See Task Details
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                      Edit Task
+                    </Dropdown.Item>
+                    <Dropdown.Item
                       onClick={() => {
                         deletetask(task._id);
                       }}
-                      className="task-management-button"
+                      as={Link}
                     >
-                      Delete
-                    </Link>
-                  </p>
-                </div>
-                <div className="mobile-open-link-container">
-                  {task.addOnReminderlist === true && (
-                    <p>
-                      <Link
-                        style={{ fontSize: "12px" }}
+                      Delete Task
+                    </Dropdown.Item>
+                    {task.addOnReminderlist === true && (
+                      <Dropdown.Item
                         onClick={() => {
                           turnoffreminder(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Turnoff Reminder
-                      </Link>
-                    </p>
-                  )}
-                  {task.addOnReminderlist === false && (
-                    <p>
-                      <Link
-                        to={`/edittask/${task._id}`}
-                        onClick={() => {
-                          turnoffreminder(task._id);
-                        }}
-                        className="task-management-button"
-                      >
+                        Turn-off Reminder
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnReminderlist === false && (
+                      <Dropdown.Item to={`/edittask/${task._id}`} as={Link}>
                         Add Reminder
-                      </Link>
-                    </p>
-                  )}
-                  {task.isPending === true && (
-                    <p>
-                      <Link
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnRepeatlist === true && (
+                      <Dropdown.Item
                         onClick={() => {
-                          markascompleted(task._id);
+                          turnoffrepeat(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Completed
-                      </Link>
-                    </p>
-                  )}
-                  {task.isPending === false && (
-                    <p>
-                      <Link
+                        Turn-off Repeat
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnRepeatlist === false && (
+                      <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                        Add Repeat
+                      </Dropdown.Item>
+                    )}
+                    {task.isPending === false && (
+                      <Dropdown.Item
                         onClick={() => {
                           markaspending(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Pending
-                      </Link>
-                    </p>
-                  )}
-                </div>
-                <div className="mobile-bottom-div"></div>
+                        Mark as Pending
+                      </Dropdown.Item>
+                    )}
+                    {task.isPending === true && (
+                      <Dropdown.Item
+                        onClick={() => {
+                          markascompleted(task._id);
+                        }}
+                        as={Link}
+                      >
+                        Mark as Completed
+                      </Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
             )
         )

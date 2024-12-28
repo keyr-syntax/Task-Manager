@@ -1,23 +1,31 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Home.css";
-import { useContext, useState } from "react";
-
+import { useContext, useEffect, useState } from "react";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import { NotebookPen } from "lucide-react";
 import { TaskContext } from "./Contextprovider.jsx";
 import toast from "react-hot-toast";
 import Container from "react-bootstrap/Container";
+import { Search } from "lucide-react";
+import Dropdown from "react-bootstrap/Dropdown";
 function Home() {
   const {
     markaspending,
     markascompleted,
     turnoffreminder,
-    deletetask,
     BASEAPI,
+    getalltasks,
+    prioritylist,
+    turnoffrepeat,
   } = useContext(TaskContext);
+  const navigate = useNavigate();
   const [keyword, setKeyword] = useState("");
   const [searchResult, setSearchResult] = useState([]);
-
+  useEffect(() => {
+    if (keyword.length > 0) {
+      searchTasks();
+    }
+  }, [keyword.length]);
   const searchTasks = async () => {
     try {
       const data = await fetch(
@@ -30,35 +38,79 @@ function Home() {
         toast.success("Tasks fetched successfully");
       } else if (response.success === false) {
         toast.error(response.message);
+        setSearchResult(null);
       }
     } catch (error) {
       console.log("Error while fetching search result", error);
       toast.error("Error while fetching search result");
     }
   };
+  const searchTasksAfterTaskIsDeleted = async () => {
+    try {
+      const data = await fetch(
+        `${BASEAPI}/api/task/searchtasks?keyword=${encodeURIComponent(keyword)}`
+      );
+      const response = await data.json();
 
+      if (response.success === true) {
+        setSearchResult(response.task);
+      } else if (response.success === false) {
+        setSearchResult(null);
+      }
+    } catch (error) {
+      console.log("Error while fetching search result", error);
+      toast.error("Error while fetching search result");
+    }
+  };
+  const deletetask = async (_id) => {
+    if (window.confirm("Confirm Delete")) {
+      try {
+        const data = await fetch(`${BASEAPI}/api/task/deletetask/${_id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const response = await data.json();
+        if (response.success) {
+          getalltasks();
+          toast.success("Task Deleted successfully");
+          setTimeout(() => {
+            searchTasksAfterTaskIsDeleted();
+          }, 2000);
+        }
+      } catch (error) {
+        console.log("Error while deleting task", error);
+      }
+    }
+  };
   return (
     <>
       {/* <Navbar className="justify-content-between"></Navbar> */}
-      <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
-        <Form>
+      <Container style={{ marginTop: "80px" }}>
+        <Form
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Form.Control
-            style={{ width: "90%", margin: "30px auto 5px auto" }}
+            style={{ width: "85%", borderRadius: "4px", margin: "auto" }}
             type="search"
-            placeholder="Search tasks..."
+            placeholder="Search tasks"
             aria-label="Search"
             value={keyword}
             onChange={(e) => {
               setKeyword(e.target.value);
             }}
           />
-          <Button
+          <Search
             style={{
-              backgroundColor: "#151533",
-              width: "150px",
-              margin: "10px auto",
-              display: "block",
-              border: "1px solid rgb(255,255,255,0.2)",
+              color: "#151533",
+              marginLeft: "-80px",
+              marginRight: "auto",
             }}
             onClick={() => {
               if (!keyword) {
@@ -67,11 +119,53 @@ function Home() {
               }
               searchTasks();
             }}
-          >
-            Search
-          </Button>
+            size={30}
+          />
         </Form>
       </Container>
+      {prioritylist && (
+        <div
+          style={{
+            margin: "15px auto 20px auto",
+            width: "100vw",
+            borderRadius: "4px",
+            padding: "5px",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {prioritylist &&
+            prioritylist.length > 0 &&
+            prioritylist.map(
+              (priority) =>
+                priority &&
+                priority.priorityname && (
+                  <button
+                    onClick={() => {
+                      setKeyword(priority.priorityname);
+                      console.log(priority.priorityname);
+                    }}
+                    key={priority._id}
+                    style={{
+                      backgroundColor: "#151533",
+                      color: "white",
+                      padding: "5px 8px",
+                      border: "1px solid rgb(255,255,255,0.2)",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      display: "block",
+                      margin: "2px auto 2px auto",
+                      width: "250px",
+                    }}
+                  >
+                    {priority.priorityname}
+                  </button>
+                )
+            )}
+        </div>
+      )}
       {searchResult && searchResult.length > 0 ? (
         searchResult.map(
           (task) =>
@@ -96,15 +190,19 @@ function Home() {
                 </p>
                 <p>
                   Due date:{" "}
-                  <span>
-                    {new Date(task.scheduledFor).toLocaleString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "numeric",
-                    })}
-                  </span>
+                  {task.scheduledFor === null ? (
+                    <span>Not added</span>
+                  ) : (
+                    <span>
+                      {new Date(task.scheduledFor).toLocaleString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                    </span>
+                  )}
                 </p>
                 {task.addOnReminderlist === true && (
                   <p>
@@ -120,85 +218,111 @@ function Home() {
                     </span>
                   </p>
                 )}
-                <div className="mobile-open-link-container">
-                  <p>
-                    <Link
-                      to={`/seetask/${task._id}`}
-                      className="task-management-button"
-                    >
-                      Open
-                    </Link>
-                  </p>
-                  <p>
-                    <Link
+                <Dropdown
+                  style={{
+                    margin: "15px auto",
+                    width: "50%",
+                    display: "block",
+                  }}
+                >
+                  <Dropdown.Toggle
+                    style={{
+                      backgroundColor: "green",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "5px 30px",
+                    }}
+                    id="dropdown-basic"
+                  >
+                    Manage Task
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item as={Link} to={`/seetask/${task._id}`}>
+                      See Task Details
+                    </Dropdown.Item>
+                    <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                      Edit Task
+                    </Dropdown.Item>
+                    <Dropdown.Item
                       onClick={() => {
                         deletetask(task._id);
                       }}
-                      className="task-management-button"
+                      as={Link}
                     >
-                      Delete
-                    </Link>
-                  </p>
-                </div>
-                <div className="mobile-open-link-container">
-                  {task.addOnReminderlist === true && (
-                    <p>
-                      <Link
-                        style={{ fontSize: "12px" }}
+                      Delete Task
+                    </Dropdown.Item>
+                    {task.addOnReminderlist === true && (
+                      <Dropdown.Item
                         onClick={() => {
                           turnoffreminder(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Turnoff Reminder
-                      </Link>
-                    </p>
-                  )}
-                  {task.addOnReminderlist === false && (
-                    <p>
-                      <Link
-                        to={`/edittask/${task._id}`}
-                        onClick={() => {
-                          turnoffreminder(task._id);
-                        }}
-                        className="task-management-button"
-                      >
+                        Turn-off Reminder
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnReminderlist === false && (
+                      <Dropdown.Item to={`/edittask/${task._id}`} as={Link}>
                         Add Reminder
-                      </Link>
-                    </p>
-                  )}
-                  {task.isPending === true && (
-                    <p>
-                      <Link
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnRepeatlist === true && (
+                      <Dropdown.Item
                         onClick={() => {
-                          markascompleted(task._id);
+                          turnoffrepeat(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Completed
-                      </Link>
-                    </p>
-                  )}
-                  {task.isPending === false && (
-                    <p>
-                      <Link
+                        Turn-off Repeat
+                      </Dropdown.Item>
+                    )}
+                    {task.addOnRepeatlist === false && (
+                      <Dropdown.Item as={Link} to={`/edittask/${task._id}`}>
+                        Add Repeat
+                      </Dropdown.Item>
+                    )}
+                    {task.isPending === false && (
+                      <Dropdown.Item
                         onClick={() => {
                           markaspending(task._id);
                         }}
-                        className="task-management-button"
+                        as={Link}
                       >
-                        Pending
-                      </Link>
-                    </p>
-                  )}
-                </div>
-                <div className="mobile-bottom-div"></div>
+                        Mark as Pending
+                      </Dropdown.Item>
+                    )}
+                    {task.isPending === true && (
+                      <Dropdown.Item
+                        onClick={() => {
+                          markascompleted(task._id);
+                        }}
+                        as={Link}
+                      >
+                        Mark as Completed
+                      </Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
             )
         )
       ) : (
         <div></div>
       )}
+      <NotebookPen
+        onClick={() => {
+          navigate("/createtask");
+        }}
+        size={35}
+        style={{
+          position: "fixed",
+          zIndex: "999",
+          bottom: "40",
+          right: "25",
+          cursor: "pointer",
+        }}
+      />
     </>
   );
 }

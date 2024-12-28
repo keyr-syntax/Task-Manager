@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import toast from "react-hot-toast";
+import { Editor } from "@tinymce/tinymce-react";
 function EditTask() {
   const { getalltasks, BASEAPI, prioritylist, getallpriorities } =
     useContext(TaskContext);
@@ -124,30 +125,7 @@ function EditTask() {
       console.log("Error fetching task:", error);
     }
   };
-  // const filteronetaskbyid = () => {
-  //   setIsLoading(true);
-  //   const filteredtask = alltasks.find((task) => task._id === _id);
-  //   const now = new Date();
-  //   const duedate = new Date(filteredtask.scheduledFor);
-  //   const reminderdate = new Date(filteredtask.reminder);
-  //   const repeatdate = new Date(filteredtask.repeatDate);
-  //   setRepeatDate(repeatdate);
-  //   setTitle(filteredtask.title);
-  //   setDescription(filteredtask.description);
-  //   setPriority(filteredtask.priority);
-  //   setScheduledFor(duedate);
-  //   setReminder(reminderdate);
-  //   setaddOnReminderlist(filteredtask.addOnReminderlist);
-  //   setaddOnRepeatlist(filteredtask.addOnRepeatlist);
-  //   setRepeatDate(filteredtask.repeatDate);
-  //   setRepeatInterval(filteredtask.repeatInterval);
-  //   setcontrolforremovebutton(filteredtask.addOnReminderlist);
-  //   setcontrolforremoverepeatbutton(filteredtask.addOnRepeatlist);
-  //   setAddreminder(false);
-  //   setAddrepeat(false);
-  //   setNow(now);
-  //   setIsLoading(false);
-  // };
+
   const edittask = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -179,9 +157,8 @@ function EditTask() {
         setIsLoading(false);
         getalltasks();
         toast.success("Task updated successfully");
-        setTimeout(() => {
-          navigate(`/seetask/${_id}`);
-        }, 1000);
+        navigate(`/seetask/${_id}`);
+        // setTimeout(() => {}, 1000);
       }
     } catch (error) {
       console.log("Error while editing task", error);
@@ -295,6 +272,57 @@ function EditTask() {
                 rows={2}
                 placeholder="Task description"
                 required
+              />
+              <Editor
+                // apiKey="x8azhf2t3vo07m8hnf207hemlel93uivm5e1xxtwpo4p79xn"
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                licenseKey="gpl"
+                value={description}
+                onEditorChange={(newContent) => {
+                  setDescription(newContent);
+                }}
+                init={{
+                  skin: "oxide-dark",
+                  height: 500,
+                  plugins: [
+                    "fullscreen",
+                    "anchor",
+                    "autolink",
+                    "charmap",
+                    "codesample",
+                    "emoticons",
+                    "image",
+                    "link",
+                    "lists",
+                    "media",
+                    "searchreplace",
+                    "table",
+                    "visualblocks",
+                    "wordcount",
+                    "autosave",
+                    "code",
+                    "codesample",
+                    "directionality",
+                    "importcss",
+                    "insertdatetime",
+                    "preview",
+                    "quickbars",
+                  ],
+                  toolbar:
+                    " undo redo restoredraft preview paste | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat codesample code ltr rtl /my-styles.css insertdatetime ",
+                  fullscreen_native: true,
+                  paste_as_text: true,
+                  mobile: {
+                    menubar: true,
+                  },
+                  toolbar_sticky: true,
+                  tinycomments_mode: "embedded",
+                  tinycomments_author: "Author name",
+                  mergetags_list: [
+                    { value: "First.Name", title: "First Name" },
+                    { value: "Email", title: "Email" },
+                  ],
+                }}
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="category">
