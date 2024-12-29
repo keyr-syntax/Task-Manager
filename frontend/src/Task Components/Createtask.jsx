@@ -8,16 +8,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader.jsx";
 import toast from "react-hot-toast";
 import { Editor } from "@tinymce/tinymce-react";
+import DatePicker from "react-datepicker";
+import "./Createtask.css";
 
 function Createtask() {
   const { BASEAPI, getalltasks, getallpriorities, prioritylist } =
     useContext(TaskContext);
-  // useState for managing Modal
   const [show, setShow] = useState(false);
   const [priorityname, setPriorityname] = useState("");
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  // useState for managing Display of Due date, task reminder, task repeat
   const [showDueDate, setShowDueDate] = useState(false);
   const [showAddReminder, setShowAddReminder] = useState(false);
   const [showAddRepeat, setShowAddRepeat] = useState(false);
@@ -25,20 +25,72 @@ function Createtask() {
   const handleShowForDueDate = () => setShowDueDate(true);
   const handleCloseForReminder = () => setShowAddReminder(false);
   const handleShowForReminder = () => setShowAddReminder(true);
-  // useState for managing Form
+
   const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [scheduledFor, setScheduledFor] = useState("");
+  const [scheduledFor, setScheduledFor] = useState(new Date());
+  const [scheduledForLocalTime, setScheduledForLocalTime] = useState(
+    new Date()
+  );
+  const [displayscheduledForLocalTime, setDisplayscheduledForLocalTime] =
+    useState(false);
+  const [reminderLocalTime, setReminderLocalTime] = useState(new Date());
+  const [displayreminderLocalTime, setDisplayreminderLocalTime] =
+    useState(false);
   const [priority, setPriority] = useState("");
   const [addOnReminderlist, setaddOnReminderlist] = useState(false);
-  const [reminder, setReminder] = useState("");
+  const [reminder, setReminder] = useState(new Date());
   const [addOnRepeatlist, setaddOnRepeatlist] = useState(false);
   const [repeatInterval, setRepeatInterval] = useState("");
-  const [repeatDate, setRepeatDate] = useState(null);
+  const [repeatDate, setRepeatDate] = useState(new Date());
   const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
 
   const textAreaRef = useRef(null);
+  const filterTime = (time) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    if (
+      selectedDate.getDate() === currentDate.getDate() &&
+      selectedDate.getMonth() === currentDate.getMonth() &&
+      selectedDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      return time.getTime() >= currentDate.getTime();
+    }
+
+    return true;
+  };
+  useEffect(() => {
+    if (scheduledForLocalTime) {
+      const utcDate = new Date(
+        Date.UTC(
+          scheduledForLocalTime.getFullYear(),
+          scheduledForLocalTime.getMonth(),
+          scheduledForLocalTime.getDate(),
+          scheduledForLocalTime.getHours(),
+          scheduledForLocalTime.getMinutes(),
+          scheduledForLocalTime.getSeconds()
+        )
+      );
+      setScheduledFor(utcDate);
+    }
+    if (reminderLocalTime) {
+      const utcDate = new Date(
+        Date.UTC(
+          reminderLocalTime.getFullYear(),
+          reminderLocalTime.getMonth(),
+          reminderLocalTime.getDate(),
+          reminderLocalTime.getHours(),
+          reminderLocalTime.getMinutes(),
+          reminderLocalTime.getSeconds()
+        )
+      );
+      setReminder(utcDate);
+      setaddOnReminderlist(true);
+    }
+  }, [scheduledForLocalTime, reminderLocalTime]);
+
   useEffect(() => {
     const now = new Date();
     if (repeatInterval === "Daily") {
@@ -85,6 +137,40 @@ function Createtask() {
   useEffect(() => {
     getallpriorities();
   }, []);
+  const handleDateChangeForScheduledFor = (date) => {
+    if (date) {
+      const localDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+      setScheduledForLocalTime(localDate);
+      setDisplayscheduledForLocalTime(true);
+      console.log("scheduledForLocalTime", localDate);
+    } else {
+      setScheduledForLocalTime(null);
+    }
+  };
+
+  const handleDateChangeForReminder = (date) => {
+    if (date) {
+      const localDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+      setReminderLocalTime(localDate);
+      setDisplayreminderLocalTime(true);
+      console.log("reminderLocalTime", localDate);
+    } else {
+      setReminderLocalTime(null);
+    }
+  };
+
   const adjustHeight = () => {
     if (textAreaRef.current) {
       textAreaRef.current.style.height = "auto";
@@ -130,13 +216,13 @@ function Createtask() {
         body: JSON.stringify({
           title,
           description,
-          scheduledFor,
+          scheduledFor: scheduledForLocalTime.toISOString(),
           priority,
           addOnReminderlist,
-          reminder,
+          reminder: reminderLocalTime.toISOString(),
           addOnRepeatlist,
           repeatInterval,
-          repeatDate,
+          repeatDate: repeatDate.toISOString(),
         }),
       });
       const response = await data.json();
@@ -189,20 +275,8 @@ function Createtask() {
             </Form.Group>
             <Form.Group className="mb-3" controlId="description">
               <Form.Label className="text-light">Task Description</Form.Label>
-              {/* <Form.Control
-                as="textarea"
-                ref={textAreaRef}
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  adjustHeight();
-                }}
-                rows={2}
-                placeholder="Task description"
-                required
-              /> */}
+
               <Editor
-                // apiKey="x8azhf2t3vo07m8hnf207hemlel93uivm5e1xxtwpo4p79xn"
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 licenseKey="gpl"
                 value={description}
@@ -286,7 +360,7 @@ function Createtask() {
             >
               Add Category
             </Button>
-            {scheduledFor === "" && (
+            {!displayscheduledForLocalTime && (
               <Button
                 style={{
                   backgroundColor: "#151533",
@@ -299,38 +373,32 @@ function Createtask() {
                 Add Due Date
               </Button>
             )}
-            {scheduledFor !== "" && (
+            {scheduledForLocalTime !== "" && (
               <Form.Group className="mb-3" controlId="due date and time">
-                <Form.Label className="text-light">
-                  Due Date and Time
-                </Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  placeholder="Title of task"
-                  name="datetime-local"
-                  min={new Date().toISOString().slice(0, 16)}
-                  value={
-                    scheduledFor ? scheduledFor.toISOString().slice(0, 16) : ""
-                  }
-                  onChange={(event) => {
-                    const localDateString = event.target.value;
-                    const localDate = new Date(localDateString);
-                    const utcDate = new Date(
-                      Date.UTC(
-                        localDate.getFullYear(),
-                        localDate.getMonth(),
-                        localDate.getDate(),
-                        localDate.getHours(),
-                        localDate.getMinutes(),
-                        localDate.getSeconds()
-                      )
-                    );
-                    setScheduledFor(utcDate);
-                  }}
-                />
+                {displayscheduledForLocalTime && (
+                  <>
+                    <Form.Label className="text-light">
+                      Due Date and Time
+                    </Form.Label>
+                    <Form.Control
+                      value={
+                        scheduledForLocalTime
+                          ? new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }).format(scheduledForLocalTime)
+                          : ""
+                      }
+                    />
+                  </>
+                )}
               </Form.Group>
             )}
-            {scheduledFor !== "" && (
+            {scheduledForLocalTime !== "" && displayreminderLocalTime && (
               <Button
                 style={{
                   backgroundColor: "green",
@@ -339,13 +407,15 @@ function Createtask() {
                 }}
                 className="w-100"
                 onClick={() => {
+                  setScheduledForLocalTime("");
                   setScheduledFor("");
+                  setDisplayscheduledForLocalTime(false);
                 }}
               >
                 Remove Due Date
               </Button>
             )}
-            {reminder === "" && (
+            {!displayreminderLocalTime && (
               <Button
                 style={{
                   backgroundColor: "#151533",
@@ -358,35 +428,30 @@ function Createtask() {
                 Add Reminder
               </Button>
             )}
-            {reminder !== "" && (
+            {reminderLocalTime !== "" && (
               <Form.Group className="mb-3" controlId="add reminder">
-                <Form.Label className="text-light"> Reminder</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  placeholder="Add reminder"
-                  name="datetime-local"
-                  min={new Date().toISOString().slice(0, 16)}
-                  value={reminder ? reminder.toISOString().slice(0, 16) : ""}
-                  selected={reminder}
-                  onChange={(event) => {
-                    const localDateString = event.target.value;
-                    const localDate = new Date(localDateString);
-                    const utcDate = new Date(
-                      Date.UTC(
-                        localDate.getFullYear(),
-                        localDate.getMonth(),
-                        localDate.getDate(),
-                        localDate.getHours(),
-                        localDate.getMinutes(),
-                        localDate.getSeconds()
-                      )
-                    );
-                    setReminder(utcDate);
-                  }}
-                />
+                {displayreminderLocalTime && (
+                  <>
+                    <Form.Label className="text-light"> Reminder</Form.Label>
+                    <Form.Control
+                      value={
+                        reminderLocalTime
+                          ? new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }).format(reminderLocalTime)
+                          : ""
+                      }
+                    />
+                  </>
+                )}
               </Form.Group>
             )}
-            {reminder !== "" && (
+            {displayreminderLocalTime && (
               <Button
                 style={{
                   backgroundColor: "green",
@@ -395,7 +460,9 @@ function Createtask() {
                 }}
                 className="w-100"
                 onClick={() => {
+                  setReminderLocalTime("");
                   setReminder("");
+                  setDisplayreminderLocalTime(false);
                 }}
               >
                 Remove Reminder
@@ -411,6 +478,7 @@ function Createtask() {
                 className="w-100"
                 onClick={() => {
                   setShowAddRepeat(true);
+                  setaddOnRepeatlist(true);
                 }}
               >
                 Repeat Task
@@ -433,7 +501,6 @@ function Createtask() {
             )}
             {showAddRepeat === true && (
               <Form.Group className="mb-3" controlId="repeat task">
-                {/* <Form.Label className="text-light">Repeat Task</Form.Label> */}
                 <Form.Select
                   value={repeatInterval}
                   onChange={(e) => {
@@ -512,9 +579,9 @@ function Createtask() {
           </Form>
         </Modal.Body>
       </Modal>
-      {/*Below Modal for Adding Due Date */}
+
       <Modal show={showDueDate} onHide={handleCloseForDueDate} centered>
-        <Modal.Body style={{ backgroundColor: "#151533" }}>
+        <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
           <Form>
             <Form.Group className="mb-3" controlId="Due Date">
               <Form.Label
@@ -526,31 +593,43 @@ function Createtask() {
               >
                 Add Due Date and Time
               </Form.Label>
-              <Form.Control
-                type="datetime-local"
-                placeholder="Title of task"
-                name="datetime-local"
-                min={new Date().toISOString().slice(0, 16)}
-                value={
-                  scheduledFor ? scheduledFor.toISOString().slice(0, 16) : ""
+              <DatePicker
+                className="custom-datepicker"
+                placeholderText="Select date and time"
+                minDate={new Date()}
+                filterTime={filterTime}
+                customInput={
+                  <input
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ced4da",
+                    }}
+                  />
                 }
-                onChange={(event) => {
-                  const localDateString = event.target.value;
-                  const localDate = new Date(localDateString);
-                  const utcDate = new Date(
-                    Date.UTC(
-                      localDate.getFullYear(),
-                      localDate.getMonth(),
-                      localDate.getDate(),
-                      localDate.getHours(),
-                      localDate.getMinutes(),
-                      localDate.getSeconds()
-                    )
-                  );
-                  setScheduledFor(utcDate);
-                }}
+                value={
+                  scheduledForLocalTime
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      }).format(scheduledForLocalTime)
+                    : ""
+                }
+                selected={scheduledForLocalTime}
+                onChange={handleDateChangeForScheduledFor}
+                showTimeSelect
+                timeIntervals={1}
+                timeCaption="Time"
+                dateFormat="PP p"
               />
             </Form.Group>
+
             <Button
               style={{
                 display: "block",
@@ -565,9 +644,9 @@ function Createtask() {
           </Form>
         </Modal.Body>
       </Modal>
-      {/*Below Modal for Adding Reminder */}
+
       <Modal show={showAddReminder} onHide={handleCloseForReminder} centered>
-        <Modal.Body style={{ backgroundColor: "#151533" }}>
+        <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
           <Form>
             <Form.Group className="mb-3" controlId="Reminder">
               <Form.Label
@@ -579,28 +658,40 @@ function Createtask() {
               >
                 Reminder
               </Form.Label>
-              <Form.Control
-                type="datetime-local"
-                placeholder="Add reminder"
-                name="datetime-local"
-                min={new Date().toISOString().slice(0, 16)}
-                value={reminder ? reminder.toISOString().slice(0, 16) : ""}
-                selected={reminder}
-                onChange={(event) => {
-                  const localDateString = event.target.value;
-                  const localDate = new Date(localDateString);
-                  const utcDate = new Date(
-                    Date.UTC(
-                      localDate.getFullYear(),
-                      localDate.getMonth(),
-                      localDate.getDate(),
-                      localDate.getHours(),
-                      localDate.getMinutes(),
-                      localDate.getSeconds()
-                    )
-                  );
-                  setReminder(utcDate);
-                }}
+              <DatePicker
+                className="custom-datepicker"
+                value={
+                  reminderLocalTime
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      }).format(reminderLocalTime)
+                    : ""
+                }
+                selected={reminderLocalTime}
+                onChange={handleDateChangeForReminder}
+                showTimeSelect
+                timeIntervals={1}
+                timeCaption="Time"
+                dateFormat="PP p"
+                placeholderText="Select date and time"
+                minDate={new Date()}
+                filterTime={filterTime}
+                customInput={
+                  <input
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ced4da",
+                    }}
+                  />
+                }
               />
             </Form.Group>
             <Button

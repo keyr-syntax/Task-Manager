@@ -31,7 +31,6 @@ const taskSchema = new Schema(
     scheduledFor: {
       type: Date,
       required: false,
-      default: "Not added",
     },
     reminder: {
       type: Date,

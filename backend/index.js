@@ -31,16 +31,24 @@ app.get("/", (req, res) => {
 app.use("/api/task", taskRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/priority", priorityRoutes);
+
 cron.schedule("* * * * *", async () => {
   const now = new Date();
+  const nowUTC = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+    now.getUTCHours(),
+    now.getUTCMinutes(),
+    now.getUTCSeconds()
+  );
   try {
     const taskstobereminded = await Task.find({});
     taskstobereminded.forEach(async (task) => {
       if (
         task.reminder &&
-        task.reminder instanceof Date &&
         task.addOnReminderlist === true &&
-        now.getTime() >= task.reminder.getTime()
+        nowUTC >= task.reminder.getTime()
       ) {
         task.isNotified = true;
         const savereminder = await task.save();
@@ -49,10 +57,10 @@ cron.schedule("* * * * *", async () => {
         task.repeatDate &&
         task.repeatDate instanceof Date &&
         task.addOnRepeatlist === true &&
-        now.getTime() >= task.repeatDate.getTime()
+        nowUTC >= task.repeatDate.getTime()
       ) {
         task.isRepeat = true;
-        task.addOnReminderlist === true;
+        task.addOnReminderlist = true;
         task.isNotified = true;
         task.reminder = task.repeatDate;
         const saveRepeat = await task.save();

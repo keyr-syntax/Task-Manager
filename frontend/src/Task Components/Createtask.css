@@ -58,6 +58,45 @@ form button {
   padding: 10px 5px;
   vertical-align: top;
 }
+/* More specific DatePicker styles */
+.custom-datepicker .react-datepicker-wrapper,
+.custom-datepicker .react-datepicker__input-container,
+.custom-datepicker .react-datepicker__input-container input {
+  color: black !important;
+  background-color: white !important;
+}
+
+.react-datepicker,
+.react-datepicker * {
+  color: black !important;
+  background-color: white !important;
+}
+
+.react-datepicker__day {
+  color: black !important;
+}
+
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.react-datepicker__header {
+  background-color: #f0f0f0 !important;
+}
+
+.react-datepicker__current-month,
+.react-datepicker-time__header {
+  color: black !important;
+}
+
+/* Ensure time list is readable */
+.react-datepicker__time-list-item {
+  color: black !important;
+}
+
 @media only screen and (max-width: 800px) {
   form {
     width: 70%;
