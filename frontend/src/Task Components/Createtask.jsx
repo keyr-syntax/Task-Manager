@@ -30,12 +30,8 @@ function Createtask() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState(new Date());
-  const [scheduledForLocalTime, setScheduledForLocalTime] = useState(
-    new Date()
-  );
   const [displayscheduledForLocalTime, setDisplayscheduledForLocalTime] =
     useState(false);
-  const [reminderLocalTime, setReminderLocalTime] = useState(new Date());
   const [displayreminderLocalTime, setDisplayreminderLocalTime] =
     useState(false);
   const [priority, setPriority] = useState("");
@@ -61,82 +57,47 @@ function Createtask() {
 
     return true;
   };
-  useEffect(() => {
-    if (scheduledForLocalTime) {
-      const utcDate = new Date(
-        Date.UTC(
-          scheduledForLocalTime.getFullYear(),
-          scheduledForLocalTime.getMonth(),
-          scheduledForLocalTime.getDate(),
-          scheduledForLocalTime.getHours(),
-          scheduledForLocalTime.getMinutes(),
-          scheduledForLocalTime.getSeconds()
-        )
-      );
-      setScheduledFor(utcDate);
-    }
-    if (reminderLocalTime) {
-      const utcDate = new Date(
-        Date.UTC(
-          reminderLocalTime.getFullYear(),
-          reminderLocalTime.getMonth(),
-          reminderLocalTime.getDate(),
-          reminderLocalTime.getHours(),
-          reminderLocalTime.getMinutes(),
-          reminderLocalTime.getSeconds()
-        )
-      );
-      setReminder(utcDate);
-      setaddOnReminderlist(true);
-    }
-  }, [scheduledForLocalTime, reminderLocalTime]);
 
   useEffect(() => {
-    const now = new Date();
+    const now = new Date("2024-12-29T16:41:13+03:00");
     if (repeatInterval === "Daily") {
       const repeatDate = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate() + 1,
-          now.getUTCHours(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
-        )
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
       );
       setRepeatDate(repeatDate);
     } else if (repeatInterval === "Weekly") {
       const repeatDate = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate() + 7,
-          now.getUTCHours(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
-        )
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 7,
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
       );
       setRepeatDate(repeatDate);
     } else if (repeatInterval === "Monthly") {
       const repeatDate = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth() + 1,
-          now.getUTCDate(),
-          now.getUTCHours(),
-          now.getUTCMinutes(),
-          now.getUTCSeconds()
-        )
+        now.getFullYear(),
+        now.getMonth() + 1,
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
       );
       setRepeatDate(repeatDate);
     } else if (repeatInterval === "None") {
       setRepeatDate(null);
     }
   }, [repeatInterval]);
-
   useEffect(() => {
     getallpriorities();
   }, []);
+
   const handleDateChangeForScheduledFor = (date) => {
     if (date) {
       const localDate = new Date(
@@ -146,11 +107,12 @@ function Createtask() {
         date.getHours(),
         date.getMinutes()
       );
-      setScheduledForLocalTime(localDate);
+
+      setScheduledFor(localDate);
       setDisplayscheduledForLocalTime(true);
       console.log("scheduledForLocalTime", localDate);
     } else {
-      setScheduledForLocalTime(null);
+      setScheduledFor(null);
     }
   };
 
@@ -163,11 +125,13 @@ function Createtask() {
         date.getHours(),
         date.getMinutes()
       );
-      setReminderLocalTime(localDate);
+      setReminder(localDate);
+      setReminder(localDate);
       setDisplayreminderLocalTime(true);
+      setaddOnReminderlist(true);
       console.log("reminderLocalTime", localDate);
     } else {
-      setReminderLocalTime(null);
+      setReminder(null);
     }
   };
 
@@ -179,7 +143,7 @@ function Createtask() {
   };
   useEffect(() => {
     adjustHeight();
-  }, [description, title]);
+  }, [title]);
 
   const handlecreatepriority = async (e) => {
     e.preventDefault();
@@ -373,32 +337,30 @@ function Createtask() {
                 Add Due Date
               </Button>
             )}
-            {scheduledForLocalTime !== "" && (
+            {scheduledFor !== "" && (
               <Form.Group className="mb-3" controlId="due date and time">
                 {displayscheduledForLocalTime && (
                   <>
                     <Form.Label className="text-light">
                       Due Date and Time
                     </Form.Label>
-                    <Form.Control
-                      value={
-                        scheduledForLocalTime
-                          ? new Intl.DateTimeFormat("en-US", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              hour12: true,
-                            }).format(scheduledForLocalTime)
-                          : ""
-                      }
-                    />
+                    <Form.Label>
+                      {scheduledFor
+                        ? new Intl.DateTimeFormat("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }).format(scheduledFor)
+                        : ""}
+                    </Form.Label>
                   </>
                 )}
               </Form.Group>
             )}
-            {scheduledForLocalTime !== "" && displayreminderLocalTime && (
+            {scheduledFor !== "" && displayreminderLocalTime && (
               <Button
                 style={{
                   backgroundColor: "green",
@@ -407,7 +369,6 @@ function Createtask() {
                 }}
                 className="w-100"
                 onClick={() => {
-                  setScheduledForLocalTime("");
                   setScheduledFor("");
                   setDisplayscheduledForLocalTime(false);
                 }}
@@ -428,14 +389,14 @@ function Createtask() {
                 Add Reminder
               </Button>
             )}
-            {reminderLocalTime !== "" && (
+            {reminder !== "" && (
               <Form.Group className="mb-3" controlId="add reminder">
                 {displayreminderLocalTime && (
                   <>
                     <Form.Label className="text-light"> Reminder</Form.Label>
                     <Form.Control
                       value={
-                        reminderLocalTime
+                        reminder
                           ? new Intl.DateTimeFormat("en-US", {
                               year: "numeric",
                               month: "short",
@@ -443,7 +404,7 @@ function Createtask() {
                               hour: "2-digit",
                               minute: "2-digit",
                               hour12: true,
-                            }).format(reminderLocalTime)
+                            }).format(reminder)
                           : ""
                       }
                     />
@@ -460,7 +421,6 @@ function Createtask() {
                 }}
                 className="w-100"
                 onClick={() => {
-                  setReminderLocalTime("");
                   setReminder("");
                   setDisplayreminderLocalTime(false);
                 }}
@@ -610,7 +570,7 @@ function Createtask() {
                   />
                 }
                 value={
-                  scheduledForLocalTime
+                  scheduledFor
                     ? new Intl.DateTimeFormat("en-US", {
                         year: "numeric",
                         month: "short",
@@ -618,10 +578,10 @@ function Createtask() {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: true,
-                      }).format(scheduledForLocalTime)
+                      }).format(scheduledFor)
                     : ""
                 }
-                selected={scheduledForLocalTime}
+                selected={scheduledFor}
                 onChange={handleDateChangeForScheduledFor}
                 showTimeSelect
                 timeIntervals={1}
@@ -661,7 +621,7 @@ function Createtask() {
               <DatePicker
                 className="custom-datepicker"
                 value={
-                  reminderLocalTime
+                  reminder
                     ? new Intl.DateTimeFormat("en-US", {
                         year: "numeric",
                         month: "short",
@@ -669,10 +629,10 @@ function Createtask() {
                         hour: "2-digit",
                         minute: "2-digit",
                         hour12: true,
-                      }).format(reminderLocalTime)
+                      }).format(reminder)
                     : ""
                 }
-                selected={reminderLocalTime}
+                selected={reminder}
                 onChange={handleDateChangeForReminder}
                 showTimeSelect
                 timeIntervals={1}
