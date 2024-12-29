@@ -216,10 +216,10 @@ function Createtask() {
         body: JSON.stringify({
           title,
           description,
-          scheduledFor: scheduledForLocalTime.toISOString(),
+          scheduledFor: scheduledFor.toISOString(),
           priority,
           addOnReminderlist,
-          reminder: reminderLocalTime.toISOString(),
+          reminder: reminder.toISOString(),
           addOnRepeatlist,
           repeatInterval,
           repeatDate: repeatDate.toISOString(),

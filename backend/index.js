@@ -43,29 +43,31 @@ cron.schedule("* * * * *", async () => {
     now.getUTCSeconds()
   );
   try {
-    const taskstobereminded = await Task.find({});
-    taskstobereminded.forEach(async (task) => {
-      if (
-        task.reminder &&
-        task.addOnReminderlist === true &&
-        nowUTC >= task.reminder.getTime()
-      ) {
-        task.isNotified = true;
-        const savereminder = await task.save();
-      }
-      if (
-        task.repeatDate &&
-        task.repeatDate instanceof Date &&
-        task.addOnRepeatlist === true &&
-        nowUTC >= task.repeatDate.getTime()
-      ) {
-        task.isRepeat = true;
-        task.addOnReminderlist = true;
-        task.isNotified = true;
-        task.reminder = task.repeatDate;
-        const saveRepeat = await task.save();
-      }
+    const taskstobereminded = await Task.find({
+      addOnReminderlist: true,
+      addOnRepeatlist: true,
     });
+
+    for (const task of taskstobereminded) {
+      try {
+        const reminder = new Date(task.reminder);
+        const repeatDate = new Date(task.repeatDate);
+        if (reminder instanceof Date && nowUTC >= reminder.getTime()) {
+          task.isNotified = true;
+          await task.save();
+        }
+
+        if (repeatDate instanceof Date && nowUTC >= repeatDate.getTime()) {
+          task.isRepeat = true;
+          task.addOnReminderlist = true;
+          task.isNotified = true;
+          task.reminder = task.repeatDate;
+          await task.save();
+        }
+      } catch (error) {
+        console.log("Error while scheduling tasks: ", error);
+      }
+    }
   } catch (error) {
     console.log("Error while scheduling tasks: ", error);
   }
