@@ -5,11 +5,12 @@ import Modal from "react-bootstrap/Modal";
 import { useState, useContext, useEffect, useRef } from "react";
 import { TaskContext } from "./Contextprovider.jsx";
 import "react-datepicker/dist/react-datepicker.css";
-import Loader from "./Loader.jsx";
+import DatePicker from "react-datepicker";
 import toast from "react-hot-toast";
 import { Editor } from "@tinymce/tinymce-react";
-import DatePicker from "react-datepicker";
+
 import "./Createtask.css";
+import { useNavigate } from "react-router-dom";
 
 function Createtask() {
   const { BASEAPI, getalltasks, getallpriorities, prioritylist } =
@@ -25,8 +26,6 @@ function Createtask() {
   const handleShowForDueDate = () => setShowDueDate(true);
   const handleCloseForReminder = () => setShowAddReminder(false);
   const handleShowForReminder = () => setShowAddReminder(true);
-
-  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState(new Date());
@@ -41,8 +40,9 @@ function Createtask() {
   const [repeatInterval, setRepeatInterval] = useState("");
   const [repeatDate, setRepeatDate] = useState(new Date());
   const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
-
+  const navigate = useNavigate();
   const textAreaRef = useRef(null);
+  
   const filterTime = (time) => {
     const currentDate = new Date();
     const selectedDate = new Date(time);
@@ -59,7 +59,7 @@ function Createtask() {
   };
 
   useEffect(() => {
-    const now = new Date("2024-12-29T16:41:13+03:00");
+    const now = new Date();
     if (repeatInterval === "Daily") {
       const repeatDate = new Date(
         now.getFullYear(),
@@ -125,11 +125,10 @@ function Createtask() {
         date.getHours(),
         date.getMinutes()
       );
-      setReminder(localDate);
+
       setReminder(localDate);
       setDisplayreminderLocalTime(true);
       setaddOnReminderlist(true);
-      console.log("reminderLocalTime", localDate);
     } else {
       setReminder(null);
     }
@@ -202,8 +201,10 @@ function Createtask() {
         setRepeatDate(null);
         getalltasks();
         setShowAddRepeat(false);
-        toast.success("Task added successfully");
-        console.log("Task added:", response.task);
+        setDisplayreminderLocalTime(false);
+        setDisplayscheduledForLocalTime(false);
+        navigate(`/seetask/${response.task._id}`);
+        toast.success("Task added");
       }
     } catch (error) {
       console.log("Error while creating new task", error);
@@ -211,108 +212,118 @@ function Createtask() {
   };
   return (
     <>
-      {isLoading === true && <Loader />}
-      {!isLoading && (
-        <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
-          <Form
+      <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
+        <Form
+          style={{
+            backgroundColor: "#151533",
+            border: "1px solid rgb(255,255,255,0.2)",
+            padding: "10px 20px",
+          }}
+          onSubmit={handleCreateTask}
+          className="mb-5"
+        >
+          <h4 className="text-center text-light">Add new task</h4>
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label className="text-light">Task Title</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Title of task"
+              name="title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label className="text-light">Task Description</Form.Label>
+
+            <Editor
+              tinymceScriptSrc="/tinymce/tinymce.min.js"
+              licenseKey="gpl"
+              value={description}
+              onEditorChange={(newContent) => {
+                setDescription(newContent);
+              }}
+              init={{
+                skin: "oxide-dark",
+                height: 500,
+                plugins: [
+                  "fullscreen",
+                  "anchor",
+                  "autolink",
+                  "charmap",
+                  "codesample",
+                  "emoticons",
+                  "image",
+                  "link",
+                  "lists",
+                  "media",
+                  "searchreplace",
+                  "table",
+                  "visualblocks",
+                  "wordcount",
+                  "autosave",
+                  "code",
+                  "codesample",
+                  "directionality",
+                  "importcss",
+                  "insertdatetime",
+                  "preview",
+                  "quickbars",
+                ],
+                toolbar:
+                  " undo redo restoredraft preview paste | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat codesample code ltr rtl /my-styles.css insertdatetime ",
+                fullscreen_native: true,
+                paste_as_text: true,
+                mobile: {
+                  menubar: true,
+                },
+                toolbar_sticky: true,
+                tinycomments_mode: "embedded",
+                tinycomments_author: "Author name",
+                mergetags_list: [
+                  { value: "First.Name", title: "First Name" },
+                  { value: "Email", title: "Email" },
+                ],
+              }}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="priority">
+            <Form.Label className="text-light">Task Category</Form.Label>
+            <Form.Select
+              value={priority}
+              onChange={(e) => {
+                setPriority(e.target.value);
+              }}
+              aria-label="task priority"
+            >
+              <option value="">Select Task Category</option>
+
+              {prioritylist.map(
+                (level) =>
+                  level &&
+                  level.priorityname && (
+                    <option value={level.priorityname} key={level._id}>
+                      {level.priorityname}
+                    </option>
+                  )
+              )}
+            </Form.Select>
+          </Form.Group>
+          <Button
             style={{
               backgroundColor: "#151533",
               border: "1px solid rgb(255,255,255,0.2)",
-              padding: "10px 20px",
+              margin: "5px auto",
             }}
-            onSubmit={handleCreateTask}
-            className="mb-5"
+            className="w-100"
+            onClick={handleShow}
           >
-            <h4 className="text-center text-light">Add new task</h4>
-            <Form.Group className="mb-3" controlId="title">
-              <Form.Label className="text-light">Task Title</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Title of task"
-                name="title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-                required
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="description">
-              <Form.Label className="text-light">Task Description</Form.Label>
-
-              <Editor
-                tinymceScriptSrc="/tinymce/tinymce.min.js"
-                licenseKey="gpl"
-                value={description}
-                onEditorChange={(newContent) => {
-                  setDescription(newContent);
-                }}
-                init={{
-                  skin: "oxide-dark",
-                  height: 500,
-                  plugins: [
-                    "fullscreen",
-                    "anchor",
-                    "autolink",
-                    "charmap",
-                    "codesample",
-                    "emoticons",
-                    "image",
-                    "link",
-                    "lists",
-                    "media",
-                    "searchreplace",
-                    "table",
-                    "visualblocks",
-                    "wordcount",
-                    "autosave",
-                    "code",
-                    "codesample",
-                    "directionality",
-                    "importcss",
-                    "insertdatetime",
-                    "preview",
-                    "quickbars",
-                  ],
-                  toolbar:
-                    " undo redo restoredraft preview paste | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat codesample code ltr rtl /my-styles.css insertdatetime ",
-                  fullscreen_native: true,
-                  paste_as_text: true,
-                  mobile: {
-                    menubar: true,
-                  },
-                  toolbar_sticky: true,
-                  tinycomments_mode: "embedded",
-                  tinycomments_author: "Author name",
-                  mergetags_list: [
-                    { value: "First.Name", title: "First Name" },
-                    { value: "Email", title: "Email" },
-                  ],
-                }}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="priority">
-              <Form.Label className="text-light">Task Category</Form.Label>
-              <Form.Select
-                value={priority}
-                onChange={(e) => {
-                  setPriority(e.target.value);
-                }}
-                aria-label="task priority"
-              >
-                <option value="">Select Task Category</option>
-
-                {prioritylist.map(
-                  (level) =>
-                    level &&
-                    level.priorityname && (
-                      <option value={level.priorityname} key={level._id}>
-                        {level.priorityname}
-                      </option>
-                    )
-                )}
-              </Form.Select>
-            </Form.Group>
+            Add new category
+          </Button>
+          {!displayscheduledForLocalTime && (
             <Button
               style={{
                 backgroundColor: "#151533",
@@ -320,83 +331,46 @@ function Createtask() {
                 margin: "5px auto",
               }}
               className="w-100"
-              onClick={handleShow}
+              onClick={handleShowForDueDate}
             >
-              Add Category
+              Add Due Date
             </Button>
-            {!displayscheduledForLocalTime && (
-              <Button
-                style={{
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={handleShowForDueDate}
-              >
-                Add Due Date
-              </Button>
-            )}
-            {scheduledFor !== "" && (
-              <Form.Group className="mb-3" controlId="due date and time">
-                {displayscheduledForLocalTime && (
-                  <>
-                    <Form.Label className="text-light">
-                      Due Date and Time
-                    </Form.Label>
-                    <Form.Label>
-                      {scheduledFor
-                        ? new Intl.DateTimeFormat("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          }).format(scheduledFor)
-                        : ""}
-                    </Form.Label>
-                  </>
-                )}
-              </Form.Group>
-            )}
-            {scheduledFor !== "" && displayreminderLocalTime && (
-              <Button
-                style={{
-                  backgroundColor: "green",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={() => {
-                  setScheduledFor("");
-                  setDisplayscheduledForLocalTime(false);
-                }}
-              >
-                Remove Due Date
-              </Button>
-            )}
-            {!displayreminderLocalTime && (
-              <Button
-                style={{
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={handleShowForReminder}
-              >
-                Add Reminder
-              </Button>
-            )}
-            {reminder !== "" && (
-              <Form.Group className="mb-3" controlId="add reminder">
-                {displayreminderLocalTime && (
-                  <>
-                    <Form.Label className="text-light"> Reminder</Form.Label>
-                    <Form.Control
-                      value={
-                        reminder
+          )}
+          {scheduledFor !== "" && displayscheduledForLocalTime && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="due date and time"
+            >
+              {displayscheduledForLocalTime && (
+                <>
+                  <Form.Label
+                    style={{
+                      display: "block",
+                      textAlign: "center",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Due Date and Time
+                  </Form.Label>
+                  {scheduledFor !== "" && displayscheduledForLocalTime && (
+                    <Container
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "15px",
+                        flexWrap: "nowrap",
+                      }}
+                    >
+                      <Form.Label style={{ wordBreak: "break-word" }}>
+                        {scheduledFor
                           ? new Intl.DateTimeFormat("en-US", {
                               year: "numeric",
                               month: "short",
@@ -404,64 +378,160 @@ function Createtask() {
                               hour: "2-digit",
                               minute: "2-digit",
                               hour12: true,
-                            }).format(reminder)
-                          : ""
-                      }
-                    />
-                  </>
-                )}
-              </Form.Group>
-            )}
-            {displayreminderLocalTime && (
-              <Button
+                            }).format(scheduledFor)
+                          : ""}
+                      </Form.Label>
+                      {scheduledFor !== "" && displayscheduledForLocalTime && (
+                        <Button
+                          style={{
+                            backgroundColor: "green",
+                            border: "1px solid rgb(255,255,255,0.2)",
+                            padding: "2px 5px",
+                          }}
+                          onClick={() => {
+                            setScheduledFor("");
+                            setDisplayscheduledForLocalTime(false);
+                            handleShowForDueDate();
+                          }}
+                        >
+                          Change
+                        </Button>
+                      )}
+                    </Container>
+                  )}
+                </>
+              )}
+            </Form.Group>
+          )}
+          {!displayreminderLocalTime && (
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+                margin: "5px auto",
+              }}
+              className="w-100"
+              onClick={handleShowForReminder}
+            >
+              Add Reminder
+            </Button>
+          )}
+          {reminder !== "" && displayreminderLocalTime && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="add reminder"
+            >
+              {displayreminderLocalTime && (
+                <>
+                  <Form.Label
+                    style={{
+                      display: "block",
+                      textAlign: "center",
+                      textWrap: "nowrap",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {" "}
+                    Reminder
+                  </Form.Label>
+
+                  <Container
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "15px",
+                      flexWrap: "nowrap",
+                    }}
+                  >
+                    <Form.Label style={{ wordBreak: "break-word" }}>
+                      {reminder
+                        ? new Intl.DateTimeFormat("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }).format(reminder)
+                        : ""}
+                    </Form.Label>
+                    {reminder !== "" && displayreminderLocalTime && (
+                      <Button
+                        style={{
+                          backgroundColor: "green",
+                          border: "1px solid rgb(255,255,255,0.2)",
+                          padding: "2px 5px",
+                        }}
+                        onClick={() => {
+                          setReminder("");
+                          setDisplayreminderLocalTime(false);
+                          handleShowForReminder();
+                        }}
+                      >
+                        Change
+                      </Button>
+                    )}
+                  </Container>
+                </>
+              )}
+            </Form.Group>
+          )}
+          {showAddRepeat === false && (
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+                margin: "5px auto",
+              }}
+              className="w-100"
+              onClick={() => {
+                setShowAddRepeat(true);
+                setaddOnRepeatlist(true);
+              }}
+            >
+              Repeat Task
+            </Button>
+          )}{" "}
+          {showAddRepeat === true && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="repeat task"
+            >
+              <Form.Label
                 style={{
-                  backgroundColor: "green",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={() => {
-                  setReminder("");
-                  setDisplayreminderLocalTime(false);
+                  display: "block",
+                  textAlign: "center",
+                  textWrap: "nowrap",
+                  color: "white",
+                  fontWeight: "bold",
                 }}
               >
-                Remove Reminder
-              </Button>
-            )}
-            {showAddRepeat === false && (
-              <Button
+                Repeat Interval
+              </Form.Label>
+              <Container
                 style={{
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={() => {
-                  setShowAddRepeat(true);
-                  setaddOnRepeatlist(true);
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "25px",
                 }}
               >
-                Repeat Task
-              </Button>
-            )}{" "}
-            {showAddRepeat === true && (
-              <Button
-                style={{
-                  backgroundColor: "green",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  margin: "5px auto",
-                }}
-                className="w-100"
-                onClick={() => {
-                  setShowAddRepeat(false);
-                }}
-              >
-                Remove Repeat Task
-              </Button>
-            )}
-            {showAddRepeat === true && (
-              <Form.Group className="mb-3" controlId="repeat task">
                 <Form.Select
+                  style={{ width: "50%" }}
                   value={repeatInterval}
                   onChange={(e) => {
                     setRepeatInterval(e.target.value);
@@ -478,22 +548,38 @@ function Createtask() {
                       )
                   )}
                 </Form.Select>
-              </Form.Group>
-            )}
-            <Button
-              style={{
-                backgroundColor: "green",
-                border: "1px solid rgb(255,255,255,0.2)",
-                margin: "15px auto",
-              }}
-              type="submit"
-              className="w-100"
-            >
-              Create Task
-            </Button>
-          </Form>
-        </Container>
-      )}
+                {showAddRepeat === true && (
+                  <Button
+                    style={{
+                      backgroundColor: "green",
+                      border: "1px solid rgb(255,255,255,0.2)",
+                      padding: "2px 5px",
+                    }}
+                    onClick={() => {
+                      setShowAddRepeat(false);
+                      setRepeatDate("");
+                      setRepeatInterval("");
+                    }}
+                  >
+                    Don&apos;t repeat
+                  </Button>
+                )}
+              </Container>
+            </Form.Group>
+          )}
+          <Button
+            style={{
+              backgroundColor: "green",
+              border: "1px solid rgb(255,255,255,0.2)",
+              margin: "15px auto",
+            }}
+            type="submit"
+            className="w-100"
+          >
+            Create Task
+          </Button>
+        </Form>
+      </Container>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Body style={{ backgroundColor: "#151533" }}>
           <Form onSubmit={handlecreatepriority}>
@@ -503,11 +589,13 @@ function Createtask() {
                   fontSize: "20px",
                   margin: "15px auto",
                   textAlign: "center",
+                  display: "block",
                 }}
               >
-                Add Category
+                Add new category
               </Form.Label>
               <Form.Control
+                style={{ width: "80%", display: "block", margin: "5px auto" }}
                 value={priorityname}
                 onChange={(e) => {
                   setPriorityname(e.target.value);
@@ -516,42 +604,59 @@ function Createtask() {
                 placeholder="write category name"
               />
             </Form.Group>
-            <Button
+            <Container
               style={{
-                backgroundColor: "#151533",
-                margin: "10px 20px 10px auto",
-                width: "45%",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                margin: "5px auto 40px auto",
               }}
-              type="submit"
             >
-              Submit
-            </Button>
-            <Button
-              style={{
-                backgroundColor: "#151533",
-                margin: "10px auto 10px 15px ",
-                width: "45%",
-              }}
-              onClick={handleClose}
-            >
-              Close
-            </Button>
+              <Button
+                style={{
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                type="submit"
+              >
+                Submit
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleClose}
+              >
+                Close
+              </Button>
+            </Container>
           </Form>
         </Modal.Body>
       </Modal>
-
       <Modal show={showDueDate} onHide={handleCloseForDueDate} centered>
         <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
           <Form>
-            <Form.Group className="mb-3" controlId="Due Date">
+            <Form.Group
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "30px",
+              }}
+              className="mb-0"
+              controlId="Due Date"
+            >
               <Form.Label
                 style={{
                   fontSize: "20px",
-                  margin: "15px auto",
                   textAlign: "center",
+                  color: "white",
+                  margin: "10px auto",
+                  display: "block",
                 }}
               >
-                Add Due Date and Time
+                Select Due Date and Time
               </Form.Label>
               <DatePicker
                 className="custom-datepicker"
@@ -590,30 +695,52 @@ function Createtask() {
               />
             </Form.Group>
 
-            <Button
-              style={{
-                display: "block",
-                backgroundColor: "#151533",
-                margin: "10px auto 10px auto",
-                width: "45%",
-              }}
-              onClick={handleCloseForDueDate}
-            >
-              Done
-            </Button>
+            <Container style={{ display: "flex", flexDirection: "row" }}>
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  margin: "10px auto 10px auto",
+                  width: "30%",
+                }}
+                onClick={handleCloseForDueDate}
+              >
+                Done
+              </Button>
+              <Button
+                type="button"
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  margin: "10px auto 10px auto",
+                  width: "30%",
+                }}
+                onClick={handleCloseForDueDate}
+              >
+                Cancel
+              </Button>
+            </Container>
           </Form>
         </Modal.Body>
       </Modal>
-
       <Modal show={showAddReminder} onHide={handleCloseForReminder} centered>
         <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
           <Form>
-            <Form.Group className="mb-3" controlId="Reminder">
+            <Form.Group
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "30px",
+              }}
+              className="mb-1"
+              controlId="Reminder"
+            >
               <Form.Label
                 style={{
                   fontSize: "20px",
                   margin: "15px auto",
                   textAlign: "center",
+                  color: "white",
                 }}
               >
                 Reminder
@@ -654,17 +781,35 @@ function Createtask() {
                 }
               />
             </Form.Group>
-            <Button
+            <Container
               style={{
-                display: "block",
-                backgroundColor: "#151533",
-                margin: "10px auto 10px auto",
-                width: "45%",
+                display: "flex",
+                flexDirection: "row",
+                margin: "15px auto",
+                justifyContent: "space-evenly",
               }}
-              onClick={handleCloseForReminder}
             >
-              Done
-            </Button>
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleCloseForReminder}
+              >
+                Done
+              </Button>
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleCloseForReminder}
+              >
+                Cancel
+              </Button>
+            </Container>
           </Form>
         </Modal.Body>
       </Modal>

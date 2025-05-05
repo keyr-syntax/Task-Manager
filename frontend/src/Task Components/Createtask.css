@@ -1,7 +1,7 @@
 form {
   display: flex;
   flex-direction: column;
-  width: 50%;
+  width: 100%;
   margin: 80px auto;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -11,21 +11,7 @@ form h3 {
   font-weight: 500;
   font-size: 25px;
 }
-form button {
-  border: none;
-  display: block;
-  background-color: #151533;
-  color: white;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  margin: 10px auto;
-  padding: 10px 20px;
-  width: 100px;
-  font-weight: 100;
-  font-size: 16px;
-  border: 1px solid white;
-  border-radius: 6px;
-  cursor: pointer;
-}
+
 .input-title {
   margin: 5px 25px;
   font-weight: 200;
@@ -46,19 +32,11 @@ form button {
   resize: none;
   overflow: hidden;
   vertical-align: top;
-  /* width: 100%;
-  max-width: 600px; */
+
   height: 50px;
   padding: 10px;
   font-size: 16px;
 }
-.input-description::placeholder {
-  color: gray;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  padding: 10px 5px;
-  vertical-align: top;
-}
-/* More specific DatePicker styles */
 .custom-datepicker .react-datepicker-wrapper,
 .custom-datepicker .react-datepicker__input-container,
 .custom-datepicker .react-datepicker__input-container input {
@@ -92,65 +70,12 @@ form button {
   color: black !important;
 }
 
-/* Ensure time list is readable */
 .react-datepicker__time-list-item {
   color: black !important;
 }
 
 @media only screen and (max-width: 800px) {
   form {
-    width: 70%;
-  }
-  .add-reminder-button {
-    display: block;
-    margin: 5px 25px;
-    padding: 10px 15px;
-    white-space: nowrap;
-    width: 85vw;
-  }
-}
-.label-date-time-picker {
-  margin: 5px 25px;
-  font-weight: 200;
-  border-radius: 6px;
-  color: white;
-  display: block;
-  font-size: 18px;
-}
-.date-picker {
-  display: block;
-  margin: 5px 25px;
-  height: 6vh;
-  width: 80vw;
-  font-weight: bold;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-}
-.date-picker::placeholder {
-  font-weight: 200;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-  padding: 10px 5px;
-  color: gray;
-}
-.select-priority {
-  margin: 5px 25px;
-  font-weight: 200;
-  border-radius: 6px;
-  padding: 5px 10px;
-  height: 6vh;
-  font-size: 16px;
-}
-.add-reminder-button {
-  display: block;
-  margin: 5px 25px;
-  padding: 10px 15px;
-  white-space: nowrap;
-  width: 255px;
-}
-
-@media only screen and (max-width: 800px) {
-  .add-reminder-button {
-    width: 82vw;
+    width: 100%;
   }
 }

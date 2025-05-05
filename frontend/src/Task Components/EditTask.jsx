@@ -2,17 +2,20 @@ import { useRef, useState } from "react";
 import { TaskContext } from "./Contextprovider.jsx";
 import { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Loader from "./Loader.jsx";
 import "react-datepicker/dist/react-datepicker.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import toast from "react-hot-toast";
 import { Editor } from "@tinymce/tinymce-react";
+import Modal from "react-bootstrap/Modal";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
+
+import "./Createtask.css";
 function EditTask() {
   const { getalltasks, BASEAPI, prioritylist, getallpriorities } =
     useContext(TaskContext);
-  const [isLoading, setIsLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [scheduledFor, setScheduledFor] = useState("");
@@ -24,16 +27,138 @@ function EditTask() {
   const [repeatDate, setRepeatDate] = useState(null);
   // eslint-disable-next-line no-unused-vars
   const [category, setCategory] = useState("Miscellaneous");
-  const [addreminder, setAddreminder] = useState(false);
-  const [addrepeat, setAddrepeat] = useState(false);
-  const [controlforremovebutton, setcontrolforremovebutton] = useState(false);
-  const [controlforremoverepeatbutton, setcontrolforremoverepeatbutton] =
-    useState(false);
+  const [priorityname, setPriorityname] = useState("");
 
-  const textAreaRef = useRef(null);
-  const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
+  const [showDueDate, setShowDueDate] = useState(false);
+  const [showAddReminder, setShowAddReminder] = useState(false);
+  const [showAddRepeat, setShowAddRepeat] = useState(false);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+  const handleCloseForDueDate = () => setShowDueDate(false);
+  const handleShowForDueDate = () => setShowDueDate(true);
+  const handleCloseForReminder = () => setShowAddReminder(false);
+  const handleShowForReminder = () => setShowAddReminder(true);
+  const [displayscheduledForLocalTime, setDisplayscheduledForLocalTime] =
+    useState(false);
+  const [displayreminderLocalTime, setDisplayreminderLocalTime] =
+    useState(false);
   const { _id } = useParams();
   const navigate = useNavigate();
+  const filterTime = (time) => {
+    const currentDate = new Date();
+    const selectedDate = new Date(time);
+
+    if (
+      selectedDate.getDate() === currentDate.getDate() &&
+      selectedDate.getMonth() === currentDate.getMonth() &&
+      selectedDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      return time.getTime() >= currentDate.getTime();
+    }
+
+    return true;
+  };
+  useEffect(() => {
+    getallpriorities();
+  }, []);
+
+  const handlecreatepriority = async (e) => {
+    e.preventDefault();
+
+    try {
+      const data = await fetch(`${BASEAPI}/api/priority/createpriority`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ priorityname }),
+      });
+      const response = await data.json();
+      if (response.success) {
+        toast.success("Category added successfully");
+        handleClose();
+        getallpriorities();
+        setPriorityname("");
+        setPriority(response.priority.priorityname);
+      }
+    } catch (error) {
+      console.log("Error occurred while creating priority", error);
+    }
+  };
+  const handleDateChangeForScheduledFor = (date) => {
+    if (date) {
+      const localDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+
+      setScheduledFor(localDate);
+      setDisplayscheduledForLocalTime(true);
+      console.log("scheduledForLocalTime", localDate);
+    } else {
+      setScheduledFor(null);
+    }
+  };
+  const handleDateChangeForReminder = (date) => {
+    if (date) {
+      const localDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes()
+      );
+
+      setReminder(localDate);
+      setDisplayreminderLocalTime(true);
+      setaddOnReminderlist(true);
+    } else {
+      setReminder(null);
+    }
+  };
+  useEffect(() => {
+    const now = new Date();
+    if (repeatInterval === "Daily") {
+      const repeatDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
+      );
+      setRepeatDate(repeatDate);
+    } else if (repeatInterval === "Weekly") {
+      const repeatDate = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 7,
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
+      );
+      setRepeatDate(repeatDate);
+    } else if (repeatInterval === "Monthly") {
+      const repeatDate = new Date(
+        now.getFullYear(),
+        now.getMonth() + 1,
+        now.getDate(),
+        now.getHours(),
+        now.getMinutes(),
+        now.getSeconds()
+      );
+      setRepeatDate(repeatDate);
+    } else if (repeatInterval === "None") {
+      setRepeatDate(null);
+    }
+  }, [repeatInterval]);
+  const textAreaRef = useRef(null);
+  const repeatIntervalList = ["None", "Daily", "Weekly", "Monthly"];
+
   useEffect(() => {
     const now = new Date();
     if (repeatInterval === "Daily") {
@@ -78,7 +203,7 @@ function EditTask() {
   }, [repeatInterval]);
   useEffect(() => {
     getonetask();
-    // filteronetaskbyid();
+
     getallpriorities();
   }, [_id]);
   const adjustHeight = () => {
@@ -93,7 +218,6 @@ function EditTask() {
   }, [description, title]);
 
   const getonetask = async () => {
-    setIsLoading(true);
     try {
       const data = await fetch(`${BASEAPI}/api/task/fetchonetask/${_id}`, {
         method: "GET",
@@ -112,14 +236,9 @@ function EditTask() {
         setScheduledFor(duedate);
         setReminder(reminderdate);
         setaddOnReminderlist(response.task.addOnReminderlist);
-        setcontrolforremovebutton(response.task.addOnReminderlist);
-        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
         setaddOnRepeatlist(response.task.addOnRepeatlist);
         setRepeatDate(repeatdate);
         setRepeatInterval(response.task.repeatInterval);
-        setAddreminder(false);
-        setAddrepeat(false);
-        setIsLoading(false);
       }
     } catch (error) {
       console.log("Error fetching task:", error);
@@ -128,7 +247,7 @@ function EditTask() {
 
   const edittask = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
+
     console.log("Is this function working?");
     try {
       const data = await fetch(`${BASEAPI}/api/task/updatetask/${_id}`, {
@@ -154,7 +273,7 @@ function EditTask() {
       console.log("Is this function working?", response);
       if (response.success) {
         console.log("task updated", response.task);
-        setIsLoading(false);
+
         getalltasks();
         toast.success("Task updated successfully");
         navigate(`/seetask/${_id}`);
@@ -164,6 +283,7 @@ function EditTask() {
       console.log("Error while editing task", error);
     }
   };
+  // eslint-disable-next-line no-unused-vars
   const turnoffreminder = async (_id) => {
     try {
       const data = await fetch(`${BASEAPI}/api/task/turnoffreminder/${_id}`, {
@@ -184,19 +304,18 @@ function EditTask() {
         setScheduledFor(duedate);
         setReminder(reminderdate);
         setaddOnReminderlist(response.task.addOnReminderlist);
-        setcontrolforremovebutton(response.task.addOnReminderlist);
-        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
+
         setaddOnRepeatlist(response.task.addOnRepeatlist);
         setRepeatDate(repeatdate);
         setRepeatInterval(response.task.repeatInterval);
-        setAddreminder(false);
-        setAddrepeat(false);
+
         toast.success("Task Reminder turned-off successfully");
       }
     } catch (error) {
       console.log("Error while turning off reminder", error);
     }
   };
+  // eslint-disable-next-line no-unused-vars
   const turnoffrepeat = async (_id) => {
     try {
       const data = await fetch(`${BASEAPI}/api/task/turnoffrepeat/${_id}`, {
@@ -217,13 +336,11 @@ function EditTask() {
         setScheduledFor(duedate);
         setReminder(reminderdate);
         setaddOnReminderlist(response.task.addOnReminderlist);
-        setcontrolforremovebutton(response.task.addOnReminderlist);
-        setcontrolforremoverepeatbutton(response.task.addOnRepeatlist);
+
         setaddOnRepeatlist(response.task.addOnRepeatlist);
         setRepeatDate(repeatdate);
         setRepeatInterval(response.task.repeatInterval);
-        setAddreminder(false);
-        setAddrepeat(false);
+
         toast.success("Task Repeat turned-off successfully");
       }
     } catch (error) {
@@ -233,344 +350,326 @@ function EditTask() {
 
   return (
     <>
-      {isLoading === true && <Loader />}
-      {!isLoading && (
-        <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
-          <Form
+      <Container style={{ maxWidth: "500px", marginTop: "70px" }}>
+        <Form
+          style={{
+            backgroundColor: "#151533",
+            border: "1px solid rgb(255,255,255,0.2)",
+            padding: "10px 20px",
+          }}
+          onSubmit={edittask}
+          className="mb-5"
+        >
+          <h4 className="text-center text-light">Add new task</h4>
+          <Form.Group className="mb-3" controlId="title">
+            <Form.Label className="text-light">Task Title</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Title of task"
+              name="title"
+              value={title}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="description">
+            <Form.Label className="text-light">Task Description</Form.Label>
+
+            <Editor
+              tinymceScriptSrc="/tinymce/tinymce.min.js"
+              licenseKey="gpl"
+              value={description}
+              onEditorChange={(newContent) => {
+                setDescription(newContent);
+              }}
+              init={{
+                skin: "oxide-dark",
+                height: 500,
+                plugins: [
+                  "fullscreen",
+                  "anchor",
+                  "autolink",
+                  "charmap",
+                  "codesample",
+                  "emoticons",
+                  "image",
+                  "link",
+                  "lists",
+                  "media",
+                  "searchreplace",
+                  "table",
+                  "visualblocks",
+                  "wordcount",
+                  "autosave",
+                  "code",
+                  "codesample",
+                  "directionality",
+                  "importcss",
+                  "insertdatetime",
+                  "preview",
+                  "quickbars",
+                ],
+                toolbar:
+                  " undo redo restoredraft preview paste | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat codesample code ltr rtl /my-styles.css insertdatetime ",
+                fullscreen_native: true,
+                paste_as_text: true,
+                mobile: {
+                  menubar: true,
+                },
+                toolbar_sticky: true,
+                tinycomments_mode: "embedded",
+                tinycomments_author: "Author name",
+                mergetags_list: [
+                  { value: "First.Name", title: "First Name" },
+                  { value: "Email", title: "Email" },
+                ],
+              }}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="priority">
+            <Form.Label className="text-light">Task Category</Form.Label>
+            <Form.Select
+              value={priority}
+              onChange={(e) => {
+                setPriority(e.target.value);
+              }}
+              aria-label="task priority"
+            >
+              <option value="">Select Task Category</option>
+
+              {prioritylist.map(
+                (level) =>
+                  level &&
+                  level.priorityname && (
+                    <option value={level.priorityname} key={level._id}>
+                      {level.priorityname}
+                    </option>
+                  )
+              )}
+            </Form.Select>
+          </Form.Group>
+          <Button
             style={{
               backgroundColor: "#151533",
               border: "1px solid rgb(255,255,255,0.2)",
-              padding: "10px 20px",
+              margin: "5px auto",
             }}
-            onSubmit={edittask}
-            className="mb-5"
+            className="w-100"
+            onClick={handleShow}
           >
-            <h4 className="text-center text-light">Edit task</h4>
-            <Form.Group className="mb-3" controlId="title">
-              <Form.Label className="text-light">Task Title</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Title of task"
-                name="title"
-                value={title}
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-                required
-              />
+            Add new category
+          </Button>
+          {!displayscheduledForLocalTime && (
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+                margin: "5px auto",
+              }}
+              className="w-100"
+              onClick={handleShowForDueDate}
+            >
+              Add Due Date
+            </Button>
+          )}
+          {scheduledFor !== "" && displayscheduledForLocalTime && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="due date and time"
+            >
+              {displayscheduledForLocalTime && (
+                <>
+                  <Form.Label
+                    style={{
+                      display: "block",
+                      textAlign: "center",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Due Date and Time
+                  </Form.Label>
+                  {scheduledFor !== "" && displayscheduledForLocalTime && (
+                    <Container
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "15px",
+                        flexWrap: "nowrap",
+                      }}
+                    >
+                      <Form.Label style={{ wordBreak: "break-word" }}>
+                        {scheduledFor
+                          ? new Intl.DateTimeFormat("en-US", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            }).format(scheduledFor)
+                          : ""}
+                      </Form.Label>
+                      {scheduledFor !== "" && displayscheduledForLocalTime && (
+                        <Button
+                          style={{
+                            backgroundColor: "green",
+                            border: "1px solid rgb(255,255,255,0.2)",
+                            padding: "2px 5px",
+                          }}
+                          onClick={() => {
+                            setScheduledFor("");
+                            setDisplayscheduledForLocalTime(false);
+                            handleShowForDueDate();
+                          }}
+                        >
+                          Change
+                        </Button>
+                      )}
+                    </Container>
+                  )}
+                </>
+              )}
             </Form.Group>
-            <Form.Group className="mb-3" controlId="description">
-              <Form.Label className="text-light">Task Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                ref={textAreaRef}
-                value={description}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                  adjustHeight();
-                }}
-                rows={2}
-                placeholder="Task description"
-                required
-              />
-              <Editor
-                // apiKey="x8azhf2t3vo07m8hnf207hemlel93uivm5e1xxtwpo4p79xn"
-                tinymceScriptSrc="/tinymce/tinymce.min.js"
-                licenseKey="gpl"
-                value={description}
-                onEditorChange={(newContent) => {
-                  setDescription(newContent);
-                }}
-                init={{
-                  skin: "oxide-dark",
-                  height: 500,
-                  plugins: [
-                    "fullscreen",
-                    "anchor",
-                    "autolink",
-                    "charmap",
-                    "codesample",
-                    "emoticons",
-                    "image",
-                    "link",
-                    "lists",
-                    "media",
-                    "searchreplace",
-                    "table",
-                    "visualblocks",
-                    "wordcount",
-                    "autosave",
-                    "code",
-                    "codesample",
-                    "directionality",
-                    "importcss",
-                    "insertdatetime",
-                    "preview",
-                    "quickbars",
-                  ],
-                  toolbar:
-                    " undo redo restoredraft preview paste | blocks fontfamily fontsize | fullscreen | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat codesample code ltr rtl /my-styles.css insertdatetime ",
-                  fullscreen_native: true,
-                  paste_as_text: true,
-                  mobile: {
-                    menubar: true,
-                  },
-                  toolbar_sticky: true,
-                  tinycomments_mode: "embedded",
-                  tinycomments_author: "Author name",
-                  mergetags_list: [
-                    { value: "First.Name", title: "First Name" },
-                    { value: "Email", title: "Email" },
-                  ],
-                }}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="category">
-              <Form.Label className="text-light">Task Category</Form.Label>
-              <Form.Select
-                value={priority}
-                onChange={(e) => {
-                  setPriority(e.target.value);
-                }}
-                aria-label="task priority"
-              >
-                <option value="">Select Task Category</option>
-                {prioritylist.map(
-                  (level) =>
-                    level &&
-                    level.priorityname && (
-                      <option value={level.priorityname} key={level._id}>
-                        {level.priorityname}
-                      </option>
-                    )
-                )}
-              </Form.Select>
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="due date and time">
-              <Form.Label className="text-light">Due Date and Time</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                placeholder="Title of task"
-                name="datetime-local"
-                min={new Date().toISOString().slice(0, 16)}
-                value={
-                  scheduledFor ? scheduledFor.toISOString().slice(0, 16) : ""
-                }
-                onChange={(event) => {
-                  const localDateString = event.target.value;
-                  const localDate = new Date(localDateString);
-                  const utcDate = new Date(
-                    Date.UTC(
-                      localDate.getFullYear(),
-                      localDate.getMonth(),
-                      localDate.getDate(),
-                      localDate.getHours(),
-                      localDate.getMinutes(),
-                      localDate.getSeconds()
-                    )
-                  );
-                  setScheduledFor(utcDate);
-                }}
-              />
-            </Form.Group>
+          )}
+          {!displayreminderLocalTime && (
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+                margin: "5px auto",
+              }}
+              className="w-100"
+              onClick={handleShowForReminder}
+            >
+              Add Reminder
+            </Button>
+          )}
+          {reminder !== "" && displayreminderLocalTime && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="add reminder"
+            >
+              {displayreminderLocalTime && (
+                <>
+                  <Form.Label
+                    style={{
+                      display: "block",
+                      textAlign: "center",
+                      textWrap: "nowrap",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {" "}
+                    Reminder
+                  </Form.Label>
 
-            {addOnReminderlist === false && addreminder === false && (
-              <Button
+                  <Container
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: "15px",
+                      flexWrap: "nowrap",
+                    }}
+                  >
+                    <Form.Label style={{ wordBreak: "break-word" }}>
+                      {reminder
+                        ? new Intl.DateTimeFormat("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true,
+                          }).format(reminder)
+                        : ""}
+                    </Form.Label>
+                    {reminder !== "" && displayreminderLocalTime && (
+                      <Button
+                        style={{
+                          backgroundColor: "green",
+                          border: "1px solid rgb(255,255,255,0.2)",
+                          padding: "2px 5px",
+                        }}
+                        onClick={() => {
+                          setReminder("");
+                          setDisplayreminderLocalTime(false);
+                          handleShowForReminder();
+                        }}
+                      >
+                        Change
+                      </Button>
+                    )}
+                  </Container>
+                </>
+              )}
+            </Form.Group>
+          )}
+          {showAddRepeat === false && (
+            <Button
+              style={{
+                backgroundColor: "#151533",
+                border: "1px solid rgb(255,255,255,0.2)",
+                margin: "5px auto",
+              }}
+              className="w-100"
+              onClick={() => {
+                setShowAddRepeat(true);
+                setaddOnRepeatlist(true);
+              }}
+            >
+              Repeat Task
+            </Button>
+          )}{" "}
+          {showAddRepeat === true && (
+            <Form.Group
+              style={{
+                border: "1px solid rgb(255,255,255,0.2)",
+                padding: "10px 10px",
+                borderRadius: "6px",
+              }}
+              className="mb-1"
+              controlId="repeat task"
+            >
+              <Form.Label
                 style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                onClick={() => {
-                  setAddreminder(true);
-                }}
-                type="button"
-              >
-                Add Reminder
-              </Button>
-            )}
-            {addreminder === true && (
-              <Button
-                style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                onClick={() => {
-                  setAddreminder(false);
-                }}
-                type="button"
-                className="add-reminder-button"
-              >
-                Remove Reminder
-              </Button>
-            )}
-            {controlforremovebutton === true && (
-              <Button
-                style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  turnoffreminder(_id);
-                }}
-              >
-                Remove Reminder
-              </Button>
-            )}
-            {controlforremovebutton && (
-              <Form.Group className="mb-3" controlId="add reminder">
-                <Form.Control
-                  type="datetime-local"
-                  placeholder="Change Due date and time of task"
-                  name="datetime-local"
-                  min={new Date().toISOString().slice(0, 16)}
-                  value={reminder ? reminder.toISOString().slice(0, 16) : ""}
-                  selected={reminder}
-                  onChange={(event) => {
-                    const localDateString = event.target.value;
-                    const localDate = new Date(localDateString);
-                    const utcDate = new Date(
-                      Date.UTC(
-                        localDate.getFullYear(),
-                        localDate.getMonth(),
-                        localDate.getDate(),
-                        localDate.getHours(),
-                        localDate.getMinutes(),
-                        localDate.getSeconds()
-                      )
-                    );
-                    setaddOnReminderlist(true);
-                    setReminder(utcDate);
-                  }}
-                />
-              </Form.Group>
-            )}
-            {addreminder && (
-              <Form.Group className="mb-3" controlId="add reminder">
-                <Form.Control
-                  type="datetime-local"
-                  placeholder="Change Due date and time of task"
-                  name="datetime-local"
-                  min={new Date().toISOString().slice(0, 16)}
-                  value={
-                    reminder === null
-                      ? reminder.toISOString().slice(0, 16)
-                      : new Date().toISOString().slice(0, 16)
-                  }
-                  selected={reminder}
-                  onChange={(event) => {
-                    const localDateString = event.target.value;
-                    const localDate = new Date(localDateString);
-                    const utcDate = new Date(
-                      Date.UTC(
-                        localDate.getFullYear(),
-                        localDate.getMonth(),
-                        localDate.getDate(),
-                        localDate.getHours(),
-                        localDate.getMinutes(),
-                        localDate.getSeconds()
-                      )
-                    );
-                    setaddOnReminderlist(true);
-                    setReminder(utcDate);
-                  }}
-                />
-              </Form.Group>
-            )}
-            {addOnRepeatlist === false && addrepeat === false && (
-              <Button
-                style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnRepeatlist(true);
-                  setAddrepeat(true);
+                  display: "block",
+                  textAlign: "center",
+                  textWrap: "nowrap",
+                  color: "white",
+                  fontWeight: "bold",
                 }}
               >
-                Add Repeat
-              </Button>
-            )}
-            {addOnRepeatlist === true && addrepeat === true && (
-              <Button
+                Repeat Interval
+              </Form.Label>
+              <Container
                 style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                type="button"
-                className="add-reminder-button"
-                onClick={() => {
-                  setaddOnRepeatlist(false);
-                  setAddrepeat(false);
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: "25px",
                 }}
               >
-                Donot Repeat
-              </Button>
-            )}
-
-            {controlforremoverepeatbutton === true && (
-              <Button
-                style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                }}
-                type="button"
-                onClick={() => {
-                  turnoffrepeat(_id);
-                }}
-              >
-                Remove Repeat
-              </Button>
-            )}
-            {controlforremoverepeatbutton && (
-              <p
-                // style={{
-                //   border: "1px solid white",
-                //   margin: "12px 26px",
-                //   padding: "8px 25px",
-                //   width: "100%",
-                //   borderRadius: "6px",
-                // }}
-                style={{
-                  width: "100%",
-                  margin: "5px auto",
-                  padding: "8px 15px",
-                  backgroundColor: "#151533",
-                  border: "1px solid rgb(255,255,255,0.2)",
-                  borderRadius: "8px",
-                }}
-              >
-                Task will be repeated on :
-                {new Date(repeatDate).toLocaleString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </p>
-            )}
-            {addOnRepeatlist === true && (
-              <Form.Group className="mb-3" controlId="repeat task">
-                <Form.Label style={{ padding: "8px" }} className="text-light">
-                  Repeat Interval
-                </Form.Label>
                 <Form.Select
+                  style={{ width: "50%" }}
                   value={repeatInterval}
                   onChange={(e) => {
                     setRepeatInterval(e.target.value);
@@ -587,21 +686,271 @@ function EditTask() {
                       )
                   )}
                 </Form.Select>
-              </Form.Group>
-            )}
-            <Button
+                {showAddRepeat === true && (
+                  <Button
+                    style={{
+                      backgroundColor: "green",
+                      border: "1px solid rgb(255,255,255,0.2)",
+                      padding: "2px 5px",
+                    }}
+                    onClick={() => {
+                      setShowAddRepeat(false);
+                      setRepeatDate("");
+                      setRepeatInterval("");
+                    }}
+                  >
+                    Don&apos;t repeat
+                  </Button>
+                )}
+              </Container>
+            </Form.Group>
+          )}
+          <Button
+            style={{
+              backgroundColor: "green",
+              border: "1px solid rgb(255,255,255,0.2)",
+              margin: "15px auto",
+            }}
+            type="submit"
+            className="w-100"
+          >
+            Create Task
+          </Button>
+        </Form>
+      </Container>
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Body style={{ backgroundColor: "#151533" }}>
+          <Form onSubmit={handlecreatepriority}>
+            <Form.Group className="mb-3" controlId="new category">
+              <Form.Label
+                style={{
+                  fontSize: "20px",
+                  margin: "15px auto",
+                  textAlign: "center",
+                  display: "block",
+                }}
+              >
+                Add new category
+              </Form.Label>
+              <Form.Control
+                style={{ width: "80%", display: "block", margin: "5px auto" }}
+                value={priorityname}
+                onChange={(e) => {
+                  setPriorityname(e.target.value);
+                }}
+                type="text"
+                placeholder="write category name"
+              />
+            </Form.Group>
+            <Container
               style={{
-                backgroundColor: "#151533",
-                border: "1px solid rgb(255,255,255,0.2)",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                alignItems: "center",
+                margin: "5px auto 40px auto",
               }}
-              type="submit"
-              className="w-100"
             >
-              Update Task
-            </Button>
+              <Button
+                style={{
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                type="submit"
+              >
+                Submit
+              </Button>
+              <Button
+                style={{
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleClose}
+              >
+                Close
+              </Button>
+            </Container>
           </Form>
-        </Container>
-      )}
+        </Modal.Body>
+      </Modal>
+      <Modal show={showDueDate} onHide={handleCloseForDueDate} centered>
+        <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
+          <Form>
+            <Form.Group
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "30px",
+              }}
+              className="mb-0"
+              controlId="Due Date"
+            >
+              <Form.Label
+                style={{
+                  fontSize: "20px",
+                  textAlign: "center",
+                  color: "white",
+                  margin: "10px auto",
+                  display: "block",
+                }}
+              >
+                Select Due Date and Time
+              </Form.Label>
+              <DatePicker
+                className="custom-datepicker"
+                placeholderText="Select date and time"
+                minDate={new Date()}
+                filterTime={filterTime}
+                customInput={
+                  <input
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ced4da",
+                    }}
+                  />
+                }
+                value={
+                  scheduledFor
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      }).format(scheduledFor)
+                    : ""
+                }
+                selected={scheduledFor}
+                onChange={handleDateChangeForScheduledFor}
+                showTimeSelect
+                timeIntervals={1}
+                timeCaption="Time"
+                dateFormat="PP p"
+              />
+            </Form.Group>
+
+            <Container style={{ display: "flex", flexDirection: "row" }}>
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  margin: "10px auto 10px auto",
+                  width: "30%",
+                }}
+                onClick={handleCloseForDueDate}
+              >
+                Done
+              </Button>
+              <Button
+                type="button"
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  margin: "10px auto 10px auto",
+                  width: "30%",
+                }}
+                onClick={handleCloseForDueDate}
+              >
+                Cancel
+              </Button>
+            </Container>
+          </Form>
+        </Modal.Body>
+      </Modal>
+      <Modal show={showAddReminder} onHide={handleCloseForReminder} centered>
+        <Modal.Body style={{ backgroundColor: "#151533", color: "black" }}>
+          <Form>
+            <Form.Group
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "30px",
+              }}
+              className="mb-1"
+              controlId="Reminder"
+            >
+              <Form.Label
+                style={{
+                  fontSize: "20px",
+                  margin: "15px auto",
+                  textAlign: "center",
+                  color: "white",
+                }}
+              >
+                Reminder
+              </Form.Label>
+              <DatePicker
+                className="custom-datepicker"
+                value={
+                  reminder
+                    ? new Intl.DateTimeFormat("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      }).format(reminder)
+                    : ""
+                }
+                selected={reminder}
+                onChange={handleDateChangeForReminder}
+                showTimeSelect
+                timeIntervals={1}
+                timeCaption="Time"
+                dateFormat="PP p"
+                placeholderText="Select date and time"
+                minDate={new Date()}
+                filterTime={filterTime}
+                customInput={
+                  <input
+                    style={{
+                      color: "black",
+                      backgroundColor: "white",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ced4da",
+                    }}
+                  />
+                }
+              />
+            </Form.Group>
+            <Container
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                margin: "15px auto",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleCloseForReminder}
+              >
+                Done
+              </Button>
+              <Button
+                style={{
+                  display: "block",
+                  backgroundColor: "#151533",
+                  width: "30%",
+                }}
+                onClick={handleCloseForReminder}
+              >
+                Cancel
+              </Button>
+            </Container>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }
